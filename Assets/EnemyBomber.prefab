@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6331196941840965901}
   - component: {fileID: 5361289709760256600}
   - component: {fileID: 4623893052380491578}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EnemyBomber
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -175,6 +175,10 @@ MonoBehaviour:
   maxHealth: 30
   currentHealth: 0
   scoreValue: 10
+  spikePrefab: {fileID: 8576523470554721778, guid: a67b792d81d4a7749809b3ff6c81c565, type: 3}
+  spikeCount: 5
+  spikeSpeed: 3
+  spawnOffset: 0.5
 --- !u!114 &5361289709760256600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,5 +205,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExplodingEnemy
   explosionRange: 2.5
-  spikeCount: 8
-  spikePrefab: {fileID: 4030788034157552999, guid: 2f8306de2a05f2a498f2eaef035c7e23, type: 3}
+  explosionDamage: 25
+  explosionEffect: {fileID: 0}

@@ -7,7 +7,7 @@ public class PlayerHealth : MonoBehaviour
     public int currentHealth;
 
     [Header("UI Settings")]
-    public Slider healthBar; // ลาก Slider หลอดเลือดมาใส่ช่องนี้
+    public Slider healthBar;
 
     void Start()
     {
@@ -17,21 +17,20 @@ public class PlayerHealth : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // ตรวจสอบ Tag ของสิ่งที่ชน
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            TakeDamage(20); // โดนศัตรูลด 20
+            TakeDamage(20);
         }
         else if (collision.gameObject.CompareTag("Wall"))
         {
-            TakeDamage(10); // ชนกำแพงลด 10
+            TakeDamage(10);
         }
     }
 
     public void TakeDamage(int amount)
     {
         currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // ป้องกันเลือดติดลบ
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         UpdateHealthUI();
 
@@ -39,6 +38,16 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+    }
+
+    // ฟังก์ชันสำหรับเพิ่มเลือด
+    public void Heal(int amount)
+    {
+        if (currentHealth <= 0) return; // ถ้าตายแล้วจะไม่เพิ่มเลือด
+
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // ล็อกไม่ให้เลือดเกิน maxHealth
+        UpdateHealthUI();
     }
 
     private void UpdateHealthUI()
@@ -54,14 +63,11 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Player Died!");
 
-        // เรียกคำสั่ง GameOver จาก GameManager
-    if (GameManager.Instance != null)
+        if (GameManager.Instance != null)
         {
             GameManager.Instance.GameOver();
         }
 
-        // เปลี่ยนจาก Destroy เป็น SetActive(false) เพื่อซ่อนตัวผู้เล่นแทน
-        // (ช่วยป้องกัน Error กรณีที่ศัตรูพยายามวิ่งหา Player ที่โดนลบทิ้งไปแล้ว)
         gameObject.SetActive(false);
     }
 }
