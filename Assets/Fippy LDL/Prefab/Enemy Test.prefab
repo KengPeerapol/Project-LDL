@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 5751980222357134340}
   - component: {fileID: 5415413731850972136}
   - component: {fileID: 1109239934466314788}
-  - component: {fileID: 6713663790357145069}
   - component: {fileID: 7743717874343307880}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Enemy Test
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -176,20 +175,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &6713663790357145069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5118996002469163254}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8e2e9a7bd80a1b428b94780b88b3ce8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyDamageTest
-  damage: 20
-  destroyOnHit: 1
 --- !u!114 &7743717874343307880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   maxHealth: 100
   currentHealth: 0
+  lifeTime: 8
   damageToPlayerOnCrash: 20
   spikePrefab: {fileID: 0}
   spikeCount: 6

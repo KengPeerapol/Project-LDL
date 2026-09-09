@@ -4,24 +4,39 @@ using UnityEngine;
 public class WallEventSystem : MonoBehaviour
 {
     [Header("Wall Transforms")]
-    public Transform topWall;
-    public Transform bottomWall;
-    public float squeezeDistance = 1.8f;
-    public float slideDuration = 1.5f;
+    public Transform topWall;             // แถบสีเหลืองด้านบน
+    public Transform bottomWall;          // แถบสีเหลืองด้านล่าง
+
+    [Header("Horizontal Movement Settings")]
+    [Tooltip("ระยะที่เลื่อนเข้าซ้ายมาอยู่ในจอเกม")]
+    public float slideDistance = 14f;
+    [Tooltip("ระยะที่เลื่อนไปซ้ายต่อเพื่อให้ออกพ้นขอบจอซ้าย")]
+    public float exitDistance = 15f;
+    [Tooltip("เวลาที่ใช้เลื่อนเข้ามาในจอ (วินาที)")]
+    public float slideInDuration = 1.5f;
+    [Tooltip("เวลาที่ใช้เลื่อนออกพ้นจอ (วินาที)")]
+    public float slideOutDuration = 1.5f;
 
     [Header("Event Timing Settings")]
-    public float eventDuration = 10f;
+    [Tooltip("เวลาปิด Spawner ล่วงหน้าก่อนกำแพงเริ่มเลื่อน (วินาที)")]
+    public float preWarningTime = 3f;
+
+    [Tooltip("ระยะเวลาที่กำแพงจะหยุดค้างบีบทางอยู่ในจอ (วินาที)")]
+    public float wallHoldDuration = 10f;  // ⭐ กำหนดเวลาค้างได้โดยตรงที่นี่
+
+    [Tooltip("คูลดาวน์หลังจบ Event ก่อนเริ่มสุ่มรอบใหม่ (วินาที)")]
     public float cooldownTime = 20f;
+
     [Range(0f, 100f)]
+    [Tooltip("โอกาสเกิด Event (67%)")]
     public float eventChance = 67f;
 
     [Header("Enemy Spawner")]
-    public GameObject enemySpawner;
+    public GameObject enemySpawner;         // ลาก 'Spawn Enemy' มาใส่
 
     [Header("Debug Settings")]
     public bool showDebugOnScreen = true;
 
-    // สถานะสำหรับแสดงผล Debug
     private string currentStatus = "Initializing";
     private string currentPattern = "None";
     private float timerDisplay = 0f;
@@ -42,7 +57,7 @@ public class WallEventSystem : MonoBehaviour
     {
         while (true)
         {
-            // 1. ช่วงคูลดาวน์ 20 วิ
+            // 1. คูลดาวน์
             currentStatus = "Cooldown";
             currentPattern = "None";
             timerDisplay = cooldownTime;
@@ -54,34 +69,41 @@ public class WallEventSystem : MonoBehaviour
             }
             timerDisplay = 0f;
 
-            // 2. สุ่มโอกาสเกิด Event (67%)
+            // 2. สุ่มโอกาสเกิด Event
             currentStatus = "Rolling Chance";
             lastRollResult = Random.Range(0f, 100f);
 
             if (lastRollResult <= eventChance)
             {
-                Debug.Log($"<color=yellow>[Event Debug] เกิด Event! ทอยได้: {lastRollResult:F1}% (ต้องการ <= {eventChance}%)</color>");
+                Debug.Log($"<color=yellow>[Event] ทอยได้: {lastRollResult:F1}% เตรียมเริ่ม Event!</color>");
                 yield return StartCoroutine(TriggerEventRoutine());
             }
             else
             {
-                Debug.Log($"<color=grey>[Event Debug] ไม่เกิด Event! ทอยได้: {lastRollResult:F1}% (ต้องการ <= {eventChance}%) รอตรวจรอบถัดไป</color>");
+                Debug.Log($"<color=grey>[Event] ไม่เกิด Event (ทอยได้: {lastRollResult:F1}%) รอตรวจรอบถัดไป</color>");
             }
         }
     }
 
     private IEnumerator TriggerEventRoutine()
     {
-        currentStatus = "Event Active";
-
-        // ปิดการทำงานของ Spawner ศัตรู
+        // ขั้นตอนที่ 1: ปิด Enemy Spawner ล่วงหน้า
+        currentStatus = "Warning (Spawner Disabled)";
         if (enemySpawner != null)
         {
             enemySpawner.SetActive(false);
-            Debug.Log("<color=red>[Event Debug] ปิด Enemy Spawner ชั่วคราว</color>");
+            Debug.Log("<color=red>[Event] สั่งปิด Enemy Spawner ล่วงหน้า!</color>");
         }
 
-        // สุ่มรูปแบบ 3 แบบ (แบบละ 33.33%)
+        timerDisplay = preWarningTime;
+        while (timerDisplay > 0f)
+        {
+            timerDisplay -= Time.deltaTime;
+            yield return null;
+        }
+        timerDisplay = 0f;
+
+        // ขั้นตอนที่ 2: สุ่มรูปแบบ 3 แบบ (แบบละ 33.33%)
         float patternRoll = Random.Range(0f, 100f);
         bool moveTop = false;
         bool moveBottom = false;
@@ -103,18 +125,18 @@ public class WallEventSystem : MonoBehaviour
             currentPattern = "Both Walls (33%)";
         }
 
-        Debug.Log($"<color=orange>[Event Debug] รูปแบบที่เลือก: {currentPattern} (ทอยได้: {patternRoll:F1}%)</color>");
+        Debug.Log($"<color=orange>[Event Pattern] {currentPattern} กำแพงเริ่มเลื่อนเข้ามา!</color>");
 
-        // คำนวณพิกัดเป้าหมาย
-        Vector3 topTarget = moveTop ? topStartPos + Vector3.down * squeezeDistance : topStartPos;
-        Vector3 bottomTarget = moveBottom ? bottomStartPos + Vector3.up * squeezeDistance : bottomStartPos;
+        Vector3 topInArena = moveTop ? topStartPos + (Vector3.left * slideDistance) : topStartPos;
+        Vector3 bottomInArena = moveBottom ? bottomStartPos + (Vector3.left * slideDistance) : bottomStartPos;
 
-        // เลื่อนกำแพงเข้ามา
-        yield return StartCoroutine(MoveWalls(topTarget, bottomTarget, slideDuration));
+        // ขั้นตอนที่ 3: เลื่อนเข้ามาในจอ
+        currentStatus = "Sliding In";
+        yield return StartCoroutine(MoveWalls(topStartPos, topInArena, bottomStartPos, bottomInArena, slideInDuration));
 
-        // นับเวลาค้างของ Event
-        float holdTime = Mathf.Max(0f, eventDuration - (slideDuration * 2f));
-        timerDisplay = holdTime;
+        // ขั้นตอนที่ 4: หยุดค้างบีบทางไว้ตามเวลาที่กำหนด (wallHoldDuration)
+        currentStatus = "Holding in Arena";
+        timerDisplay = wallHoldDuration;
 
         while (timerDisplay > 0f)
         {
@@ -123,60 +145,70 @@ public class WallEventSystem : MonoBehaviour
         }
         timerDisplay = 0f;
 
-        // เลื่อนกำแพงกลับ
-        currentStatus = "Returning Walls";
-        yield return StartCoroutine(MoveWalls(topStartPos, bottomStartPos, slideDuration));
+        // ขั้นตอนที่ 5: เลื่อนทะลุออกซ้ายจนพ้นจอ
+        Vector3 topExit = moveTop ? topInArena + (Vector3.left * exitDistance) : topStartPos;
+        Vector3 bottomExit = moveBottom ? bottomInArena + (Vector3.left * exitDistance) : bottomStartPos;
 
-        // เปิด Enemy Spawner ให้กลับมาทำงาน
+        currentStatus = "Exiting Left";
+        yield return StartCoroutine(MoveWalls(topInArena, topExit, bottomInArena, bottomExit, slideOutDuration));
+
+        // ขั้นตอนที่ 6: วาร์ปกลับจุดเริ่มต้น
+        if (topWall != null) topWall.position = topStartPos;
+        if (bottomWall != null) bottomWall.position = bottomStartPos;
+
+        // ขั้นตอนที่ 7: เปิด Spawner กลับมาทำงาน
         if (enemySpawner != null)
         {
             enemySpawner.SetActive(true);
-            Debug.Log("<color=green>[Event Debug] เปิด Enemy Spawner กลับมาทำงานตามปกติ</color>");
+            Debug.Log("<color=green>[Event] เปิด Enemy Spawner ทำงานตามปกติ</color>");
         }
     }
 
-    private IEnumerator MoveWalls(Vector3 targetTop, Vector3 targetBottom, float duration)
+    private IEnumerator MoveWalls(Vector3 topFrom, Vector3 topTo, Vector3 bottomFrom, Vector3 bottomTo, float duration)
     {
         float elapsed = 0f;
-        Vector3 currentTopStart = topWall != null ? topWall.position : Vector3.zero;
-        Vector3 currentBottomStart = bottomWall != null ? bottomWall.position : Vector3.zero;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
 
-            if (topWall != null) topWall.position = Vector3.Lerp(currentTopStart, targetTop, t);
-            if (bottomWall != null) bottomWall.position = Vector3.Lerp(currentBottomStart, targetBottom, t);
+            if (topWall != null) topWall.position = Vector3.Lerp(topFrom, topTo, t);
+            if (bottomWall != null) bottomWall.position = Vector3.Lerp(bottomFrom, bottomTo, t);
 
             yield return null;
         }
 
-        if (topWall != null) topWall.position = targetTop;
-        if (bottomWall != null) bottomWall.position = targetBottom;
+        if (topWall != null) topWall.position = topTo;
+        if (bottomWall != null) bottomWall.position = bottomTo;
     }
 
-    // วาดเส้นแนวระยะบีบของกำแพงในหน้า Scene
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.magenta;
+        Gizmos.color = Color.yellow;
 
         if (topWall != null)
         {
-            Vector3 target = topWall.position + Vector3.down * squeezeDistance;
-            Gizmos.DrawWireCube(target, topWall.localScale);
-            Gizmos.DrawLine(topWall.position, target);
+            Vector3 inArena = topWall.position + Vector3.left * slideDistance;
+            Vector3 outLeft = inArena + Vector3.left * exitDistance;
+            Gizmos.DrawLine(topWall.position, inArena);
+            Gizmos.DrawWireCube(inArena, topWall.localScale);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(inArena, outLeft);
         }
 
+        Gizmos.color = Color.yellow;
         if (bottomWall != null)
         {
-            Vector3 target = bottomWall.position + Vector3.up * squeezeDistance;
-            Gizmos.DrawWireCube(target, bottomWall.localScale);
-            Gizmos.DrawLine(bottomWall.position, target);
+            Vector3 inArena = bottomWall.position + Vector3.left * slideDistance;
+            Vector3 outLeft = inArena + Vector3.left * exitDistance;
+            Gizmos.DrawLine(bottomWall.position, inArena);
+            Gizmos.DrawWireCube(inArena, bottomWall.localScale);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(inArena, outLeft);
         }
     }
 
-    // แสดงข้อมูล Debug บนหน้าจอ Game View แบบเรียลไทม์
     private void OnGUI()
     {
         if (!showDebugOnScreen) return;
@@ -185,17 +217,21 @@ public class WallEventSystem : MonoBehaviour
         style.fontSize = 15;
         style.fontStyle = FontStyle.Bold;
 
-        // กล่องพื้นหลังข้อความ Debug มุมซ้ายล่าง
         float boxX = 20f;
         float boxY = Screen.height - 120f;
 
-        if (currentStatus == "Event Active")
+        if (currentStatus.Contains("Warning"))
+        {
+            style.normal.textColor = Color.red;
+            GUI.Label(new Rect(boxX, boxY, 400, 25), $"[WARNING] Wall incoming in: {timerDisplay:F1}s", style);
+        }
+        else if (currentStatus.Contains("Sliding") || currentStatus.Contains("Holding") || currentStatus.Contains("Exiting"))
         {
             style.normal.textColor = Color.yellow;
-            GUI.Label(new Rect(boxX, boxY, 400, 25), $"[EVENT ACTIVE] Mode: {currentPattern}", style);
+            GUI.Label(new Rect(boxX, boxY, 400, 25), $"[EVENT ACTIVE] {currentPattern} ({currentStatus})", style);
 
             style.normal.textColor = Color.white;
-            GUI.Label(new Rect(boxX, boxY + 25, 400, 25), $"Event Duration Left: {timerDisplay:F1}s", style);
+            GUI.Label(new Rect(boxX, boxY + 25, 400, 25), $"Hold Time Remaining: {timerDisplay:F1}s", style);
         }
         else
         {

@@ -1,5 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class EnemyHealthTest : MonoBehaviour
 {
     [Header("Enemy Health Settings")]
@@ -7,18 +8,20 @@ public class EnemyHealthTest : MonoBehaviour
     public int currentHealth;
 
     [Header("Lifetime Settings")]
-    [Tooltip("เวลาที่มีชีวิตอยู่ก่อนทำลายตัวเองทิ้ง (วินาที)")]
     public float lifeTime = 8f;
 
     [Header("Collision With Player")]
     public int damageToPlayerOnCrash = 20;
 
-    [Header("Death Spikes (Optional)")]
+    [Header("Death Spikes Settings")]
     public GameObject spikePrefab;
     public int spikeCount = 6;
     public float spikeSpeed = 8f;
+    public float spawnOffset = 0.5f;
 
     private Collider2D myCollider;
+    private bool isDead = false;
+    private bool hasCrashed = false;
 
     private void Awake()
     {
@@ -29,7 +32,6 @@ public class EnemyHealthTest : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // สั่งทำลายตัวเองล่วงหน้าตามเวลา Life Time ที่ตั้งไว้
         if (lifeTime > 0f)
         {
             Destroy(gameObject, lifeTime);
@@ -38,6 +40,8 @@ public class EnemyHealthTest : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         currentHealth -= damage;
 
         if (currentHealth <= 0)
@@ -48,6 +52,9 @@ public class EnemyHealthTest : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
+        isDead = true;
+
         SpawnDeathSpikes();
 
         if (ScoreManager.Instance != null)
@@ -60,34 +67,35 @@ public class EnemyHealthTest : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            if (myCollider != null) myCollider.enabled = false;
-            HandlePlayerCrash(collision.gameObject);
-        }
+        HandlePlayerCrash(collision.gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            if (myCollider != null) myCollider.enabled = false;
-            HandlePlayerCrash(collision.gameObject);
-        }
+        HandlePlayerCrash(collision.gameObject);
     }
 
     private void HandlePlayerCrash(GameObject target)
     {
-        if (target.TryGetComponent(out PlayerHealthTest playerTest))
-        {
-            playerTest.TakeDamage(damageToPlayerOnCrash);
-        }
-        else if (target.TryGetComponent(out PlayerHealth player))
-        {
-            player.TakeDamage(damageToPlayerOnCrash);
-        }
+        if (isDead || hasCrashed) return;
 
-        Destroy(gameObject);
+        if (target.CompareTag("Player"))
+        {
+            hasCrashed = true;
+
+            if (myCollider != null) myCollider.enabled = false;
+
+            if (target.TryGetComponent(out PlayerHealthTest playerTest))
+            {
+                playerTest.TakeDamage(damageToPlayerOnCrash);
+            }
+            else if (target.TryGetComponent(out PlayerHealth player))
+            {
+                player.TakeDamage(damageToPlayerOnCrash);
+            }
+
+            Destroy(gameObject);
+        }
     }
 
     private void SpawnDeathSpikes()
@@ -103,11 +111,17 @@ public class EnemyHealthTest : MonoBehaviour
             float dirY = Mathf.Sin(currentAngle * Mathf.Deg2Rad);
             Vector2 direction = new Vector2(dirX, dirY).normalized;
 
-            GameObject spike = Instantiate(spikePrefab, transform.position + (Vector3)(direction * 0.5f), Quaternion.identity);
-            BouncingSpike spikeScript = spike.GetComponent<BouncingSpike>();
-            if (spikeScript != null)
+            Vector3 spawnPosition = transform.position + (Vector3)(direction * spawnOffset);
+            GameObject spike = Instantiate(spikePrefab, spawnPosition, Quaternion.identity);
+
+            // รองรับทั้งชื่อคลาส BouncingSpikeTest และ BouncingSpike
+            if (spike.TryGetComponent(out BouncingSpikeTest spikeTest))
             {
-                spikeScript.Setup(direction, spikeSpeed);
+                spikeTest.Setup(direction, spikeSpeed);
+            }
+            else if (spike.TryGetComponent(out BouncingSpike spikeNormal))
+            {
+                spikeNormal.Setup(direction, spikeSpeed);
             }
 
             currentAngle += angleStep;

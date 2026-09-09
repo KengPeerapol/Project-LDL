@@ -14,10 +14,14 @@ public class PlayerHealthTest : MonoBehaviour
     [Header("หน้าต่าง UI ตอนแพ้ (GameOverPanel)")]
     public GameObject gameOverUI;
 
+    [Header("Debug Settings")]
+    public bool showDebugOnScreen = true;
+    public bool enableConsoleLogs = true;
+
     private bool isDead = false;
 
     private SpriteRenderer[] allSprites;
-    private PlayerControllerTest playerController; // เชื่อมกับ PlayerControllerTest
+    private PlayerControllerTest playerController;
     private Collider2D playerCollider;
 
     private Color color100, color80, color60, color40, color20;
@@ -27,10 +31,12 @@ public class PlayerHealthTest : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // แคชคอมโพเนนต์ล่วงหน้าเพื่อประหยัดทรัพยากร
         allSprites = GetComponentsInChildren<SpriteRenderer>();
         playerController = GetComponent<PlayerControllerTest>();
         playerCollider = GetComponent<Collider2D>();
+
+        // ตรวจสอบการลากเชื่อมโยง Component
+        ValidateComponents();
 
         // โค้ดสีตามระดับเลือด
         ColorUtility.TryParseHtmlString("#e9ff69", out color100);
@@ -42,11 +48,31 @@ public class PlayerHealthTest : MonoBehaviour
         UpdateHealthBar();
     }
 
+    private void ValidateComponents()
+    {
+        if (hpBarFill == null)
+            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก Image หลอดเลือดมาใส่ในช่อง 'Hp Bar Fill'</color>");
+
+        if (gameOverUI == null)
+            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก GameOverPanel มาใส่ในช่อง 'Game Over UI'</color>");
+
+        if (playerController == null)
+            Debug.LogWarning("<color=orange>[Health Debug] ไม่พบคอมโพเนนต์ PlayerControllerTest บนตัว Player</color>");
+
+        if (playerCollider == null)
+            Debug.LogWarning("<color=orange>[Health Debug] ไม่พบคอมโพเนนต์ Collider2D บนตัว Player</color>");
+    }
+
     public void TakeDamage(float damageAmount)
     {
         if (isDead) return;
 
         currentHealth -= damageAmount;
+
+        if (enableConsoleLogs)
+        {
+            Debug.Log($"<color=red>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
+        }
 
         if (currentHealth <= 0f)
         {
@@ -59,7 +85,6 @@ public class PlayerHealthTest : MonoBehaviour
         }
     }
 
-    // ฟังก์ชันรองรับดาเมจแบบ int จากสคริปต์ศัตรู
     public void TakeDamage(int damageAmount)
     {
         TakeDamage((float)damageAmount);
@@ -70,6 +95,12 @@ public class PlayerHealthTest : MonoBehaviour
         if (isDead) return;
 
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
+
+        if (enableConsoleLogs)
+        {
+            Debug.Log($"<color=green>[Health Debug] ได้รับการฮีล: +{healAmount} | HP ปัจจุบัน: {currentHealth:F0}/{maxHealth}</color>");
+        }
+
         UpdateHealthBar();
     }
 
@@ -107,7 +138,11 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (hpBarFill != null) hpBarFill.fillAmount = 0f;
 
-        Debug.Log("Player เลือดหมดแล้ว!");
+        if (enableConsoleLogs)
+        {
+            Debug.Log("<color=red><b>[Health Debug] Player เลือดหมดแล้ว! กำลังเริ่มอนิเมชันการตาย...</b></color>");
+        }
+
         StartCoroutine(DeathSequenceRoutine());
     }
 
@@ -115,7 +150,6 @@ public class PlayerHealthTest : MonoBehaviour
     {
         if (playerController != null) playerController.TriggerDeath();
 
-        // อนิเมชันตัวสั่นก่อนตาย 1 วินาที
         float shakeDuration = 1f;
         float elapsed = 0f;
         Vector3 originalPos = transform.position;
@@ -132,7 +166,6 @@ public class PlayerHealthTest : MonoBehaviour
 
         transform.position = originalPos;
 
-        // ซ่อน Sprite และปิด Collider
         foreach (SpriteRenderer sprite in allSprites)
         {
             if (sprite != null) sprite.enabled = false;
@@ -144,6 +177,35 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (gameOverUI != null) gameOverUI.SetActive(true);
 
-        Time.timeScale = 0f; // หยุดเวลาเกม
+        Time.timeScale = 0f;
+    }
+
+    private void OnGUI()
+    {
+        if (!showDebugOnScreen) return;
+
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 17;
+        style.fontStyle = FontStyle.Bold;
+
+        // วางกล่องแสดงเลือดไว้ด้านบนซ้าย (ใต้จุดแสดงสถานะยิงปืน)
+        float posX = 20f;
+        float posY = 80f;
+
+        if (isDead)
+        {
+            style.normal.textColor = Color.red;
+            GUI.Label(new Rect(posX, posY, 300, 30), "PLAYER STATUS: DEAD", style);
+        }
+        else
+        {
+            float hpPercent = (currentHealth / maxHealth) * 100f;
+
+            if (hpPercent > 60f) style.normal.textColor = Color.green;
+            else if (hpPercent > 30f) style.normal.textColor = Color.yellow;
+            else style.normal.textColor = new Color(1f, 0.3f, 0f); // ส้ม-แดง
+
+            GUI.Label(new Rect(posX, posY, 350, 30), $"HP: {currentHealth:F0} / {maxHealth:F0} ({hpPercent:F0}%)", style);
+        }
     }
 }
