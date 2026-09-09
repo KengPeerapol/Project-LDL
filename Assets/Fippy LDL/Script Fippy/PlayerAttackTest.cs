@@ -10,7 +10,7 @@ public class PlayerAttackTest : MonoBehaviour
     public float firePointDistance = 0.7f;
 
     [Header("Aim Angle Clamp (ชี้ได้เฉพาะด้านหน้า)")]
-    [Range(0f, 90f)]
+    [Range(0f, 360f)]
     public float maxAimAngle = 80f;
 
     [Header("Charge Attack Settings")]

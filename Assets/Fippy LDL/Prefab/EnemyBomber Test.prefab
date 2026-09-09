@@ -179,7 +179,7 @@ MonoBehaviour:
   lifeTime: 8
   damageToPlayerOnCrash: 20
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
-  spikeCount: 6
+  spikeCount: 3
   spikeSpeed: 8
   spawnOffset: 0.5
 --- !u!95 &5120644694000503860
@@ -219,8 +219,8 @@ MonoBehaviour:
   explosionRange: 2
   explosionEffect: {fileID: 0}
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
-  spikeCount: 5
-  spikeSpeed: 8
+  spikeCount: 3
+  spikeSpeed: 6.7
   spikeSpawnOffset: 0.5
 --- !u!114 &5418579328430915441
 MonoBehaviour:
