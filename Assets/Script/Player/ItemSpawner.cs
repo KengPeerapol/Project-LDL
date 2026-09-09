@@ -3,7 +3,7 @@ using UnityEngine;
 public class ItemSpawner : MonoBehaviour
 {
     [Header("Spawner Settings")]
-    public GameObject[] itemPrefabs;    // ใส่ Prefab ไอเทมทั้งหมดลงในช่องนี้ (ทั้งยิงเร็วและเพิ่มเลือด)
+    public GameObject[] itemPrefabs;
     public float spawnRate = 10f;
     public int maxItemsOnScreen = 3;
 
@@ -31,17 +31,15 @@ public class ItemSpawner : MonoBehaviour
     {
         if (itemPrefabs == null || itemPrefabs.Length == 0) return;
 
-        // นับไอเทมทั้งสองประเภทรวมกันในฉาก
-        int currentItems = FindObjectsByType<FireRateItem>(FindObjectsSortMode.None).Length +
-                           FindObjectsByType<HealthItem>(FindObjectsSortMode.None).Length;
+        // แก้ไขให้รองรับมาตรฐาน Unity 6 โดยไม่ต้องใส่ SortMode
+        int currentItems = FindObjectsByType<FireRateItem>().Length +
+                           FindObjectsByType<HealthItem>().Length;
 
         if (currentItems >= maxItemsOnScreen) return;
 
-        // สุ่มไอเทมจากรายการ
         int randomIndex = Random.Range(0, itemPrefabs.Length);
         GameObject selectedPrefab = itemPrefabs[randomIndex];
 
-        // สุ่มพิกัดเกิด
         float randomX = Random.Range(minBounds.x, maxBounds.x);
         float randomY = Random.Range(minBounds.y, maxBounds.y);
         Vector3 spawnPos = new Vector3(randomX, randomY, 0f);
