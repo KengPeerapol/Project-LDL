@@ -5,8 +5,15 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerControllerTest : MonoBehaviour
 {
-    [Header("ตั้งค่าการบิน (คลิกซ้ายค้าง หรือ Spacebar)")]
+    [Header("ตั้งค่าการบิน (คลิกขวาค้าง หรือ Spacebar)")]
     public float flyForce = 5f;
+
+    [Header("ตั้งค่าการหล่น / แรงโน้มถ่วง")]
+    [Tooltip("ค่าแรงโน้มถ่วง (ค่ายิ่งน้อย ยิ่งตกช้าลง เช่น 0.5 - 0.7)")]
+    public float customGravityScale = 0.6f;
+
+    [Tooltip("จำกัดความเร็วตกสูงสุด ไม่ให้ตกเร็วเกินไปเวลาทิ้งดิ่ง")]
+    public float maxFallSpeed = 4f;
 
     [Header("ตั้งค่าการเอียงตัว")]
     public float baseRotationZ = -90f;
@@ -34,11 +41,14 @@ public class PlayerControllerTest : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
+
+        rb.gravityScale = customGravityScale;
     }
 
     private void Update()
     {
-        bool mousePress = Mouse.current != null && Mouse.current.leftButton.isPressed;
+        // ⭐ เปลี่ยนเป็นตรวจจับคลิกขวา (rightButton) หรือ Spacebar สำหรับควบคุมการบิน
+        bool mousePress = Mouse.current != null && Mouse.current.rightButton.isPressed;
         bool spacePress = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
 
         isFlapping = mousePress || spacePress;
@@ -54,6 +64,11 @@ public class PlayerControllerTest : MonoBehaviour
         if (isFlapping && CanFly)
         {
             FlyUp();
+        }
+
+        if (rb.linearVelocity.y < -maxFallSpeed)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallSpeed);
         }
     }
 
