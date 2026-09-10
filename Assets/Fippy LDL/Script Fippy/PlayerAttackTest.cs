@@ -10,19 +10,19 @@ public class PlayerAttackTest : MonoBehaviour
     public float firePointDistance = 0.7f;
 
     [Header("Aim Angle Clamp (ชี้ได้เฉพาะด้านหน้า)")]
-    [Range(0f, 360f)]
+    [Range(0f, 90f)]
     public float maxAimAngle = 80f;
 
     [Header("Charge Attack Settings")]
-    public float chargeTimeRequired = 1.0f;
-    public float chargeCooldown = 5.0f;
-    public int normalDamage = 25;
-    public int chargedDamage = 100;
-    public float chargedBulletScale = 2.5f;
+    public float chargeTimeRequired = 1.0f; // เวลาชาร์จ (1 วินาที)
+    public float chargeCooldown = 5.0f;     // คูลดาวน์การชาร์จยิง (5 วินาที)
+    public int normalDamage = 25;           // ดาเมจกระสุนปกติ
+    public int chargedDamage = 100;         // ดาเมจกระสุนชาร์จ
+    public float chargedBulletScale = 2.5f;  // อัตราขยายขนาดกระสุนชาร์จ
 
     private float nextFireTime = 0f;
     private float currentChargeTimer = 0f;
-    private float chargeCooldownTimer = 0f;
+    private float chargeCooldownTimer = 0f; // ตัวนับเวลาคูลดาวน์
     private bool isCharging = false;
     private bool hasLoggedFullCharge = false;
 
@@ -99,25 +99,26 @@ public class PlayerAttackTest : MonoBehaviour
     {
         if (Mouse.current == null) return;
 
-        // ⭐ 1. เริ่มกดคลิกซ้าย
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        // 1. เริ่มกดคลิกขวา
+        if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             isCharging = true;
             currentChargeTimer = 0f;
             hasLoggedFullCharge = false;
         }
 
-        // ⭐ 2. กดคลิกซ้ายค้างเพื่อชาร์จ
-        if (Mouse.current.leftButton.isPressed && isCharging)
+        // 2. กำลังกดคลิกขวาค้าง
+        if (Mouse.current.rightButton.isPressed && isCharging)
         {
             currentChargeTimer += Time.deltaTime;
 
+            // แจ้งเตือนเมื่อชาร์จครบ 1 วินาที
             if (currentChargeTimer >= chargeTimeRequired && !hasLoggedFullCharge)
             {
                 hasLoggedFullCharge = true;
                 if (chargeCooldownTimer <= 0f)
                 {
-                    Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! ปล่อยคลิกซ้ายเพื่อยิงกระสุนยักษ์</color>");
+                    Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! ปล่อยคลิกขวาเพื่อยิงกระสุนยักษ์</color>");
                 }
                 else
                 {
@@ -126,27 +127,30 @@ public class PlayerAttackTest : MonoBehaviour
             }
         }
 
-        // ⭐ 3. ปล่อยคลิกซ้ายเพื่อยิง
-        if (Mouse.current.leftButton.wasReleasedThisFrame && isCharging)
+        // 3. ปล่อยคลิกขวา
+        if (Mouse.current.rightButton.wasReleasedThisFrame && isCharging)
         {
             isCharging = false;
 
             if (currentChargeTimer >= chargeTimeRequired)
             {
+                // ตรวจสอบคูลดาวน์ก่อนยิงกระสุนชาร์จ
                 if (chargeCooldownTimer <= 0f)
                 {
                     FireBullet(chargedDamage, chargedBulletScale);
-                    chargeCooldownTimer = chargeCooldown;
+                    chargeCooldownTimer = chargeCooldown; // เริ่มนับคูลดาวน์ 5 วินาที
                     Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จสำเร็จ! ดาเมจ 100 (ติดคูลดาวน์ {chargeCooldown} วินาที)</color>");
                 }
                 else
                 {
+                    // ติดคูลดาวน์: แปลงเป็นกระสุนปกติแทน
                     FireBullet(normalDamage, 1.0f);
                     Debug.LogWarning($"[Charged Shot] ยังติดคูลดาวน์ ({chargeCooldownTimer:F1}s) จึงยิงเป็นกระสุนธรรมดาแทน");
                 }
             }
             else if (Time.time >= nextFireTime)
             {
+                // กดยิงเร็วปกติ
                 FireBullet(normalDamage, 1.0f);
                 nextFireTime = Time.time + fireRate;
             }
@@ -168,6 +172,7 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
+    // แสดงตัวเลข Debug บนหน้าจอ Game View แบบเรียลไทม์
     private void OnGUI()
     {
         GUIStyle style = new GUIStyle();
@@ -199,6 +204,7 @@ public class PlayerAttackTest : MonoBehaviour
         Gizmos.DrawRay(transform.position, (Vector3)currentAimDirection * 2f);
     }
 
+    // เพิ่มฟังก์ชันนี้ลงใน PlayerAttackTest.cs
     public void ReduceChargeCooldown(float reductionTime)
     {
         if (chargeCooldownTimer > 0f)
