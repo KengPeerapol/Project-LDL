@@ -22,7 +22,7 @@ public class WallEventSystem : MonoBehaviour
     public float preWarningTime = 3f;
 
     [Tooltip("ระยะเวลาที่กำแพงจะหยุดค้างบีบทางอยู่ในจอ (วินาที)")]
-    public float wallHoldDuration = 10f;  // ⭐ กำหนดเวลาค้างได้โดยตรงที่นี่
+    public float wallHoldDuration = 10f;
 
     [Tooltip("คูลดาวน์หลังจบ Event ก่อนเริ่มสุ่มรอบใหม่ (วินาที)")]
     public float cooldownTime = 20f;
@@ -31,8 +31,9 @@ public class WallEventSystem : MonoBehaviour
     [Tooltip("โอกาสเกิด Event (67%)")]
     public float eventChance = 67f;
 
-    [Header("Enemy Spawner")]
+    [Header("Spawners (ตัวสร้างศัตรูและไอเทม)")]
     public GameObject enemySpawner;         // ลาก 'Spawn Enemy' มาใส่
+    public GameObject itemSpawner;          // ⭐ ลาก 'Spawn Item' มาใส่ช่องนี้
 
     [Header("Debug Settings")]
     public bool showDebugOnScreen = true;
@@ -87,12 +88,20 @@ public class WallEventSystem : MonoBehaviour
 
     private IEnumerator TriggerEventRoutine()
     {
-        // ขั้นตอนที่ 1: ปิด Enemy Spawner ล่วงหน้า
-        currentStatus = "Warning (Spawner Disabled)";
+        // ขั้นตอนที่ 1: ปิด Spawner ทั้งหมดล่วงหน้า
+        currentStatus = "Warning (Spawners Disabled)";
+
         if (enemySpawner != null)
         {
             enemySpawner.SetActive(false);
             Debug.Log("<color=red>[Event] สั่งปิด Enemy Spawner ล่วงหน้า!</color>");
+        }
+
+        // ⭐ สั่งปิด Item Spawner ทันทีเมื่อเข้าสู่ช่วงเตือน Event
+        if (itemSpawner != null)
+        {
+            itemSpawner.SetActive(false);
+            Debug.Log("<color=orange>[Event] สั่งปิด Item Spawner เรียบร้อย!</color>");
         }
 
         timerDisplay = preWarningTime;
@@ -156,11 +165,18 @@ public class WallEventSystem : MonoBehaviour
         if (topWall != null) topWall.position = topStartPos;
         if (bottomWall != null) bottomWall.position = bottomStartPos;
 
-        // ขั้นตอนที่ 7: เปิด Spawner กลับมาทำงาน
+        // ขั้นตอนที่ 7: เปิด Spawner ทั้งหมดกลับมาทำงานตามปกติ
         if (enemySpawner != null)
         {
             enemySpawner.SetActive(true);
             Debug.Log("<color=green>[Event] เปิด Enemy Spawner ทำงานตามปกติ</color>");
+        }
+
+        // ⭐ สั่งเปิด Item Spawner กลับมาทำงานใหม่อีกครั้ง
+        if (itemSpawner != null)
+        {
+            itemSpawner.SetActive(true);
+            Debug.Log("<color=green>[Event] เปิด Item Spawner กลับมาทำงานตามปกติ</color>");
         }
     }
 

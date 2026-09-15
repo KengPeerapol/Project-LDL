@@ -6,21 +6,28 @@ public class MovementTest : MonoBehaviour
     [Header("Movement Settings")]
     public float speed = 5f;
 
+    [Tooltip("ติ๊กถูกเพื่อให้หันหัวตามทิศพุ่ง (ติ๊กออกสำหรับศัตรูที่ต้องการให้หมุนควงสว่านเอง)")]
+    public bool rotateTowardsDirection = true;
+
     [Header("Random Angle Settings")]
     public float minAngle = -30f;
     public float maxAngle = 30f;
 
-    [Header("Collision Settings")]
-    public string wallTag = "Wall"; // กำหนด Tag กำแพงที่จะให้สะท้อน
+    [Header("Collision & Bounce Settings")]
+    public string wallTag = "Wall";
+
+    [Tooltip("ให้เด้งสะท้อนเมื่อชนกับ Enemy หรือ Item ด้วยกันเองหรือไม่")]
+    public bool bounceWithEntities = true;
 
     private Rigidbody2D rb;
+    private Collider2D myCollider;
     private Vector2 lastVelocity;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        myCollider = GetComponent<Collider2D>();
 
-        // ปิดแรงโน้มถ่วงและล็อกไม่ให้ฟิสิกส์หมุนตัววัตถุเอง
         rb.gravityScale = 0f;
         rb.linearDamping = 0f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -28,20 +35,15 @@ public class MovementTest : MonoBehaviour
 
     private void Start()
     {
-        // 1. สุ่มมุมเอียงขึ้น-ลง[cite: 12]
         float randomAngle = Random.Range(minAngle, maxAngle);
-
-        // 2. คำนวณทิศทางพุ่งไปทางซ้ายตามมุมที่สุ่มได้[cite: 12]
         Vector2 moveDirection = Quaternion.Euler(0f, 0f, randomAngle) * Vector2.left;
 
-        // 3. กำหนดความเร็วเริ่มต้น[cite: 12]
         rb.linearVelocity = moveDirection * speed;
         lastVelocity = rb.linearVelocity;
     }
 
     private void FixedUpdate()
     {
-        // บันทึกความเร็วก่อนเกิดการชนในแต่ละเฟรม
         if (rb.linearVelocity.sqrMagnitude > 0.1f)
         {
             lastVelocity = rb.linearVelocity;
@@ -50,9 +52,9 @@ public class MovementTest : MonoBehaviour
 
     private void Update()
     {
-        Vector2 currentVelocity = rb.linearVelocity;
+        if (!rotateTowardsDirection) return;
 
-        // หันหัวไปตามทิศทางความเร็วจริงตลอดเวลา (ทั้งตอนพุ่งและตอนเด้ง)[cite: 12]
+        Vector2 currentVelocity = rb.linearVelocity;
         if (currentVelocity != Vector2.zero)
         {
             float angle = Mathf.Atan2(currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg;
@@ -60,18 +62,69 @@ public class MovementTest : MonoBehaviour
         }
     }
 
+    // รองรับการเด้งผ่านระบบ Trigger (ไม่ขัดจังหวะ Player)
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        HandleBounce(collision.gameObject);
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // เมื่อชนกับวัตถุที่มี Tag กำแพง
-        if (collision.gameObject.CompareTag(wallTag))
-        {
-            // คำนวณมุมสะท้อนจากระนาบพื้นผิวที่ชน
-            Vector2 normal = collision.contacts[0].normal;
-            Vector2 reflectDir = Vector2.Reflect(lastVelocity.normalized, normal).normalized;
+        HandleBounce(collision.gameObject);
+    }
 
-            // คืนค่าความเร็วให้คงที่ตามทิศทางสะท้อนใหม่ทันที
-            rb.linearVelocity = reflectDir * speed;
-            lastVelocity = rb.linearVelocity;
+    private void HandleBounce(GameObject target)
+    {
+        // 1. เด้งสะท้อนกำแพง (Wall)
+        if (target.CompareTag(wallTag))
+        {
+            float normalY = (transform.position.y > target.transform.position.y) ? 1f : -1f;
+            Vector2 wallNormal = new Vector2(0f, normalY);
+
+            ReflectVelocity(wallNormal, false);
+        }
+        // 2. ชนกับ Enemy หรือ Item (ให้เบี่ยงขึ้น-ลง แต่ห้ามเด้งย้อนกลับไปทางขวา)
+        else if (bounceWithEntities && (target.CompareTag("Enemy") || target.CompareTag("Item")))
+        {
+            // ตัวที่อยู่สูงกว่าให้เบี่ยงขึ้นบน ตัวที่อยู่ต่ำกว่าให้เบี่ยงลงล่าง
+            float diffY = transform.position.y - target.transform.position.y;
+            float normalY = (diffY >= 0f) ? 1f : -1f;
+
+            Vector2 entityNormal = new Vector2(0f, normalY);
+            ReflectVelocity(entityNormal, true);
+        }
+    }
+
+    private void ReflectVelocity(Vector2 normal, bool isEntityBounce)
+    {
+        Vector2 reflectDir = Vector2.Reflect(lastVelocity.normalized, normal).normalized;
+
+        if (isEntityBounce)
+        {
+            // ⭐ บังคับให้แกน X ติดลบเสมอ (พุ่งไปทางซ้ายตลอดเวลา ห้ามย้อนไปทางขวา)
+            reflectDir.x = -Mathf.Abs(reflectDir.x);
+
+            // ให้มีแรงส่งไปทางซ้ายขั้นต่ำ ป้องกันการลอยขึ้นลงอยู่กับที่
+            if (reflectDir.x > -0.4f)
+            {
+                reflectDir.x = -0.6f;
+            }
+            reflectDir = reflectDir.normalized;
+        }
+        else
+        {
+            // ชนกำแพง: บังคับให้แกน X ยังคงมุ่งหน้าไปทางซ้ายเช่นกัน
+            reflectDir.x = -Mathf.Abs(reflectDir.x);
+            reflectDir = reflectDir.normalized;
+        }
+
+        rb.linearVelocity = reflectDir * speed;
+        lastVelocity = rb.linearVelocity;
+
+        if (rotateTowardsDirection)
+        {
+            float angle = Mathf.Atan2(reflectDir.y, reflectDir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
     }
 }
