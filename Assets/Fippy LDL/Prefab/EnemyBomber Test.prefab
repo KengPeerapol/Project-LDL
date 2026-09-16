@@ -88,7 +88,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5895240819618427197, guid: 635e1f89dd791a343a1b1d1d33086ffb, type: 3}
+  m_Sprite: {fileID: 4594338265141194305, guid: fda36f6d14c3e6d45a8c407b9f05203b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -192,7 +192,7 @@ Animator:
   m_GameObject: {fileID: 4577170958725877148}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ba66ead3393f02640bfe0a5357d1851b, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -252,3 +252,4 @@ MonoBehaviour:
   minAngle: -30
   maxAngle: 30
   wallTag: Wall
+  bounceWithEntities: 1
