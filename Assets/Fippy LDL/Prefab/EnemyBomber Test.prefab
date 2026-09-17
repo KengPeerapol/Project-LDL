@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 5620443497527264152}
   - component: {fileID: 5120644694000503860}
   - component: {fileID: 773047448701312030}
-  - component: {fileID: 5418579328430915441}
   - component: {fileID: 970582940734475238}
   m_Layer: 3
   m_Name: EnemyBomber Test
@@ -176,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   maxHealth: 100
   currentHealth: 0
-  lifeTime: 8
+  lifeTime: 6
   damageToPlayerOnCrash: 20
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
@@ -222,19 +221,6 @@ MonoBehaviour:
   spikeCount: 3
   spikeSpeed: 6.7
   spikeSpawnOffset: 0.5
---- !u!114 &5418579328430915441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4577170958725877148}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f7551d99de0f0d4989bd3fc01f2e0f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RotateSelf
-  rotationSpeed: 48
 --- !u!114 &970582940734475238
 MonoBehaviour:
   m_ObjectHideFlags: 0

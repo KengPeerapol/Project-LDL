@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CooldownItem
   cooldownReduction: 5
-  lifeTime: 10
+  lifeTime: 8
 --- !u!58 &-7170217904238699054
 CircleCollider2D:
   m_ObjectHideFlags: 0

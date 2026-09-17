@@ -191,7 +191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   maxHealth: 100
   currentHealth: 0
-  lifeTime: 8
+  lifeTime: 6
   damageToPlayerOnCrash: 20
   spikePrefab: {fileID: 0}
   spikeCount: 6
