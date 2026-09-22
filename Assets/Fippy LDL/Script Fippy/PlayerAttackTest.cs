@@ -3,13 +3,19 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttackTest : MonoBehaviour
 {
+    [Header("Gun & Aiming Settings")]
+    [Tooltip("ลาก GameObject 'GunPivot' ที่สร้างไว้มาใส่ช่องนี้")]
+    public Transform gunPivot;              // ⭐ ตัวควบคุมจุดหมุนปืน
+    [Tooltip("องศาชดเชย (Sprite แคปซูลแนวตั้งให้ใช้ -90 เพื่อให้ชี้ไปทางขวา)")]
+    public float gunRotationOffset = -90f;  // ⭐ ชดเชยให้ปลายแคปซูลชี้ตรงกับเมาส์
+
     [Header("Shooting Settings")]
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float fireRate = 0.25f;
     public float firePointDistance = 0.7f;
 
-    [Header("Aim Angle Clamp (ชี้ได้เฉพาะด้านหน้า)")]
+    [Header("Aim Angle Clamp (จำกัดมุมชี้ด้านหน้า)")]
     [Range(0f, 360f)]
     public float maxAimAngle = 80f;
 
@@ -81,17 +87,29 @@ public class PlayerAttackTest : MonoBehaviour
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
 
-        Vector2 rawDirection = (mouseWorldPos - transform.position);
+        // หาจุดกำเนิดของปืน (ถ้ามี gunPivot ให้ใช้ตำแหน่งของมัน ถ้าไม่มีให้ใช้ตัว Player)
+        Vector2 pivotOrigin = (gunPivot != null) ? (Vector2)gunPivot.position : (Vector2)transform.position;
+
+        // คำนวณมุมเล็งไปหาตำแหน่งเมาส์
+        Vector2 rawDirection = (Vector2)mouseWorldPos - pivotOrigin;
         float targetAngle = Mathf.Atan2(rawDirection.y, rawDirection.x) * Mathf.Rad2Deg;
 
+        // บล็อกมุมไม่ให้หันหลัง (จำกัดตาม maxAimAngle)
         targetAngle = Mathf.Clamp(targetAngle, -maxAimAngle, maxAimAngle);
 
         float rad = targetAngle * Mathf.Deg2Rad;
         currentAimDirection = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
 
-        if (firePoint != null)
+        // ⭐ หมุน GunPivot ตามเมาส์ (ใช้ World Rotation ป้องกันปืนบิดตามจังหวะนกกระพือปีก)
+        if (gunPivot != null)
         {
-            firePoint.position = transform.position + (Vector3)(currentAimDirection * firePointDistance);
+            gunPivot.rotation = Quaternion.Euler(0f, 0f, targetAngle + gunRotationOffset);
+        }
+
+        // กรณี FirePoint ไม่ได้ใส่เป็นลูกของ GunPivot ให้จัดตำแหน่งตามระยะห่าง
+        if (firePoint != null && firePoint.parent != gunPivot)
+        {
+            firePoint.position = pivotOrigin + (currentAimDirection * firePointDistance);
         }
     }
 
@@ -99,7 +117,7 @@ public class PlayerAttackTest : MonoBehaviour
     {
         if (Mouse.current == null) return;
 
-        // ⭐ 1. เริ่มกดคลิกซ้าย
+        // 1. เริ่มคลิกซ้าย
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             isCharging = true;
@@ -107,7 +125,7 @@ public class PlayerAttackTest : MonoBehaviour
             hasLoggedFullCharge = false;
         }
 
-        // ⭐ 2. กดคลิกซ้ายค้างเพื่อชาร์จ
+        // 2. คลิกซ้ายค้างเพื่อชาร์จ
         if (Mouse.current.leftButton.isPressed && isCharging)
         {
             currentChargeTimer += Time.deltaTime;
@@ -126,7 +144,7 @@ public class PlayerAttackTest : MonoBehaviour
             }
         }
 
-        // ⭐ 3. ปล่อยคลิกซ้ายเพื่อยิง
+        // 3. ปล่อยคลิกซ้ายเพื่อปล่อยกระสุน
         if (Mouse.current.leftButton.wasReleasedThisFrame && isCharging)
         {
             isCharging = false;
@@ -137,12 +155,12 @@ public class PlayerAttackTest : MonoBehaviour
                 {
                     FireBullet(chargedDamage, chargedBulletScale);
                     chargeCooldownTimer = chargeCooldown;
-                    Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จสำเร็จ! ดาเมจ 100 (ติดคูลดาวน์ {chargeCooldown} วินาที)</color>");
+                    Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จสำเร็จ! ดาเมจ {chargedDamage}</color>");
                 }
                 else
                 {
                     FireBullet(normalDamage, 1.0f);
-                    Debug.LogWarning($"[Charged Shot] ยังติดคูลดาวน์ ({chargeCooldownTimer:F1}s) จึงยิงเป็นกระสุนธรรมดาแทน");
+                    Debug.LogWarning($"[Charged Shot] ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
                 }
             }
             else if (Time.time >= nextFireTime)
@@ -207,11 +225,11 @@ public class PlayerAttackTest : MonoBehaviour
 
             if (chargeCooldownTimer <= 0f)
             {
-                Debug.Log("<color=green>[Item] ลดคูลดาวน์ 5 วิ! ปืนพร้อมชาร์จยิงทันที!</color>");
+                Debug.Log("<color=green>[Item] ลดคูลดาวน์! ปืนพร้อมชาร์จยิงทันที!</color>");
             }
             else
             {
-                Debug.Log($"<color=cyan>[Item] ลดคูลดาวน์ลง {reductionTime} วินาที! เหลืออีก {chargeCooldownTimer:F1}s</color>");
+                Debug.Log($"<color=cyan>[Item] ลดคูลดาวน์ลง {reductionTime}s เหลืออีก {chargeCooldownTimer:F1}s</color>");
             }
         }
     }

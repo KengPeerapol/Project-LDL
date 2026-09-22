@@ -35,10 +35,8 @@ public class PlayerHealthTest : MonoBehaviour
         playerController = GetComponent<PlayerControllerTest>();
         playerCollider = GetComponent<Collider2D>();
 
-        // ตรวจสอบการลากเชื่อมโยง Component
         ValidateComponents();
 
-        // โค้ดสีตามระดับเลือด
         ColorUtility.TryParseHtmlString("#e9ff69", out color100);
         ColorUtility.TryParseHtmlString("#fff56e", out color80);
         ColorUtility.TryParseHtmlString("#ffd869", out color60);
@@ -188,7 +186,6 @@ public class PlayerHealthTest : MonoBehaviour
         style.fontSize = 17;
         style.fontStyle = FontStyle.Bold;
 
-        // วางกล่องแสดงเลือดไว้ด้านบนซ้าย (ใต้จุดแสดงสถานะยิงปืน)
         float posX = 20f;
         float posY = 80f;
 
@@ -203,7 +200,7 @@ public class PlayerHealthTest : MonoBehaviour
 
             if (hpPercent > 60f) style.normal.textColor = Color.green;
             else if (hpPercent > 30f) style.normal.textColor = Color.yellow;
-            else style.normal.textColor = new Color(1f, 0.3f, 0f); // ส้ม-แดง
+            else style.normal.textColor = new Color(1f, 0.3f, 0f);
 
             GUI.Label(new Rect(posX, posY, 350, 30), $"HP: {currentHealth:F0} / {maxHealth:F0} ({hpPercent:F0}%)", style);
         }

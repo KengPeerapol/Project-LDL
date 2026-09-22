@@ -47,7 +47,6 @@ public class PlayerControllerTest : MonoBehaviour
 
     private void Update()
     {
-        // ⭐ เปลี่ยนเป็นตรวจจับคลิกขวา (rightButton) หรือ Spacebar สำหรับควบคุมการบิน
         bool mousePress = Mouse.current != null && Mouse.current.rightButton.isPressed;
         bool spacePress = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
 
