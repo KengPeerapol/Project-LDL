@@ -1354,7 +1354,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 850535643}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
   m_Name: 
@@ -1364,7 +1364,7 @@ MonoBehaviour:
   m_RefResolutionX: 320
   m_RefResolutionY: 180
   m_CropFrame: 0
-  m_GridSnapping: 1
+  m_GridSnapping: 0
   m_FilterMode: 0
   m_UpscaleRT: 0
   m_PixelSnapping: 0
@@ -1950,7 +1950,7 @@ MonoBehaviour:
   - {fileID: 1310062795}
   - {fileID: 64150220}
   - {fileID: 1207587742}
-  scrollSpeed: 1.5
+  scrollSpeed: 1
   seamOffset: 0
   resetThresholdX: -20
   autoCalculateThreshold: 1
@@ -4569,7 +4569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 534322496820327794, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2134135327144630043, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_LocalPosition.x
