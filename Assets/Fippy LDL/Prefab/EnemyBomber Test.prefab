@@ -174,13 +174,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   maxHealth: 100
-  currentHealth: 0
-  lifeTime: 6
-  damageToPlayerOnCrash: 20
+  scoreReward: 20
+  contactDamage: 15
+  destroyOnHitPlayer: 1
+  damageCooldown: 0.5
+  spawnSpikesOnDeath: 1
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
-  spikeSpeed: 8
-  spawnOffset: 0.5
+  spikeSpeed: 5
+  randomizeSpikeAngle: 1
+  useEnemyRotation: 1
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.08
+  deathEffectPrefab: {fileID: 0}
 --- !u!95 &5120644694000503860
 Animator:
   serializedVersion: 7
@@ -219,8 +225,10 @@ MonoBehaviour:
   explosionEffect: {fileID: 0}
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
-  spikeSpeed: 6.7
+  spikeSpeed: 4
   spikeSpawnOffset: 0.5
+  randomizeAngle: 1
+  useCurrentRotationAsBase: 1
 --- !u!114 &970582940734475238
 MonoBehaviour:
   m_ObjectHideFlags: 0
