@@ -181,7 +181,7 @@ MonoBehaviour:
   spawnSpikesOnDeath: 1
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
-  spikeSpeed: 8
+  spikeSpeed: 5
   randomizeSpikeAngle: 1
   useEnemyRotation: 1
   hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
