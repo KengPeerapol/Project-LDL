@@ -87,12 +87,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7850379532012533278, guid: 98563f78c41f87242927db40baa3aab4, type: 3}
+  m_Sprite: {fileID: 453779152405450707, guid: a6859806659b3a34ab457e6a452e54e7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.1, y: 1.05}
+  m_Size: {x: 0.23, y: 0.23}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -181,7 +181,7 @@ MonoBehaviour:
   spawnSpikesOnDeath: 1
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
-  spikeSpeed: 5
+  spikeSpeed: 8
   randomizeSpikeAngle: 1
   useEnemyRotation: 1
   hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
@@ -197,7 +197,7 @@ Animator:
   m_GameObject: {fileID: 4577170958725877148}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ba66ead3393f02640bfe0a5357d1851b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -225,7 +225,7 @@ MonoBehaviour:
   explosionEffect: {fileID: 0}
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
-  spikeSpeed: 4
+  spikeSpeed: 6.7
   spikeSpawnOffset: 0.5
   randomizeAngle: 1
   useCurrentRotationAsBase: 1
