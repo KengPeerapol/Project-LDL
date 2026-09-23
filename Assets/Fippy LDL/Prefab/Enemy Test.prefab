@@ -190,10 +190,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   maxHealth: 100
-  currentHealth: 0
-  lifeTime: 6
-  damageToPlayerOnCrash: 20
-  spikePrefab: {fileID: 0}
-  spikeCount: 6
-  spikeSpeed: 8
-  spawnOffset: 0.5
+  scoreReward: 10
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.08
+  deathEffectPrefab: {fileID: 0}
+  dropItemChance: 25
+  itemDropPrefab: {fileID: 0}

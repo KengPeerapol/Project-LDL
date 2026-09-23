@@ -1,52 +1,139 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
 public class EnemyHealthTest : MonoBehaviour
 {
-    [Header("Enemy Health Settings")]
-    public int maxHealth = 100;
-    public int currentHealth;
+    [Header("Health Settings (การตั้งค่าเลือด)")]
+    public float maxHealth = 50f;
+    private float currentHealth;
 
-    [Header("Lifetime Settings")]
-    public float lifeTime = 8f;
+    [Header("Score Reward (คะแนนที่ได้รับ)")]
+    public int scoreReward = 20;
 
-    [Header("Collision With Player")]
-    public int damageToPlayerOnCrash = 20;
+    [Header("Player Collision (การชนกับผู้เล่น)")]
+    [Tooltip("ดาเมจที่ทำใส่ Player เมื่อบินชนกัน")]
+    public int contactDamage = 15; // ⭐ จำนวนเลือดที่ลดเมื่อชนตัวผู้เล่น
 
-    [Header("Death Spikes Settings")]
+    [Tooltip("เมื่อชน Player แล้ว ศัตรูตัวนี้จะระเบิด/ตายทันทีหรือไม่")]
+    public bool destroyOnHitPlayer = true;
+
+    [Tooltip("คูลดาวน์ดาเมจ (กรณี destroyOnHitPlayer = false)")]
+    public float damageCooldown = 0.5f;
+    private float lastHitPlayerTime = -999f;
+
+    [Header("Spike Death Settings (ปล่อยหนามตอนตาย)")]
+    [Tooltip("ติ๊กถูกถ้าต้องการให้ตัวนี้ปล่อยหนามตอนตาย")]
+    public bool spawnSpikesOnDeath = true;
     public GameObject spikePrefab;
-    public int spikeCount = 6;
-    public float spikeSpeed = 8f;
-    public float spawnOffset = 0.5f;
+    public int spikeCount = 4;
+    public float spikeSpeed = 6f;
 
-    private Collider2D myCollider;
+    [Header("Spike Rotation Variation (การหมุนทิศทางหนาม)")]
+    public bool randomizeSpikeAngle = true;
+    public bool useEnemyRotation = true;
+
+    [Header("Hit Flash Effect")]
+    public Color hitFlashColor = Color.red;
+    public float flashDuration = 0.08f;
+
+    [Header("Death Effects")]
+    public GameObject deathEffectPrefab;
+
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+    private Coroutine flashCoroutine;
     private bool isDead = false;
-    private bool hasCrashed = false;
 
     private void Awake()
     {
-        myCollider = GetComponent<Collider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null) originalColor = spriteRenderer.color;
     }
 
     private void Start()
     {
         currentHealth = maxHealth;
-
-        if (lifeTime > 0f)
-        {
-            Destroy(gameObject, lifeTime);
-        }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (isDead) return;
 
         currentHealth -= damage;
 
-        if (currentHealth <= 0)
+        if (spriteRenderer != null && gameObject.activeInHierarchy)
         {
+            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
+            flashCoroutine = StartCoroutine(FlashHitRoutine());
+        }
+
+        if (currentHealth <= 0f)
+        {
+            currentHealth = 0f;
             Die();
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        TakeDamage((float)damage);
+    }
+
+    private IEnumerator FlashHitRoutine()
+    {
+        spriteRenderer.color = hitFlashColor;
+        yield return new WaitForSeconds(flashDuration);
+        if (spriteRenderer != null) spriteRenderer.color = originalColor;
+    }
+
+    // ⭐ 1. ตรวจจับการชนแบบ Collider ปกติ (แข็ง ชนแล้วเด้ง)
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandlePlayerCollision(collision.gameObject);
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        HandlePlayerCollision(collision.gameObject);
+    }
+
+    // ⭐ 2. ตรวจจับการชนแบบ Is Trigger (ทะลุผ่าน)
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        HandlePlayerCollision(collider.gameObject);
+    }
+
+    private void HandlePlayerCollision(GameObject target)
+    {
+        if (isDead) return;
+
+        // เช็กว่าวัตถุที่ชนมี Tag "Player" หรือเป็นส่วนลูกของ Player หรือไม่
+        if (target.CompareTag("Player") || target.transform.root.CompareTag("Player"))
+        {
+            if (Time.time < lastHitPlayerTime + damageCooldown) return;
+            lastHitPlayerTime = Time.time;
+
+            // ค้นหาสคริปต์เลือดของ Player
+            PlayerHealthTest healthTest = target.GetComponentInParent<PlayerHealthTest>();
+            if (healthTest != null)
+            {
+                healthTest.TakeDamage(contactDamage);
+                Debug.Log($"<color=red>[Enemy Collision] ชน Player! ลดเลือด {contactDamage}</color>");
+            }
+            else
+            {
+                PlayerHealth standardHealth = target.GetComponentInParent<PlayerHealth>();
+                if (standardHealth != null)
+                {
+                    standardHealth.TakeDamage(contactDamage);
+                }
+            }
+
+            // ถ้ากำหนดให้ชนแล้วศัตรูสลาย/ตายทันที
+            if (destroyOnHitPlayer)
+            {
+                Die();
+            }
         }
     }
 
@@ -55,76 +142,55 @@ public class EnemyHealthTest : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        SpawnDeathSpikes();
-
-        if (ScoreManager.Instance != null)
+        // 1. เพิ่มแต้มเข้า GameManager
+        if (GameScoreManager.Instance != null)
         {
-            ScoreManager.Instance.AddScore(10);
+            GameScoreManager.Instance.AddScore(scoreReward);
+        }
+
+        // 2. ปล่อยหนามพุ่งกระจายรอบตัว
+        if (spawnSpikesOnDeath && spikePrefab != null)
+        {
+            SpawnBouncingSpikes();
+        }
+
+        // 3. เอฟเฟกต์ระเบิด
+        if (deathEffectPrefab != null)
+        {
+            Quaternion randomRot = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+            Instantiate(deathEffectPrefab, transform.position, randomRot);
         }
 
         Destroy(gameObject);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void SpawnBouncingSpikes()
     {
-        HandlePlayerCrash(collision.gameObject);
-    }
+        float startAngle = 0f;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        HandlePlayerCrash(collision.gameObject);
-    }
-
-    private void HandlePlayerCrash(GameObject target)
-    {
-        if (isDead || hasCrashed) return;
-
-        if (target.CompareTag("Player"))
+        if (useEnemyRotation)
         {
-            hasCrashed = true;
-
-            if (myCollider != null) myCollider.enabled = false;
-
-            if (target.TryGetComponent(out PlayerHealthTest playerTest))
-            {
-                playerTest.TakeDamage(damageToPlayerOnCrash);
-            }
-            else if (target.TryGetComponent(out PlayerHealth player))
-            {
-                player.TakeDamage(damageToPlayerOnCrash);
-            }
-
-            Destroy(gameObject);
+            startAngle += transform.eulerAngles.z;
         }
-    }
 
-    private void SpawnDeathSpikes()
-    {
-        if (spikePrefab == null || spikeCount <= 0) return;
+        if (randomizeSpikeAngle)
+        {
+            startAngle += Random.Range(0f, 360f);
+        }
 
         float angleStep = 360f / spikeCount;
-        float currentAngle = 0f;
 
         for (int i = 0; i < spikeCount; i++)
         {
-            float dirX = Mathf.Cos(currentAngle * Mathf.Deg2Rad);
-            float dirY = Mathf.Sin(currentAngle * Mathf.Deg2Rad);
-            Vector2 direction = new Vector2(dirX, dirY).normalized;
+            float angle = startAngle + (i * angleStep);
+            Vector2 direction = Quaternion.Euler(0f, 0f, angle) * Vector2.right;
 
-            Vector3 spawnPosition = transform.position + (Vector3)(direction * spawnOffset);
-            GameObject spike = Instantiate(spikePrefab, spawnPosition, Quaternion.identity);
+            GameObject newSpike = Instantiate(spikePrefab, transform.position, Quaternion.identity);
 
-            // รองรับทั้งชื่อคลาส BouncingSpikeTest และ BouncingSpike
-            if (spike.TryGetComponent(out BouncingSpikeTest spikeTest))
+            if (newSpike.TryGetComponent(out BouncingSpikeTest spikeScript))
             {
-                spikeTest.Setup(direction, spikeSpeed);
+                spikeScript.Setup(direction, spikeSpeed);
             }
-            else if (spike.TryGetComponent(out BouncingSpike spikeNormal))
-            {
-                spikeNormal.Setup(direction, spikeSpeed);
-            }
-
-            currentAngle += angleStep;
         }
     }
 }

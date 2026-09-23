@@ -37,17 +37,20 @@ public class PlayerAttackTest : MonoBehaviour
 
     private PlayerHealthTest playerHealthTest;
     private PlayerHealth playerHealth;
+    private PlayerControllerTest playerController; // ⭐ ตัวแปรเชื่อมต่อระบบควบคุมตัวละคร
 
     private void Start()
     {
         mainCamera = Camera.main;
         playerHealthTest = GetComponent<PlayerHealthTest>();
         playerHealth = GetComponent<PlayerHealth>();
+        playerController = GetComponent<PlayerControllerTest>(); // ดึงคอมโพเนนต์ PlayerControllerTest
     }
 
     private void Update()
     {
-        if (IsPlayerDead())
+        // ⭐ ตรวจสอบ: หากผู้เล่นตาย หรืออยู่ในช่วงพุ่ง Intro เข้าจอ / ชนะเกม จะไม่อนุญาตให้เล็งหรือยิง
+        if (IsPlayerDead() || (playerController != null && !playerController.CanShootAndControl))
         {
             currentChargeTimer = 0f;
             isCharging = false;
@@ -100,7 +103,7 @@ public class PlayerAttackTest : MonoBehaviour
         float rad = targetAngle * Mathf.Deg2Rad;
         currentAimDirection = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
 
-        // ⭐ หมุน GunPivot ตามเมาส์ (ใช้ World Rotation ป้องกันปืนบิดตามจังหวะนกกระพือปีก)
+        // หมุน GunPivot ตามเมาส์ (ใช้ World Rotation ป้องกันปืนบิดตามจังหวะนกกระพือปีก)
         if (gunPivot != null)
         {
             gunPivot.rotation = Quaternion.Euler(0f, 0f, targetAngle + gunRotationOffset);
@@ -188,6 +191,9 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void OnGUI()
     {
+        // ซ่อนข้อความ GUI ตอนที่กำลังบินพุ่งเข้าฉาก หรือตอนตาย
+        if (playerController != null && !playerController.CanShootAndControl) return;
+
         GUIStyle style = new GUIStyle();
         style.fontSize = 18;
         style.fontStyle = FontStyle.Bold;
