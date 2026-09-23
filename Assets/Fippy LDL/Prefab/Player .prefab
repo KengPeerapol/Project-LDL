@@ -88,7 +88,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7436114040362366363, guid: 2deca3a2fa6642941b257c78d08dbbae, type: 3}
+  m_Sprite: {fileID: -2413806693520163455, guid: 93e286f120ba0284b9da170785e3a720, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -174,6 +174,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a01d2adadaddb744a257d5733ad373a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControllerTest
+  playIntroDash: 1
+  introSpawnOffsetX: 8
+  introDashSpeed: 10
   flyForce: 4
   customGravityScale: 0.5
   maxFallSpeed: 4
@@ -185,6 +188,7 @@ MonoBehaviour:
   wallBounceForce: 6
   wallStunDuration: 0.15
   damageCooldown: 0.5
+  winDashSpeed: 14
 --- !u!114 &514008331962633070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,6 +205,7 @@ MonoBehaviour:
   currentHealth: 0
   hpBarFill: {fileID: 0}
   gameOverUI: {fileID: 0}
+  playerBodySprite: {fileID: 0}
   showDebugOnScreen: 1
   enableConsoleLogs: 1
 --- !u!114 &6681081217590678989

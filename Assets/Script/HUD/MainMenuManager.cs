@@ -7,7 +7,7 @@ public class MainMenuManager : MonoBehaviour
     public void PlayGame()
     {
         // โหลด Scene เกมหลัก (ต้องพิมพ์ชื่อ Scene เกมของคุณให้ตรงเป๊ะ เช่น "SampleScene")
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("FippyLDL");
     }
 
     // ฟังก์ชันสำหรับปุ่ม Quit

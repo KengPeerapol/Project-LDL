@@ -14,6 +14,10 @@ public class PlayerHealthTest : MonoBehaviour
     [Header("หน้าต่าง UI ตอนแพ้ (GameOverPanel)")]
     public GameObject gameOverUI;
 
+    [Header("Sprite Settings (สไปรต์ของตัว Player)")]
+    [Tooltip("ลาก SpriteRenderer ของตัว Player มาใส่ (ถ้าเว้นว่างไว้จะดึงจากตัวมันเองให้อัตโนมัติ)")]
+    public SpriteRenderer playerBodySprite; // ⭐ เจาะจงเฉพาะ Sprite ลำตัว ไม่แตะต้องปืน
+
     [Header("Debug Settings")]
     public bool showDebugOnScreen = true;
     public bool enableConsoleLogs = true;
@@ -31,12 +35,25 @@ public class PlayerHealthTest : MonoBehaviour
     {
         currentHealth = maxHealth;
 
+        // 1. ดึงเฉพาะ SpriteRenderer บนตัว Player เอง
+        if (playerBodySprite == null)
+        {
+            playerBodySprite = GetComponent<SpriteRenderer>();
+        }
+
         allSprites = GetComponentsInChildren<SpriteRenderer>();
         playerController = GetComponent<PlayerControllerTest>();
         playerCollider = GetComponent<Collider2D>();
 
+        // ดึง GameOverPanel จาก GameScoreManager อัตโนมัติถ้าลืมลากใส่
+        if (gameOverUI == null && GameScoreManager.Instance != null)
+        {
+            gameOverUI = GameScoreManager.Instance.gameOverPanel;
+        }
+
         ValidateComponents();
 
+        // ระดับสีเลือด (100% -> 20%)
         ColorUtility.TryParseHtmlString("#e9ff69", out color100);
         ColorUtility.TryParseHtmlString("#fff56e", out color80);
         ColorUtility.TryParseHtmlString("#ffd869", out color60);
@@ -112,9 +129,10 @@ public class PlayerHealthTest : MonoBehaviour
         HandlePlayerColor();
     }
 
+    // ⭐ เปลี่ยนสีเฉพาะ playerBodySprite ลำตัวเท่านั้น
     private void HandlePlayerColor()
     {
-        if (allSprites == null || allSprites.Length == 0) return;
+        if (playerBodySprite == null) return;
 
         Color targetColor;
 
@@ -124,10 +142,8 @@ public class PlayerHealthTest : MonoBehaviour
         else if (currentHealth <= 80f) targetColor = color80;
         else targetColor = color100;
 
-        foreach (SpriteRenderer sprite in allSprites)
-        {
-            if (sprite != null) sprite.color = targetColor;
-        }
+        // สั่งเปลี่ยนสีเฉพาะตัว Player (ปืนจะไม่ถูกเปลี่ยนสี)
+        playerBodySprite.color = targetColor;
     }
 
     private void Die()
@@ -152,6 +168,7 @@ public class PlayerHealthTest : MonoBehaviour
         float elapsed = 0f;
         Vector3 originalPos = transform.position;
 
+        // อนิเมชันสั่นตัวละครตอนตาย
         while (elapsed < shakeDuration)
         {
             float x = originalPos.x + Random.Range(-0.2f, 0.2f);
@@ -164,6 +181,7 @@ public class PlayerHealthTest : MonoBehaviour
 
         transform.position = originalPos;
 
+        // ตอนตายจะซ่อนทุกชิ้นส่วนทั้งตัวและปืน
         foreach (SpriteRenderer sprite in allSprites)
         {
             if (sprite != null) sprite.enabled = false;
@@ -172,6 +190,10 @@ public class PlayerHealthTest : MonoBehaviour
         if (playerCollider != null) playerCollider.enabled = false;
 
         yield return deathWaitTime;
+
+        // เปิดเมาส์และแสดงหน้าต่างแพ้
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
 
         if (gameOverUI != null) gameOverUI.SetActive(true);
 
