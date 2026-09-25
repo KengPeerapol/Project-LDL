@@ -1,13 +1,16 @@
 fileFormatVersion: 2
-guid: d7385af53dccac943ae5251ff20f6d62
+guid: affa60148c0705848b53874254021c72
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5543469572509033139
-    second: menu-bg_0
+      213: -3901462605829202632
+    second: deasktop-icon-glow_0
   - first:
-      213: -5340155390381065260
-    second: menu-bg_1
+      213: 8536664054816534267
+    second: deasktop-icon-glow_1
+  - first:
+      213: 963469787016552025
+    second: deasktop-icon-glow_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -56,7 +59,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -103,13 +106,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: menu-bg_0
+      name: deasktop-icon-glow_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 6
-        height: 6
+        y: 2
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,20 +121,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d4d996b5bc3a113b0800000000000000
-      internalID: -5543469572509033139
+      spriteID: 83d941b4e683bd9c0800000000000000
+      internalID: -3901462605829202632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: menu-bg_1
+      name: deasktop-icon-glow_1
       rect:
         serializedVersion: 2
-        x: 10
-        y: 1
-        width: 6
-        height: 6
+        x: 23
+        y: 3
+        width: 18
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,8 +143,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4dbf2fe37f4f3e5b0800000000000000
-      internalID: -5340155390381065260
+      spriteID: bfe6f2a8ab2587670800000000000000
+      internalID: 8536664054816534267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: deasktop-icon-glow_2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 2
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95e51f6aaaeee5d00800000000000000
+      internalID: 963469787016552025
       vertices: []
       indices: 
       edges: []
@@ -150,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1ee2ccdaac339284891ef5932725883c
+    spriteID: c8152a7b4c8dbe646aac8b0eee75f67a
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      menu-bg_0: -5543469572509033139
-      menu-bg_1: -5340155390381065260
+      deasktop-icon-glow_0: -3901462605829202632
+      deasktop-icon-glow_1: 8536664054816534267
+      deasktop-icon-glow_2: 963469787016552025
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

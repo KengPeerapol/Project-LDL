@@ -59,7 +59,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -109,9 +109,9 @@ TextureImporter:
       name: deasktop-icon_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 16
-        width: 16
+        x: 1
+        y: 2
+        width: 12
         height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -131,10 +131,10 @@ TextureImporter:
       name: deasktop-icon_1
       rect:
         serializedVersion: 2
-        x: 16
-        y: 16
-        width: 16
-        height: 16
+        x: 14
+        y: 1
+        width: 18
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,9 +153,9 @@ TextureImporter:
       name: deasktop-icon_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 16
+        x: 33
+        y: 2
+        width: 12
         height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -175,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7c2479a2bc8b0ec4b9b9c6cbc564a3ff
+    spriteID: 559644da622b313449221ca1d98e1dad
     internalID: 0
     vertices: []
     indices: 
@@ -185,7 +185,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":15.0,"y":19.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       deasktop-icon_0: 8705950463646268520
       deasktop-icon_1: -5065168272484568065
