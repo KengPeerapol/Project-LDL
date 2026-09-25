@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 1f8ad5948f721d04288082f449b50436
+guid: e388ea87f1942b540a2e365cba3a328c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5543469572509033139
-    second: menu-bg_0
+      213: 8705950463646268520
+    second: deasktop-icon_0
+  - first:
+      213: -5065168272484568065
+    second: deasktop-icon_1
+  - first:
+      213: -7996718975918154075
+    second: deasktop-icon_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +106,67 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: menu-bg_0
+      name: deasktop-icon_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 320
-        height: 180
+        y: 2
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d4d996b5bc3a113b0800000000000000
-      internalID: -5543469572509033139
+      spriteID: 86c78c112dfb1d870800000000000000
+      internalID: 8705950463646268520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: deasktop-icon_1
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 2
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff37af6ea48e4b9b0800000000000000
+      internalID: -5065168272484568065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: deasktop-icon_2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 2
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aed5c7b572f50190800000000000000
+      internalID: -7996718975918154075
       vertices: []
       indices: 
       edges: []
@@ -125,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d527561d3135d1846a58305dccc1ca6b
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      menu-bg_0: -5543469572509033139
+      deasktop-icon_0: 8705950463646268520
+      deasktop-icon_1: -5065168272484568065
+      deasktop-icon_2: -7996718975918154075
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

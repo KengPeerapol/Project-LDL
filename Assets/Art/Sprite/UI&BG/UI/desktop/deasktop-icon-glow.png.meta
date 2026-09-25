@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: affa60148c0705848b53874254021c72
+guid: 647e3258812a4024aa2203b775a87f3f
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -59,7 +59,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -109,10 +109,10 @@ TextureImporter:
       name: deasktop-icon-glow_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 2
-        width: 20
-        height: 20
+        x: 2
+        y: 5
+        width: 18
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,8 +131,8 @@ TextureImporter:
       name: deasktop-icon-glow_1
       rect:
         serializedVersion: 2
-        x: 23
-        y: 3
+        x: 25
+        y: 5
         width: 18
         height: 18
       alignment: 0
@@ -153,10 +153,10 @@ TextureImporter:
       name: deasktop-icon-glow_2
       rect:
         serializedVersion: 2
-        x: 46
-        y: 2
-        width: 20
-        height: 20
+        x: 50
+        y: 5
+        width: 18
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -175,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c8152a7b4c8dbe646aac8b0eee75f67a
+    spriteID: 8ca2cc6821f299342bfcb2cabd3b2c70
     internalID: 0
     vertices: []
     indices: 
