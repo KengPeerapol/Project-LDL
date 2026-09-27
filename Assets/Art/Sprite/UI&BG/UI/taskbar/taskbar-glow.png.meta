@@ -106,9 +106,9 @@ TextureImporter:
       name: taskbar-glow_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 10
+        x: 4
+        y: 5
+        width: 9
         height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -128,8 +128,8 @@ TextureImporter:
       name: taskbar-glow_1
       rect:
         serializedVersion: 2
-        x: 9
-        y: 0
+        x: 22
+        y: 5
         width: 10
         height: 10
       alignment: 0
@@ -150,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c0b3f7bc0bc5f00468dad1947215a7bc
+    spriteID: e26dc26fe3b4dff42b255b2706b4ad7a
     internalID: 0
     vertices: []
     indices: 

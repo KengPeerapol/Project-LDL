@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: a77cedb99ac92b543a2937dfa9e199e5
+guid: cd1e73c9b06f92342afe2351d30f158f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -970303804754093239
-    second: menu-bg 1_0
+      213: -449712076736121542
+    second: taskbar_0
+  - first:
+      213: -7524537190028597355
+    second: taskbar_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +103,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: menu-bg 1_0
+      name: taskbar_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 320
-        height: 180
+        x: 4
+        y: 4
+        width: 7
+        height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 94b1c6994d9c882f0800000000000000
-      internalID: -970303804754093239
+      spriteID: a35b0f6bf3d42c9f0800000000000000
+      internalID: -449712076736121542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: taskbar_1
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 4
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5972129da49739790800000000000000
+      internalID: -7524537190028597355
       vertices: []
       indices: 
       edges: []
@@ -125,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1289377f65e6dbc408fd84169cbaf7f7
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      menu-bg 1_0: -970303804754093239
+      taskbar_0: -449712076736121542
+      taskbar_1: -7524537190028597355
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

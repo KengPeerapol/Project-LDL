@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: a8c3e760f81fea246a2b2d4c93a45888
+guid: d8430238d5fc2f84b990ab578c9e56a5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8233389612858973752
-    second: taskbar-icon_0
-  - first:
-      213: -6097903052989644197
-    second: taskbar-icon_1
+      213: -5543469572509033139
+    second: menu-bg_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -103,45 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: taskbar-icon_0
+      name: menu-bg_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 1
-        width: 10
-        height: 10
+        x: 0
+        y: 0
+        width: 320
+        height: 180
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 83e99d30b30e24270800000000000000
-      internalID: 8233389612858973752
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: taskbar-icon_1
-      rect:
-        serializedVersion: 2
-        x: 10
-        y: 1
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b5248cb3b75ef5ba0800000000000000
-      internalID: -6097903052989644197
+      spriteID: d4d996b5bc3a113b0800000000000000
+      internalID: -5543469572509033139
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: bb0a85043ac323e43b64ac8ab70ee5e2
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      taskbar-icon_0: 8233389612858973752
-      taskbar-icon_1: -6097903052989644197
+      menu-bg_0: -5543469572509033139
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
