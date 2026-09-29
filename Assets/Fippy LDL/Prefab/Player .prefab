@@ -177,7 +177,10 @@ MonoBehaviour:
   playIntroDash: 1
   introSpawnOffsetX: 8
   introDashSpeed: 10
-  flyForce: 4
+  tapForce: 3.2
+  holdThreshold: 0.12
+  holdAcceleration: 15
+  maxHoldAscentSpeed: 5.2
   customGravityScale: 0.5
   maxFallSpeed: 4
   baseRotationZ: 0

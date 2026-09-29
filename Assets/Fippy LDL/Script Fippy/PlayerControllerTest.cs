@@ -15,8 +15,19 @@ public class PlayerControllerTest : MonoBehaviour
     [Tooltip("ความเร็วในการพุ่งเข้ามาในจอ")]
     public float introDashSpeed = 10f;
 
-    [Header("ตั้งค่าการบิน (คลิกขวาค้าง หรือ Spacebar)")]
-    public float flyForce = 5f;
+    [Header("ตั้งค่าการบิน: กดครั้งเดียว (Tap)")]
+    [Tooltip("แรงยกตัวเมื่อกดเคาะ 1 ครั้ง (ค่ายิ่งน้อย ยิ่งขึ้นทีละนิด เช่น 3 - 4)")]
+    public float tapForce = 3.2f;
+
+    [Header("ตั้งค่าการบิน: กดค้าง (Hold)")]
+    [Tooltip("เวลากดค้างขั้นต่ำที่จะเริ่มเร่งเครื่องพุ่งไว (วินาที เช่น 0.12 - 0.15)")]
+    public float holdThreshold = 0.12f;
+
+    [Tooltip("ความเร่งในการพุ่งขึ้นตอนกดค้าง (ค่ายิ่งเยอะ ยิ่งไต่ระดับไว)")]
+    public float holdAcceleration = 35f;
+
+    [Tooltip("เพดานความเร็วลอยขึ้นสูงสุดตอนกดค้าง (พุ่งขึ้นได้เร็วสุดเท่าไหร่)")]
+    public float maxHoldAscentSpeed = 7.5f;
 
     [Header("ตั้งค่าการหล่น / แรงโน้มถ่วง")]
     [Tooltip("ค่าแรงโน้มถ่วง (ค่ายิ่งน้อย ยิ่งตกช้าลง เช่น 0.5 - 0.7)")]
@@ -46,10 +57,14 @@ public class PlayerControllerTest : MonoBehaviour
     private bool isIntroPlaying = false;
     private bool isWinning = false;
     private bool isDead = false;
-    private bool isFlapping = false;
+
+    // ตัวแปรจับสถานะ Tap / Hold
+    private bool isHoldingInput = false;
+    private bool tapRequested = false;
+    private float holdTimer = 0f;
     private float lastDamageTime = -999f;
 
-    // ⭐ Property สำหรับให้สคริปต์อื่น (เช่น ปืน) เช็กว่าอนุญาตให้ยิงหรือยัง
+    // ⭐ Property สำหรับให้สคริปต์อื่นเช็กว่าพร้อมควบคุมหรือยัง
     public bool CanShootAndControl => canControl && !isIntroPlaying && !isWinning && !isDead;
     private bool IsActive => !isWinning && !isDead && !isIntroPlaying;
     private bool CanFly => IsActive && canControl;
@@ -68,34 +83,25 @@ public class PlayerControllerTest : MonoBehaviour
         }
     }
 
-    // ⭐ Coroutine นำตัว Player พุ่งจากนอกจอเข้ามาที่จุดเริ่มต้น
     private IEnumerator IntroDashRoutine()
     {
         isIntroPlaying = true;
         canControl = false;
 
-        // 1. จำตำแหน่งที่วางไว้ใน Scene
         Vector3 targetDestination = transform.position;
-
-        // 2. ย้ายตำแหน่ง Player ไปอยู่นอกจอทางซ้าย
         transform.position = targetDestination + new Vector3(-introSpawnOffsetX, 0f, 0f);
 
-        // 3. ปิดฟิสิกส์แรงโน้มถ่วงชั่วคราว และจัดมุมหันหัวตรง
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
         transform.rotation = Quaternion.Euler(0f, 0f, baseRotationZ);
 
-        // 4. บินพุ่งเข้ามายังจุดเป้าหมายอย่างนุ่มนวล
         while (Vector3.Distance(transform.position, targetDestination) > 0.05f)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetDestination, introDashSpeed * Time.deltaTime);
             yield return null;
         }
 
-        // 5. ปรับพิกัดเข้าล็อกเป๊ะๆ
         transform.position = targetDestination;
-
-        // 6. คืนค่าฟิสิกส์และเปิดการควบคุมให้เล่นเกมได้ตามปกติ
         SetupNormalPlay();
         isIntroPlaying = false;
 
@@ -113,10 +119,30 @@ public class PlayerControllerTest : MonoBehaviour
     {
         if (isWinning || isDead || isIntroPlaying) return;
 
-        bool mousePress = Mouse.current != null && Mouse.current.rightButton.isPressed;
-        bool spacePress = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+        // ตรวจจับการกดปุ่มเฟรมแรก (Tap)
+        bool mouseTap = Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
+        bool spaceTap = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
 
-        isFlapping = mousePress || spacePress;
+        // ตรวจจับการกดค้าง (Hold)
+        bool mouseHold = Mouse.current != null && Mouse.current.rightButton.isPressed;
+        bool spaceHold = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+
+        isHoldingInput = mouseHold || spaceHold;
+
+        if (mouseTap || spaceTap)
+        {
+            tapRequested = true;
+            holdTimer = 0f;
+        }
+
+        if (isHoldingInput)
+        {
+            holdTimer += Time.deltaTime;
+        }
+        else
+        {
+            holdTimer = 0f;
+        }
 
         if (IsActive)
         {
@@ -134,20 +160,32 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (isIntroPlaying) return;
 
-        if (isFlapping && CanFly)
+        if (CanFly)
         {
-            FlyUp();
+            // 1. ถ้าเป็นการเคาะ 1 ครั้ง (Tap)
+            if (tapRequested)
+            {
+                rb.linearVelocity = new Vector2(0f, tapForce);
+                tapRequested = false;
+            }
+            // 2. ถ้ากดค้างเกินเวลาที่กำหนด (Hold) -> เร่งความเร็วพุ่งขึ้นไวๆ
+            else if (isHoldingInput && holdTimer >= holdThreshold)
+            {
+                float currentY = rb.linearVelocity.y;
+                float targetY = Mathf.MoveTowards(currentY, maxHoldAscentSpeed, holdAcceleration * Time.fixedDeltaTime);
+                rb.linearVelocity = new Vector2(0f, Mathf.Max(targetY, tapForce));
+            }
+        }
+        else
+        {
+            tapRequested = false;
         }
 
+        // จำกัดความเร็วตกสูงสุด
         if (rb.linearVelocity.y < -maxFallSpeed)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallSpeed);
         }
-    }
-
-    private void FlyUp()
-    {
-        rb.linearVelocity = new Vector2(0f, flyForce);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -219,7 +257,8 @@ public class PlayerControllerTest : MonoBehaviour
     {
         isWinning = true;
         canControl = false;
-        isFlapping = false;
+        tapRequested = false;
+        isHoldingInput = false;
 
         rb.gravityScale = 0f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -239,6 +278,8 @@ public class PlayerControllerTest : MonoBehaviour
     {
         isDead = true;
         canControl = false;
+        tapRequested = false;
+        isHoldingInput = false;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
     }
