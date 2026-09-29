@@ -187,6 +187,20 @@ public class PlayerAttackTest : MonoBehaviour
         {
             bulletScript.Setup(currentAimDirection, damage, scale);
         }
+
+        // --- เพิ่มโค้ดเรียกเสียงยิงปืนตรงนี้ ---
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio"); // ค้นหาจาก Tag "Audio"
+        if (audioObj != null)
+        {
+            // ใช้ชื่อ AudioManger ตามสคริปต์ในโปรเจกต์ของคุณ
+            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+            if (audioManager != null && audioManager.Shoot != null)
+            {
+                // สั่งเล่นเสียงโดยอ้างอิงจากตัวแปร Shoot ใน AudioManger
+                audioManager.PlaySFX(audioManager.Shoot);
+            }
+        }
+        // ---------------------------------
     }
 
     private void OnGUI()

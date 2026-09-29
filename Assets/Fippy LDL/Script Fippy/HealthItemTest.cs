@@ -80,6 +80,19 @@ public class HealthItemTest : MonoBehaviour
                 playerHealth.Heal(healAmount);
                 Debug.Log($"<color=green>[Item] เก็บไอเทมฮีลสำเร็จ! ฟื้นฟูเลือด +{healAmount}</color>");
 
+                // --- เพิ่มโค้ดเรียกเสียงเก็บไอเทม (Pick) ตรงนี้ ---
+                GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+                if (audioObj != null)
+                {
+                    AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+                    if (audioManager != null && audioManager.Pick != null)
+                    {
+                        // สั่งเล่นเสียงโดยอ้างอิงจากตัวแปร Pick ใน AudioManger
+                        audioManager.PlaySFX(audioManager.Pick);
+                    }
+                }
+                // ---------------------------------
+
                 // เล่นเอฟเฟกต์ (ถ้ามี)
                 if (pickupEffectPrefab != null)
                 {

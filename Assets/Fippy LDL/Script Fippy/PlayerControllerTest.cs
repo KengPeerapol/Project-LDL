@@ -283,4 +283,11 @@ public class PlayerControllerTest : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
     }
+
+    AudioManger audioManager;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManger>();
+    }
 }

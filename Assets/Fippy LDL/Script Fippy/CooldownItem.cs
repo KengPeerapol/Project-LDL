@@ -53,6 +53,19 @@ public class CooldownItem : MonoBehaviour
                 if (myCollider != null) myCollider.enabled = false;
 
                 playerAttack.ReduceChargeCooldown(cooldownReduction);
+
+                // --- เพิ่มโค้ดเรียกเสียงเก็บไอเทมเวลา (Time) ตรงนี้ ---
+                GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+                if (audioObj != null)
+                {
+                    AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+                    if (audioManager != null && audioManager.Time != null)
+                    {
+                        audioManager.PlaySFX(audioManager.Time);
+                    }
+                }
+                // ---------------------------------
+
                 Destroy(gameObject);
             }
         }
