@@ -1576,7 +1576,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnTest
   enemyPrefabs:
   - {fileID: 4044427734538613108, guid: 53a65531bc6ecc24497b2568c6dc5f94, type: 3}
-  spawnInterval: 6
+  - {fileID: 8593860426822094936, guid: c457a11619842e941b7deecedb8561aa, type: 3}
+  spawnInterval: 1
   spawnImmediately: 1
   playerController: {fileID: 0}
   alwaysShowGizmo: 1

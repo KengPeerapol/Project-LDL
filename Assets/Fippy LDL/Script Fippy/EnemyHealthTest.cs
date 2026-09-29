@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class EnemyHealthTest : MonoBehaviour
 {
+    [Header("Lifetime Settings (ระยะเวลาการคงอยู่)")]
+    [Tooltip("เปิดใช้งานให้ศัตรูหายไปเองอัตโนมัติหรือไม่")]
+    public bool autoDestroy = true;
+
+    [Tooltip("ระยะเวลาที่ศัตรูจะมีชีวิตอยู่ก่อนจะหายไป (วินาที)")]
+    public float lifeTime = 4f; // ⭐ ตั้งค่า 4 วินาที
+
     [Header("Health Settings (การตั้งค่าเลือด)")]
     public float maxHealth = 50f;
     private float currentHealth;
@@ -12,7 +19,7 @@ public class EnemyHealthTest : MonoBehaviour
 
     [Header("Player Collision (การชนกับผู้เล่น)")]
     [Tooltip("ดาเมจที่ทำใส่ Player เมื่อบินชนกัน")]
-    public int contactDamage = 15; // ⭐ จำนวนเลือดที่ลดเมื่อชนตัวผู้เล่น
+    public int contactDamage = 15; // จำนวนเลือดที่ลดเมื่อชนตัวผู้เล่น
 
     [Tooltip("เมื่อชน Player แล้ว ศัตรูตัวนี้จะระเบิด/ตายทันทีหรือไม่")]
     public bool destroyOnHitPlayer = true;
@@ -47,149 +54,152 @@ public class EnemyHealthTest : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null) originalColor = spriteRenderer.color;
+        if (spriteRenderer != null) originalColor = spriteRenderer.color; //
     }
 
     private void Start()
     {
-        currentHealth = maxHealth;
+        currentHealth = maxHealth; //[cite: 13]
+
+        // ⭐ ตั้งเวลานับถอยหลัง 4 วินาทีเพื่อทำลายตัวเองทิ้งอัตโนมัติ
+        if (autoDestroy)
+        {
+            Destroy(gameObject, lifeTime);
+        }
     }
 
     public void TakeDamage(float damage)
     {
-        if (isDead) return;
+        if (isDead) return; //[cite: 13]
 
-        currentHealth -= damage;
+        currentHealth -= damage; //[cite: 13]
 
-        if (spriteRenderer != null && gameObject.activeInHierarchy)
+        if (spriteRenderer != null && gameObject.activeInHierarchy) //[cite: 13]
         {
-            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
-            flashCoroutine = StartCoroutine(FlashHitRoutine());
+            if (flashCoroutine != null) StopCoroutine(flashCoroutine); //[cite: 13]
+            flashCoroutine = StartCoroutine(FlashHitRoutine()); //[cite: 13]
         }
 
-        if (currentHealth <= 0f)
+        if (currentHealth <= 0f) //[cite: 13]
         {
-            currentHealth = 0f;
-            Die();
+            currentHealth = 0f; //[cite: 13]
+            Die(); //[cite: 13]
         }
     }
 
     public void TakeDamage(int damage)
     {
-        TakeDamage((float)damage);
+        TakeDamage((float)damage); //[cite: 13]
     }
 
     private IEnumerator FlashHitRoutine()
     {
-        spriteRenderer.color = hitFlashColor;
-        yield return new WaitForSeconds(flashDuration);
-        if (spriteRenderer != null) spriteRenderer.color = originalColor;
+        spriteRenderer.color = hitFlashColor; //[cite: 13]
+        yield return new WaitForSeconds(flashDuration); //[cite: 13]
+        if (spriteRenderer != null) spriteRenderer.color = originalColor; //[cite: 13]
     }
 
-    // ⭐ 1. ตรวจจับการชนแบบ Collider ปกติ (แข็ง ชนแล้วเด้ง)
+    // ตรวจจับการชนแบบ Collider ปกติ
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        HandlePlayerCollision(collision.gameObject);
+        HandlePlayerCollision(collision.gameObject); //[cite: 13]
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        HandlePlayerCollision(collision.gameObject);
+        HandlePlayerCollision(collision.gameObject); //[cite: 13]
     }
 
-    // ⭐ 2. ตรวจจับการชนแบบ Is Trigger (ทะลุผ่าน)
+    // ตรวจจับการชนแบบ Is Trigger
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        HandlePlayerCollision(collider.gameObject);
+        HandlePlayerCollision(collider.gameObject); //[cite: 13]
     }
 
     private void HandlePlayerCollision(GameObject target)
     {
-        if (isDead) return;
+        if (isDead) return; //[cite: 13]
 
-        // เช็กว่าวัตถุที่ชนมี Tag "Player" หรือเป็นส่วนลูกของ Player หรือไม่
-        if (target.CompareTag("Player") || target.transform.root.CompareTag("Player"))
+        if (target.CompareTag("Player") || target.transform.root.CompareTag("Player")) //[cite: 13]
         {
-            if (Time.time < lastHitPlayerTime + damageCooldown) return;
-            lastHitPlayerTime = Time.time;
+            if (Time.time < lastHitPlayerTime + damageCooldown) return; //[cite: 13]
+            lastHitPlayerTime = Time.time; //[cite: 13]
 
-            // ค้นหาสคริปต์เลือดของ Player
-            PlayerHealthTest healthTest = target.GetComponentInParent<PlayerHealthTest>();
-            if (healthTest != null)
+            PlayerHealthTest healthTest = target.GetComponentInParent<PlayerHealthTest>(); //[cite: 13]
+            if (healthTest != null) //[cite: 13]
             {
-                healthTest.TakeDamage(contactDamage);
-                Debug.Log($"<color=red>[Enemy Collision] ชน Player! ลดเลือด {contactDamage}</color>");
+                healthTest.TakeDamage(contactDamage); //[cite: 13]
+                Debug.Log($"<color=red>[Enemy Collision] ชน Player! ลดเลือด {contactDamage}</color>"); //[cite: 13]
             }
             else
             {
-                PlayerHealth standardHealth = target.GetComponentInParent<PlayerHealth>();
-                if (standardHealth != null)
+                PlayerHealth standardHealth = target.GetComponentInParent<PlayerHealth>(); //[cite: 13]
+                if (standardHealth != null) //[cite: 13]
                 {
-                    standardHealth.TakeDamage(contactDamage);
+                    standardHealth.TakeDamage(contactDamage); //[cite: 13]
                 }
             }
 
-            // ถ้ากำหนดให้ชนแล้วศัตรูสลาย/ตายทันที
-            if (destroyOnHitPlayer)
+            if (destroyOnHitPlayer) //[cite: 13]
             {
-                Die();
+                Die(); //[cite: 13]
             }
         }
     }
 
     private void Die()
     {
-        if (isDead) return;
-        isDead = true;
+        if (isDead) return; //[cite: 13]
+        isDead = true; //[cite: 13]
 
         // 1. เพิ่มแต้มเข้า GameManager
-        if (GameScoreManager.Instance != null)
+        if (GameScoreManager.Instance != null) //[cite: 13]
         {
-            GameScoreManager.Instance.AddScore(scoreReward);
+            GameScoreManager.Instance.AddScore(scoreReward); //[cite: 13]
         }
 
         // 2. ปล่อยหนามพุ่งกระจายรอบตัว
-        if (spawnSpikesOnDeath && spikePrefab != null)
+        if (spawnSpikesOnDeath && spikePrefab != null) //[cite: 13]
         {
-            SpawnBouncingSpikes();
+            SpawnBouncingSpikes(); //[cite: 13]
         }
 
         // 3. เอฟเฟกต์ระเบิด
-        if (deathEffectPrefab != null)
+        if (deathEffectPrefab != null) //[cite: 13]
         {
-            Quaternion randomRot = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
-            Instantiate(deathEffectPrefab, transform.position, randomRot);
+            Quaternion randomRot = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f)); //[cite: 13]
+            Instantiate(deathEffectPrefab, transform.position, randomRot); //[cite: 13]
         }
 
-        Destroy(gameObject);
+        Destroy(gameObject); //[cite: 13]
     }
 
     private void SpawnBouncingSpikes()
     {
-        float startAngle = 0f;
+        float startAngle = 0f; //[cite: 13]
 
-        if (useEnemyRotation)
+        if (useEnemyRotation) //[cite: 13]
         {
-            startAngle += transform.eulerAngles.z;
+            startAngle += transform.eulerAngles.z; //[cite: 13]
         }
 
-        if (randomizeSpikeAngle)
+        if (randomizeSpikeAngle) //[cite: 13]
         {
-            startAngle += Random.Range(0f, 360f);
+            startAngle += Random.Range(0f, 360f); //[cite: 13]
         }
 
-        float angleStep = 360f / spikeCount;
+        float angleStep = 360f / spikeCount; //[cite: 13]
 
-        for (int i = 0; i < spikeCount; i++)
+        for (int i = 0; i < spikeCount; i++) //[cite: 13]
         {
-            float angle = startAngle + (i * angleStep);
-            Vector2 direction = Quaternion.Euler(0f, 0f, angle) * Vector2.right;
+            float angle = startAngle + (i * angleStep); //[cite: 13]
+            Vector2 direction = Quaternion.Euler(0f, 0f, angle) * Vector2.right; //[cite: 13]
 
-            GameObject newSpike = Instantiate(spikePrefab, transform.position, Quaternion.identity);
+            GameObject newSpike = Instantiate(spikePrefab, transform.position, Quaternion.identity); //[cite: 13]
 
-            if (newSpike.TryGetComponent(out BouncingSpikeTest spikeScript))
+            if (newSpike.TryGetComponent(out BouncingSpikeTest spikeScript)) //[cite: 13]
             {
-                spikeScript.Setup(direction, spikeSpeed);
+                spikeScript.Setup(direction, spikeSpeed); //[cite: 13]
             }
         }
     }

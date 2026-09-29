@@ -173,6 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f1a9f50b6e76e64da7291d3677c5f8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
+  autoDestroy: 1
+  lifeTime: 6
   maxHealth: 25
   scoreReward: 20
   contactDamage: 15
