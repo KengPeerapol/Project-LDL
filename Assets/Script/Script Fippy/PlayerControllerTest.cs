@@ -16,18 +16,18 @@ public class PlayerControllerTest : MonoBehaviour
     public float introDashSpeed = 10f;
 
     [Header("ตั้งค่าการบิน: กดครั้งเดียว (Tap)")]
-    [Tooltip("แรงยกตัวเมื่อกดเคาะ 1 ครั้ง (ค่ายิ่งน้อย ยิ่งขึ้นทีละนิด เช่น 3 - 4)")]
-    public float tapForce = 3.2f;
+    [Tooltip("แรงยกตัวเมื่อกดเคาะ 1 ครั้ง (ค่ายิ่งน้อย ยิ่งขึ้นทีละนิด เช่น 2.8 - 3.2)")]
+    public float tapForce = 3.0f;
 
     [Header("ตั้งค่าการบิน: กดค้าง (Hold)")]
-    [Tooltip("เวลากดค้างขั้นต่ำที่จะเริ่มเร่งเครื่องพุ่งไว (วินาที เช่น 0.12 - 0.15)")]
+    [Tooltip("เวลากดค้างขั้นต่ำที่จะเริ่มเร่งเครื่องพุ่งไว (วินาที)")]
     public float holdThreshold = 0.12f;
 
-    [Tooltip("ความเร่งในการพุ่งขึ้นตอนกดค้าง (ค่ายิ่งเยอะ ยิ่งไต่ระดับไว)")]
-    public float holdAcceleration = 35f;
+    [Tooltip("ความเร่งในการพุ่งขึ้นตอนกดค้าง")]
+    public float holdAcceleration = 16f;
 
-    [Tooltip("เพดานความเร็วลอยขึ้นสูงสุดตอนกดค้าง (พุ่งขึ้นได้เร็วสุดเท่าไหร่)")]
-    public float maxHoldAscentSpeed = 7.5f;
+    [Tooltip("เพดานความเร็วลอยขึ้นสูงสุดตอนกดค้าง")]
+    public float maxHoldAscentSpeed = 5.2f;
 
     [Header("ตั้งค่าการหล่น / แรงโน้มถ่วง")]
     [Tooltip("ค่าแรงโน้มถ่วง (ค่ายิ่งน้อย ยิ่งตกช้าลง เช่น 0.5 - 0.7)")]
@@ -53,6 +53,8 @@ public class PlayerControllerTest : MonoBehaviour
     public float winDashSpeed = 14f;
 
     private Rigidbody2D rb;
+    private AudioManger audioManager;
+
     private bool canControl = false;
     private bool isIntroPlaying = false;
     private bool isWinning = false;
@@ -68,6 +70,16 @@ public class PlayerControllerTest : MonoBehaviour
     public bool CanShootAndControl => canControl && !isIntroPlaying && !isWinning && !isDead;
     private bool IsActive => !isWinning && !isDead && !isIntroPlaying;
     private bool CanFly => IsActive && canControl;
+
+    private void Awake()
+    {
+        // ค้นหา AudioManager ในฉากอย่างปลอดภัย
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            audioManager = audioObj.GetComponent<AudioManger>();
+        }
+    }
 
     private void Start()
     {
@@ -162,13 +174,13 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (CanFly)
         {
-            // 1. ถ้าเป็นการเคาะ 1 ครั้ง (Tap)
+            // 1. เคาะ 1 ครั้ง (Tap)
             if (tapRequested)
             {
                 rb.linearVelocity = new Vector2(0f, tapForce);
                 tapRequested = false;
             }
-            // 2. ถ้ากดค้างเกินเวลาที่กำหนด (Hold) -> เร่งความเร็วพุ่งขึ้นไวๆ
+            // 2. กดค้างเกินกำหนด (Hold) -> ค่อยๆ เร่งระดับความเร็วขึ้นอย่างนุ่มนวล
             else if (isHoldingInput && holdTimer >= holdThreshold)
             {
                 float currentY = rb.linearVelocity.y;
@@ -204,6 +216,7 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Wall"))
         {
+            // คิดดาเมจเมื่อเลย Cooldown
             if (Time.time >= lastDamageTime + damageCooldown)
             {
                 lastDamageTime = Time.time;
@@ -212,15 +225,26 @@ public class PlayerControllerTest : MonoBehaviour
                 {
                     healthTest.TakeDamage(wallDamage);
                 }
-                else if (TryGetComponent(out PlayerHealthTest health))
+            }
+
+            // ⭐ หาเวกเตอร์แรงสะท้อนจากผิวสัมผัสจริง (Normal Vector จะชี้ผลักออกจากผิวกำแพงเสมอ)
+            float pushDirectionY = 0f;
+            if (collision.contactCount > 0)
+            {
+                Vector2 contactNormal = collision.GetContact(0).normal;
+                if (Mathf.Abs(contactNormal.y) > 0.1f)
                 {
-                    health.TakeDamage(wallDamage);
+                    pushDirectionY = Mathf.Sign(contactNormal.y);
                 }
             }
 
-            float wallCenterY = collision.collider.bounds.center.y;
-            float pushDirectionY = (transform.position.y >= wallCenterY) ? 1f : -1f;
+            // Fallback: หากชนเข้าขอบตรงๆ ให้เทียบตำแหน่ง Player กับแนวกึ่งกลางกำแพง
+            if (pushDirectionY == 0f)
+            {
+                pushDirectionY = (transform.position.y >= collision.collider.bounds.center.y) ? 1f : -1f;
+            }
 
+            // สะท้อนเด้งออกจากผิวกำแพง
             rb.linearVelocity = new Vector2(0f, pushDirectionY * wallBounceForce);
             transform.position += new Vector3(0f, pushDirectionY * 0.15f, 0f);
 
@@ -282,12 +306,5 @@ public class PlayerControllerTest : MonoBehaviour
         isHoldingInput = false;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-    }
-
-    AudioManger audioManager;
-
-    private void Awake()
-    {
-        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManger>();
     }
 }
