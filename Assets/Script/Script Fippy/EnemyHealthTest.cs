@@ -133,7 +133,7 @@ public class EnemyHealthTest : MonoBehaviour
             }
             else
             {
-                PlayerHealth standardHealth = target.GetComponentInParent<PlayerHealth>(); //[cite: 13]
+                PlayerHealthTest standardHealth = target.GetComponentInParent<PlayerHealthTest>(); //[cite: 13]
                 if (standardHealth != null) //[cite: 13]
                 {
                     standardHealth.TakeDamage(contactDamage); //[cite: 13]

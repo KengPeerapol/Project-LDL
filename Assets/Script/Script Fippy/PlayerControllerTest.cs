@@ -212,7 +212,7 @@ public class PlayerControllerTest : MonoBehaviour
                 {
                     healthTest.TakeDamage(wallDamage);
                 }
-                else if (TryGetComponent(out PlayerHealth health))
+                else if (TryGetComponent(out PlayerHealthTest health))
                 {
                     health.TakeDamage(wallDamage);
                 }

@@ -51,7 +51,7 @@ public class GameScoreManager : MonoBehaviour
 
         if (finishLine == null)
         {
-            FinishLine fl = Object.FindFirstObjectByType<FinishLine>();
+            FinishLine fl = Object.FindAnyObjectByType<FinishLine>();
             if (fl != null) finishLine = fl.transform;
         }
 

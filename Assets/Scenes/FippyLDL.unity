@@ -1307,14 +1307,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 622734590}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 47.56, y: -0.3691, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 52.74, y: -0.4291, z: 0}
   m_LocalScale: {x: 1.03, y: 0.92, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1157801743}
   - {fileID: 492009001}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1897711356}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &622734592
 MonoBehaviour:
@@ -2907,6 +2907,8 @@ MonoBehaviour:
   Shoot: {fileID: 8300000, guid: 2e9078aea510f9a49a05bea3d1e7435d, type: 3}
   Pick: {fileID: 8300000, guid: 75b4eb3ff7e4ee746858177a367ad103, type: 3}
   Time: {fileID: 8300000, guid: 10cb641937816034eb68a4facbade175, type: 3}
+  Player: {fileID: 0}
+  Die: {fileID: 0}
 --- !u!4 &1398041598
 Transform:
   m_ObjectHideFlags: 0
@@ -3066,7 +3068,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.43867922, g: 1, b: 0.44626868, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4936,7 +4938,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2134135327144630043, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 622734591}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
 --- !u!1 &2123478697
@@ -5220,7 +5225,6 @@ SceneRoots:
   - {fileID: 1080669739}
   - {fileID: 1566125617}
   - {fileID: 1893617209}
-  - {fileID: 622734591}
   - {fileID: 2120821915}
   - {fileID: 2069455780}
   - {fileID: 1172932076}

@@ -38,7 +38,7 @@ public class BulletTest : MonoBehaviour
             {
                 enemyTest.TakeDamage(damage);
             }
-            else if (collision.TryGetComponent(out EnemyHealth enemy))
+            else if (collision.TryGetComponent(out EnemyHealthTest enemy))
             {
                 enemy.TakeDamage(damage);
             }

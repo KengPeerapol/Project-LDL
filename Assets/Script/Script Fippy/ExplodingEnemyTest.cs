@@ -104,7 +104,7 @@ public class ExplodingEnemyTest : MonoBehaviour
             {
                 spikeTest.Setup(direction, spikeSpeed);
             }
-            else if (spike.TryGetComponent(out BouncingSpike spikeNormal))
+            else if (spike.TryGetComponent(out BouncingSpikeTest spikeNormal))
             {
                 spikeNormal.Setup(direction, spikeSpeed);
             }

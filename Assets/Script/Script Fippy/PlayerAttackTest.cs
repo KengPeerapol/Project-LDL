@@ -5,9 +5,9 @@ public class PlayerAttackTest : MonoBehaviour
 {
     [Header("Gun & Aiming Settings")]
     [Tooltip("ลาก GameObject 'GunPivot' ที่สร้างไว้มาใส่ช่องนี้")]
-    public Transform gunPivot;              // ⭐ ตัวควบคุมจุดหมุนปืน
+    public Transform gunPivot;              // ตัวควบคุมจุดหมุนปืน
     [Tooltip("องศาชดเชย (Sprite แคปซูลแนวตั้งให้ใช้ -90 เพื่อให้ชี้ไปทางขวา)")]
-    public float gunRotationOffset = -90f;  // ⭐ ชดเชยให้ปลายแคปซูลชี้ตรงกับเมาส์
+    public float gunRotationOffset = -90f;  // ชดเชยให้ปลายแคปซูลชี้ตรงกับเมาส์
 
     [Header("Shooting Settings")]
     public GameObject bulletPrefab;
@@ -35,21 +35,20 @@ public class PlayerAttackTest : MonoBehaviour
     private Camera mainCamera;
     private Vector2 currentAimDirection = Vector2.right;
 
+    // ⭐ อ้างอิงเฉพาะ PlayerHealthTest ตัวเดียว
     private PlayerHealthTest playerHealthTest;
-    private PlayerHealth playerHealth;
-    private PlayerControllerTest playerController; // ⭐ ตัวแปรเชื่อมต่อระบบควบคุมตัวละคร
+    private PlayerControllerTest playerController;
 
     private void Start()
     {
         mainCamera = Camera.main;
         playerHealthTest = GetComponent<PlayerHealthTest>();
-        playerHealth = GetComponent<PlayerHealth>();
-        playerController = GetComponent<PlayerControllerTest>(); // ดึงคอมโพเนนต์ PlayerControllerTest
+        playerController = GetComponent<PlayerControllerTest>();
     }
 
     private void Update()
     {
-        // ⭐ ตรวจสอบ: หากผู้เล่นตาย หรืออยู่ในช่วงพุ่ง Intro เข้าจอ / ชนะเกม จะไม่อนุญาตให้เล็งหรือยิง
+        // บล็อกไม่ให้เล็งหรือยิง หากตัวละครตาย หรืออยู่ในช่วงบิน Intro เข้าจอ / ชนะเกม
         if (IsPlayerDead() || (playerController != null && !playerController.CanShootAndControl))
         {
             currentChargeTimer = 0f;
@@ -76,10 +75,13 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
+    // ⭐ ตรวจสอบสถานะการตายผ่าน PlayerHealthTest เพียงตัวเดียว
     private bool IsPlayerDead()
     {
-        if (playerHealthTest != null && playerHealthTest.currentHealth <= 0) return true;
-        if (playerHealth != null && playerHealth.currentHealth <= 0) return true;
+        if (playerHealthTest != null && playerHealthTest.currentHealth <= 0f)
+        {
+            return true;
+        }
         return false;
     }
 
@@ -90,26 +92,21 @@ public class PlayerAttackTest : MonoBehaviour
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
 
-        // หาจุดกำเนิดของปืน (ถ้ามี gunPivot ให้ใช้ตำแหน่งของมัน ถ้าไม่มีให้ใช้ตัว Player)
         Vector2 pivotOrigin = (gunPivot != null) ? (Vector2)gunPivot.position : (Vector2)transform.position;
 
-        // คำนวณมุมเล็งไปหาตำแหน่งเมาส์
         Vector2 rawDirection = (Vector2)mouseWorldPos - pivotOrigin;
         float targetAngle = Mathf.Atan2(rawDirection.y, rawDirection.x) * Mathf.Rad2Deg;
 
-        // บล็อกมุมไม่ให้หันหลัง (จำกัดตาม maxAimAngle)
         targetAngle = Mathf.Clamp(targetAngle, -maxAimAngle, maxAimAngle);
 
         float rad = targetAngle * Mathf.Deg2Rad;
         currentAimDirection = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
 
-        // หมุน GunPivot ตามเมาส์ (ใช้ World Rotation ป้องกันปืนบิดตามจังหวะนกกระพือปีก)
         if (gunPivot != null)
         {
             gunPivot.rotation = Quaternion.Euler(0f, 0f, targetAngle + gunRotationOffset);
         }
 
-        // กรณี FirePoint ไม่ได้ใส่เป็นลูกของ GunPivot ให้จัดตำแหน่งตามระยะห่าง
         if (firePoint != null && firePoint.parent != gunPivot)
         {
             firePoint.position = pivotOrigin + (currentAimDirection * firePointDistance);
@@ -163,7 +160,7 @@ public class PlayerAttackTest : MonoBehaviour
                 else
                 {
                     FireBullet(normalDamage, 1.0f);
-                    Debug.LogWarning($"[Charged Shot] ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
+                    Debug.LogWarning("[Charged Shot] ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
                 }
             }
             else if (Time.time >= nextFireTime)
@@ -188,24 +185,20 @@ public class PlayerAttackTest : MonoBehaviour
             bulletScript.Setup(currentAimDirection, damage, scale);
         }
 
-        // --- เพิ่มโค้ดเรียกเสียงยิงปืนตรงนี้ ---
-        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio"); // ค้นหาจาก Tag "Audio"
+        // เรียกเล่นเสียงยิงปืน
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
-            // ใช้ชื่อ AudioManger ตามสคริปต์ในโปรเจกต์ของคุณ
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
             if (audioManager != null && audioManager.Shoot != null)
             {
-                // สั่งเล่นเสียงโดยอ้างอิงจากตัวแปร Shoot ใน AudioManger
                 audioManager.PlaySFX(audioManager.Shoot);
             }
         }
-        // ---------------------------------
     }
 
     private void OnGUI()
     {
-        // ซ่อนข้อความ GUI ตอนที่กำลังบินพุ่งเข้าฉาก หรือตอนตาย
         if (playerController != null && !playerController.CanShootAndControl) return;
 
         GUIStyle style = new GUIStyle();

@@ -86,7 +86,7 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (enableConsoleLogs)
         {
-            Debug.Log($"<color=red>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
+            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
         }
 
         if (currentHealth <= 0f)
@@ -154,7 +154,7 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (enableConsoleLogs)
         {
-            Debug.Log("<color=red><b>[Health Debug] Player เลือดหมดแล้ว! กำลังเริ่มอนิเมชันการตาย...</b></color>");
+            Debug.Log("<color=orange><b>[Health Debug] Player เลือดหมดแล้ว! กำลังเริ่มอนิเมชันการตาย...</b></color>");
         }
 
         StartCoroutine(DeathSequenceRoutine());

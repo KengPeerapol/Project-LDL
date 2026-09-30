@@ -157,7 +157,6 @@ public class BouncingSpikeTest : MonoBehaviour
     {
         // ทะลุหนามด้วยกันเอง, ศัตรู และไอเทม
         if (target.GetComponent<BouncingSpikeTest>() != null ||
-            target.GetComponent<BouncingSpike>() != null ||
             target.CompareTag("Enemy") ||
             target.CompareTag("Item"))
         {
@@ -177,7 +176,7 @@ public class BouncingSpikeTest : MonoBehaviour
             {
                 playerTest.TakeDamage(damage);
             }
-            else if (target.TryGetComponent(out PlayerHealth player))
+            else if (target.TryGetComponent(out PlayerHealthTest player))
             {
                 player.TakeDamage(damage);
             }
