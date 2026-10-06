@@ -137,8 +137,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3460b6d3f902d45419241db916c87051
-      internalID: 1275970836
+      spriteID: ab6e3a38258a3b54aab92651e779167c
+      internalID: -1668901636
       vertices: []
       indices: 
       edges: []
@@ -159,8 +159,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3c3c1ef1a0f0d22498b784ed053ce7b2
-      internalID: 1009386960
+      spriteID: 616b478fdfdffd24a9303f7b59f8d378
+      internalID: -121599252
       vertices: []
       indices: 
       edges: []
@@ -181,8 +181,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74fd2cd4661e9eb42895ec900ed3cee1
-      internalID: -688072449
+      spriteID: 604835b75087af145baea36e4234135b
+      internalID: 1679611286
       vertices: []
       indices: 
       edges: []
@@ -203,8 +203,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 19d68c6720ec8b246b13dd855fdec05d
-      internalID: -1301655468
+      spriteID: 5f749afe3f6924f42a4e959edd4d7458
+      internalID: 1964346501
       vertices: []
       indices: 
       edges: []
@@ -213,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: f5fc0efbde1ceb54f98558324dd38b74
+    spriteID: 4a33deb96145cf14ab5b75882336418a
     internalID: 0
     vertices: []
     indices: 
@@ -223,13 +223,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":320.0,"y":180.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":1.0},"gridSpriteSize":{"x":320.0,"y":180.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Gameplay-bg_0: 7658045800596577545
-      Gameplay-bg_1: 1275970836
-      Gameplay-bg_2: 1009386960
-      Gameplay-bg_3: -688072449
-      Gameplay-bg_4: -1301655468
+      Gameplay-bg_1: -1668901636
+      Gameplay-bg_2: -121599252
+      Gameplay-bg_3: 1679611286
+      Gameplay-bg_4: 1964346501
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
