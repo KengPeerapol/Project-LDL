@@ -124,12 +124,12 @@ TextureImporter:
       name: gun_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 6
-        width: 19
-        height: 8
+        x: 5
+        y: 5
+        width: 21
+        height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -146,12 +146,12 @@ TextureImporter:
       name: gun_1
       rect:
         serializedVersion: 2
-        x: 30
+        x: 29
         y: 5
-        width: 19
+        width: 21
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: gun_2
       rect:
         serializedVersion: 2
-        x: 54
+        x: 53
         y: 5
-        width: 19
+        width: 21
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -190,12 +190,12 @@ TextureImporter:
       name: gun_3
       rect:
         serializedVersion: 2
-        x: 78
+        x: 76
         y: 5
-        width: 19
+        width: 22
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -212,12 +212,12 @@ TextureImporter:
       name: gun_4
       rect:
         serializedVersion: 2
-        x: 102
+        x: 100
         y: 5
-        width: 19
+        width: 22
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -234,12 +234,12 @@ TextureImporter:
       name: gun_5
       rect:
         serializedVersion: 2
-        x: 126
+        x: 124
         y: 5
-        width: 19
+        width: 22
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -256,12 +256,12 @@ TextureImporter:
       name: gun_6
       rect:
         serializedVersion: 2
-        x: 150
+        x: 148
         y: 5
-        width: 19
+        width: 22
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -278,12 +278,12 @@ TextureImporter:
       name: gun_7
       rect:
         serializedVersion: 2
-        x: 174
-        y: 6
-        width: 19
-        height: 8
+        x: 172
+        y: 5
+        width: 22
+        height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -300,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 33fa20729d2ce7c4f9aa287b73a9e5b3
     internalID: 0
     vertices: []
     indices: 
@@ -308,7 +308,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":24.0,"y":20.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       gun_0: -6628414004274166170
       gun_1: -3058517067305430257
