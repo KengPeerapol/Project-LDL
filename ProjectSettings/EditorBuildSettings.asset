@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FippyLDL.unity
     guid: d817891c79b7fad438f646d9a482b479
+  - enabled: 1
+    path: Assets/Scenes/TEST.unity
+    guid: f8798a38ffc1f364c9b75502f277bebd
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

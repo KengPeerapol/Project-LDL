@@ -15,8 +15,25 @@ public class PlayerHealthTest : MonoBehaviour
     public GameObject gameOverUI;
 
     [Header("Sprite Settings (สไปรต์ของตัว Player)")]
-    [Tooltip("ลาก SpriteRenderer ของตัว Player มาใส่ (ถ้าเว้นว่างไว้จะดึงจากตัวมันเองให้อัตโนมัติ)")]
-    public SpriteRenderer playerBodySprite; // ⭐ เจาะจงเฉพาะ Sprite ลำตัว ไม่แตะต้องปืน
+    [Tooltip("ลาก SpriteRenderer ลำตัวมาใส่ (ถ้าเว้นว่างไว้จะค้นหาให้อัตโนมัติ)")]
+    public SpriteRenderer playerBodySprite;
+
+    [Header("Hit Flash Effect (แสงกะพริบตอนโดนโจมตี)")]
+    [Tooltip("เปิดใช้งานเอฟเฟกต์กะพริบตอนโดนดาเมจหรือไม่")]
+    public bool enableHitFlash = true;
+
+    [Tooltip("สีแฟลช (แนะนำสีแดงจัด Color.red หรือสีส้ม เพื่อให้ตัดกับสีเดิมชัดเจน)")]
+    public Color hitFlashColor = Color.red; // ⭐ เปลี่ยนเป็นสีแดงเพื่อให้เห็นชัดเจน 100%
+
+    [Tooltip("ระยะเวลาที่กะพริบ (วินาที แนะนำ 0.1 - 0.15)")]
+    public float flashDuration = 0.12f;
+
+    [Header("Screen Shake Settings (กล้องสั่นเมื่อโดนดาเมจ)")]
+    [Tooltip("เปิดใช้งานระบบจอสั่นหรือไม่")]
+    public bool enableScreenShake = true;
+    public float shakeDuration = 0.18f;
+    public float shakeMagnitude = 0.22f;
+    public Camera targetCamera;
 
     [Header("Debug Settings")]
     public bool showDebugOnScreen = true;
@@ -31,21 +48,38 @@ public class PlayerHealthTest : MonoBehaviour
     private Color color100, color80, color60, color40, color20;
     private WaitForSeconds deathWaitTime = new WaitForSeconds(0.3f);
 
+    private Coroutine flashRoutine;
+    private Coroutine shakeRoutine;
+    private Vector3 cameraOriginalPos;
+
     private void Start()
     {
         currentHealth = maxHealth;
 
-        // 1. ดึงเฉพาะ SpriteRenderer บนตัว Player เอง
+        // 1. ค้นหา SpriteRenderer (ตรวจทั้งตัวแม่และตัวลูก)
         if (playerBodySprite == null)
         {
             playerBodySprite = GetComponent<SpriteRenderer>();
+            if (playerBodySprite == null)
+            {
+                playerBodySprite = GetComponentInChildren<SpriteRenderer>();
+            }
         }
 
         allSprites = GetComponentsInChildren<SpriteRenderer>();
         playerController = GetComponent<PlayerControllerTest>();
         playerCollider = GetComponent<Collider2D>();
 
-        // ดึง GameOverPanel จาก GameScoreManager อัตโนมัติถ้าลืมลากใส่
+        if (targetCamera == null)
+        {
+            targetCamera = Camera.main;
+        }
+
+        if (targetCamera != null)
+        {
+            cameraOriginalPos = targetCamera.transform.localPosition;
+        }
+
         if (gameOverUI == null && GameScoreManager.Instance != null)
         {
             gameOverUI = GameScoreManager.Instance.gameOverPanel;
@@ -65,17 +99,14 @@ public class PlayerHealthTest : MonoBehaviour
 
     private void ValidateComponents()
     {
+        if (playerBodySprite == null)
+            Debug.LogError("<color=red>[Health Debug] ไม่พบ SpriteRenderer สำหรับทำ Hit Flash! กรุณาลากใส่ในช่อง 'Player Body Sprite'</color>");
+
         if (hpBarFill == null)
             Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก Image หลอดเลือดมาใส่ในช่อง 'Hp Bar Fill'</color>");
 
         if (gameOverUI == null)
             Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก GameOverPanel มาใส่ในช่อง 'Game Over UI'</color>");
-
-        if (playerController == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ไม่พบคอมโพเนนต์ PlayerControllerTest บนตัว Player</color>");
-
-        if (playerCollider == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ไม่พบคอมโพเนนต์ Collider2D บนตัว Player</color>");
     }
 
     public void TakeDamage(float damageAmount)
@@ -87,6 +118,24 @@ public class PlayerHealthTest : MonoBehaviour
         if (enableConsoleLogs)
         {
             Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
+        }
+
+        // ⭐ ทำงาน Hit Flash
+        if (enableHitFlash && playerBodySprite != null && gameObject.activeInHierarchy)
+        {
+            if (flashRoutine != null) StopCoroutine(flashRoutine);
+            flashRoutine = StartCoroutine(HitFlashRoutine());
+        }
+
+        // ⭐ ทำงาน Screen Shake
+        if (enableScreenShake && targetCamera != null)
+        {
+            if (shakeRoutine != null)
+            {
+                StopCoroutine(shakeRoutine);
+                targetCamera.transform.localPosition = cameraOriginalPos;
+            }
+            shakeRoutine = StartCoroutine(ScreenShakeRoutine());
         }
 
         if (currentHealth <= 0f)
@@ -105,17 +154,45 @@ public class PlayerHealthTest : MonoBehaviour
         TakeDamage((float)damageAmount);
     }
 
+    // ⭐ Coroutine แฟลชสีแดง แล้วสลับกลับเป็นสีเดิม
+    private IEnumerator HitFlashRoutine()
+    {
+        playerBodySprite.color = hitFlashColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        HandlePlayerColor(); // คืนค่าสีตามระดับเลือดปัจจุบัน
+        flashRoutine = null;
+    }
+
+    private IEnumerator ScreenShakeRoutine()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < shakeDuration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * shakeMagnitude;
+            float offsetY = Random.Range(-1f, 1f) * shakeMagnitude;
+
+            targetCamera.transform.localPosition = new Vector3(
+                cameraOriginalPos.x + offsetX,
+                cameraOriginalPos.y + offsetY,
+                cameraOriginalPos.z
+            );
+
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        targetCamera.transform.localPosition = cameraOriginalPos;
+        shakeRoutine = null;
+    }
+
     public void Heal(float healAmount)
     {
         if (isDead) return;
 
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
-
-        if (enableConsoleLogs)
-        {
-            Debug.Log($"<color=green>[Health Debug] ได้รับการฮีล: +{healAmount} | HP ปัจจุบัน: {currentHealth:F0}/{maxHealth}</color>");
-        }
-
         UpdateHealthBar();
     }
 
@@ -126,10 +203,13 @@ public class PlayerHealthTest : MonoBehaviour
             hpBarFill.fillAmount = currentHealth / maxHealth;
         }
 
-        HandlePlayerColor();
+        // ถ้าไม่ได้กำลังเล่น Hit Flash อยู่ ให้ปรับสีตามเลือดปกติ
+        if (flashRoutine == null)
+        {
+            HandlePlayerColor();
+        }
     }
 
-    // ⭐ เปลี่ยนสีเฉพาะ playerBodySprite ลำตัวเท่านั้น
     private void HandlePlayerColor()
     {
         if (playerBodySprite == null) return;
@@ -142,7 +222,6 @@ public class PlayerHealthTest : MonoBehaviour
         else if (currentHealth <= 80f) targetColor = color80;
         else targetColor = color100;
 
-        // สั่งเปลี่ยนสีเฉพาะตัว Player (ปืนจะไม่ถูกเปลี่ยนสี)
         playerBodySprite.color = targetColor;
     }
 
@@ -150,12 +229,14 @@ public class PlayerHealthTest : MonoBehaviour
     {
         isDead = true;
 
-        if (hpBarFill != null) hpBarFill.fillAmount = 0f;
-
-        if (enableConsoleLogs)
+        if (flashRoutine != null) StopCoroutine(flashRoutine);
+        if (shakeRoutine != null)
         {
-            Debug.Log("<color=orange><b>[Health Debug] Player เลือดหมดแล้ว! กำลังเริ่มอนิเมชันการตาย...</b></color>");
+            StopCoroutine(shakeRoutine);
+            if (targetCamera != null) targetCamera.transform.localPosition = cameraOriginalPos;
         }
+
+        if (hpBarFill != null) hpBarFill.fillAmount = 0f;
 
         StartCoroutine(DeathSequenceRoutine());
     }
@@ -168,7 +249,6 @@ public class PlayerHealthTest : MonoBehaviour
         float elapsed = 0f;
         Vector3 originalPos = transform.position;
 
-        // อนิเมชันสั่นตัวละครตอนตาย
         while (elapsed < shakeDuration)
         {
             float x = originalPos.x + Random.Range(-0.2f, 0.2f);
@@ -181,7 +261,6 @@ public class PlayerHealthTest : MonoBehaviour
 
         transform.position = originalPos;
 
-        // ตอนตายจะซ่อนทุกชิ้นส่วนทั้งตัวและปืน
         foreach (SpriteRenderer sprite in allSprites)
         {
             if (sprite != null) sprite.enabled = false;
@@ -191,7 +270,6 @@ public class PlayerHealthTest : MonoBehaviour
 
         yield return deathWaitTime;
 
-        // เปิดเมาส์และแสดงหน้าต่างแพ้
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 

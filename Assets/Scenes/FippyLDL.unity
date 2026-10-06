@@ -344,8 +344,8 @@ Transform:
   m_GameObject: {fileID: 73467946}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0036, y: -5.13, z: 0}
-  m_LocalScale: {x: 19.973373, y: 0.96976095, z: 1}
+  m_LocalPosition: {x: -0.0036, y: -6.3636, z: 0}
+  m_LocalScale: {x: 19.973373, y: 3.437123, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -928,8 +928,8 @@ Transform:
   m_GameObject: {fileID: 382893524}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0036, y: 5.1281, z: 0}
-  m_LocalScale: {x: 20.019567, y: 0.9481968, z: 1}
+  m_LocalPosition: {x: -0.0036, y: 6.0757, z: 0}
+  m_LocalScale: {x: 20.019567, y: 2.8434615, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1278,19 +1278,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 622734590}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b07a766b5ad290843b34e7cfc5c7147c, type: 3}
+  m_Script: {fileID: 11500000, guid: cc69c0ec933992a4fb2a2eeefb55afe0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WallEventSystem
+  m_EditorClassIdentifier: Assembly-CSharp::GameEventManager
+  cooldownTime: 5
+  globalEventChance: 75
+  wallWeight: 50
+  missileWeight: 50
   topWall: {fileID: 1157801743}
   bottomWall: {fileID: 492009001}
-  moveSpeed: 6
-  slideDistance: 90
-  preWarningTime: 3
-  cooldownTime: 5
-  eventChance: 67
+  wallMoveSpeed: 6
+  slideDistance: 87.1
+  wallPreWarningTime: 2.5
+  warningPrefab: {fileID: 1919442258139172247, guid: 45a3158c6d78cff41986552f9bf3809d, type: 3}
+  missilePrefab: {fileID: 4783931667091252217, guid: 76aa89af7611a144589d4689e458bf77, type: 3}
+  minMissiles: 1
+  maxMissiles: 3
+  delayBetweenMissiles: 0.8
+  totalWarningDuration: 2
+  trackingDuration: 1.3
+  missileSpawnRightX: 9.5
+  minY: -3.8
+  maxY: 3.8
   enemySpawner: {fileID: 1951566999}
   itemSpawner: {fileID: 1080669736}
+  playerController: {fileID: 1897711352}
   showDebugOnScreen: 1
+  showGizmos: 1
 --- !u!1 &850535643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1656,12 +1670,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa73ea085b9c48249bb6e6d77b162025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnTest
-  enemyPrefabs:
-  - {fileID: 4044427734538613108, guid: 53a65531bc6ecc24497b2568c6dc5f94, type: 3}
-  - {fileID: 8593860426822094936, guid: c457a11619842e941b7deecedb8561aa, type: 3}
-  spawnInterval: 1
+  enemies:
+  - enemyName: Cooldown
+    prefab: {fileID: 4044427734538613108, guid: 53a65531bc6ecc24497b2568c6dc5f94, type: 3}
+    spawnWeight: 70
+  - enemyName: Heal
+    prefab: {fileID: 8593860426822094936, guid: c457a11619842e941b7deecedb8561aa, type: 3}
+    spawnWeight: 30
+  useRandomInterval: 1
+  minSpawnInterval: 1
+  maxSpawnInterval: 2.5
   spawnImmediately: 1
-  playerController: {fileID: 0}
+  playerController: {fileID: 1897711352}
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0.5, a: 0.8}
   gizmoAreaWidth: 1
@@ -4090,7 +4110,7 @@ MonoBehaviour:
   border1: {fileID: 1885380645}
   border2: {fileID: 1997634412}
   scrollSpeed: 3
-  seamOffset: 0.2
+  seamOffset: 0.4
 --- !u!1 &1893617206
 GameObject:
   m_ObjectHideFlags: 0
@@ -4184,6 +4204,11 @@ MonoBehaviour:
 --- !u!4 &1897711356 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2134135327144630043, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+  m_PrefabInstance: {fileID: 2120821915}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &1897711362 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 609646592889192449, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
   m_PrefabInstance: {fileID: 2120821915}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1943448683
@@ -4291,10 +4316,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa73ea085b9c48249bb6e6d77b162025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnTest
-  enemyPrefabs:
-  - {fileID: 5118996002469163254, guid: 363392e48f618d347bb93f3f14ecc410, type: 3}
-  - {fileID: 4577170958725877148, guid: b78620821dc462144b836ec74407c2fb, type: 3}
-  spawnInterval: 1
+  enemies:
+  - enemyName: Basic
+    prefab: {fileID: 5118996002469163254, guid: 363392e48f618d347bb93f3f14ecc410, type: 3}
+    spawnWeight: 70
+  - enemyName: Boomer
+    prefab: {fileID: 4577170958725877148, guid: b78620821dc462144b836ec74407c2fb, type: 3}
+    spawnWeight: 30
+  useRandomInterval: 1
+  minSpawnInterval: 0.5
+  maxSpawnInterval: 1
   spawnImmediately: 1
   playerController: {fileID: 1897711352}
   alwaysShowGizmo: 1
@@ -4782,6 +4813,18 @@ PrefabInstance:
       propertyPath: gameOverUI
       value: 
       objectReference: {fileID: 1418368742}
+    - target: {fileID: 514008331962633070, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: targetCamera
+      value: 
+      objectReference: {fileID: 850535645}
+    - target: {fileID: 514008331962633070, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: playerBodySprite
+      value: 
+      objectReference: {fileID: 1897711362}
+    - target: {fileID: 514008331962633070, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: enableScreenShake
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 534322496820327794, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_Name
       value: 'Player '
