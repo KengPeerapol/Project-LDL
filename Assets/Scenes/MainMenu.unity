@@ -759,6 +759,139 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314157775}
   m_CullTransparentMesh: 1
+--- !u!1 &383937369
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 383937370}
+  - component: {fileID: 383937373}
+  - component: {fileID: 383937372}
+  - component: {fileID: 383937371}
+  m_Layer: 5
+  m_Name: Exercise
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &383937370
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383937369}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1750201292}
+  m_Father: {fileID: 1913876200}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -390, y: 48}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &383937371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383937369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 383937372}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 900556793}
+        m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
+        m_MethodName: OnRiskInfoButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &383937372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383937369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &383937373
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383937369}
+  m_CullTransparentMesh: 1
 --- !u!1 &502897131
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,7 +905,7 @@ GameObject:
   - component: {fileID: 502897134}
   - component: {fileID: 502897133}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Eat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -795,7 +928,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -391, y: -131}
+  m_AnchoredPosition: {x: -390, y: 93}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &502897133
@@ -844,8 +977,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 900556793}
         m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
-        m_MethodName: OnRiskInfoButtonClicked
-        m_Mode: 1
+        m_MethodName: ShowDetail
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1150,139 +1283,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 576678202}
   m_CullTransparentMesh: 1
---- !u!1 &627526786
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 627526787}
-  - component: {fileID: 627526790}
-  - component: {fileID: 627526789}
-  - component: {fileID: 627526788}
-  m_Layer: 5
-  m_Name: Button
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &627526787
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627526786}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1910503345}
-  m_Father: {fileID: 1787572343}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -35}
-  m_SizeDelta: {x: 160, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &627526788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627526786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 627526789}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 900556793}
-        m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
-        m_MethodName: OnNameButtonClicked
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &627526789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627526786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &627526790
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627526786}
-  m_CullTransparentMesh: 1
 --- !u!1 &640886543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1552,10 +1552,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: EAT
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
+  m_sharedMaterial: {fileID: -6936773463457069765, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1579,8 +1579,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 44
+  m_fontSizeBase: 44
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2043,8 +2043,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0006485, y: 0.0011673}
-  m_SizeDelta: {x: 543.57, y: 514.27}
+  m_AnchoredPosition: {x: -0.8619, y: 0.8637}
+  m_SizeDelta: {x: 521.1446, y: 495.2946}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &769868766
 MonoBehaviour:
@@ -2093,8 +2093,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44
-  m_fontSizeBase: 44
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2288,50 +2288,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9f2acaaf9b598c43bd46eb56ac62978, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PatientSystemManager
-  speechBoxText: {fileID: 769868766}
-  profileBoxText: {fileID: 640886545}
-  nameButtonText: {fileID: 1580858468}
   avatarDisplayImage: {fileID: 652003240}
+  patientNameText: {fileID: 1580858468}
+  profileBoxText: {fileID: 640886545}
+  contentBoxText: {fileID: 769868766}
+  topicButtons:
+  - {fileID: 502897133}
+  - {fileID: 383937371}
+  - {fileID: 1026842294}
   patients:
-  - patientName: "\u0E40\u0E01\u0E48\u0E07 \u0E02\u0E22\u0E35\u0E49\u0E43\u0E08"
+  - patientName: "\u0E40\u0E01\u0E48\u0E07 \u0E02\u0E22\u0E35\u0E49\u0E19\u0E21"
     patientAvatar: {fileID: 4592761091510274918, guid: aa23f468b3abd784b841fa0ff74031b0, type: 3}
     targetSceneName: FippyLDL
-    generalProfile: "\u0E1B\u0E23\u0E30\u0E27\u0E31\u0E15\u0E34\u0E1C\u0E39\u0E49\u0E1B\u0E48\u0E27\u0E22:\n\u0E0A\u0E37\u0E48\u0E2D:
-      \u0E19\u0E32\u0E22\u0E2A\u0E21\u0E0A\u0E32\u0E22 \u0E0A\u0E32\u0E0D\u0E27\u0E34\u0E17\u0E22\u0E4C\n\u0E2D\u0E32\u0E22\u0E38:
-      54 \u0E1B\u0E35\n\u0E27\u0E31\u0E19\u0E40\u0E01\u0E34\u0E14: 14 \u0E01.\u0E1E.
-      2515\n\u0E2D\u0E32\u0E0A\u0E35\u0E1E: \u0E1E\u0E19\u0E31\u0E01\u0E07\u0E32\u0E19\u0E02\u0E31\u0E1A\u0E23\u0E16\u0E1A\u0E23\u0E23\u0E17\u0E38\u0E01\n\u0E19\u0E49\u0E33\u0E2B\u0E19\u0E31\u0E01/\u0E2A\u0E48\u0E27\u0E19\u0E2A\u0E39\u0E07:
-      86 \u0E01\u0E01. / 168 \u0E0B\u0E21.\n\u0E04\u0E27\u0E32\u0E21\u0E14\u0E31\u0E19\u0E42\u0E25\u0E2B\u0E34\u0E15:
-      145/92 mmHg"
     introductionSpeech: "\u0E2A\u0E27\u0E31\u0E2A\u0E14\u0E35\u0E04\u0E23\u0E31\u0E1A\u0E04\u0E38\u0E13\u0E2B\u0E21\u0E2D
-      \u0E0A\u0E48\u0E27\u0E07\u0E19\u0E35\u0E49\u0E1C\u0E21\u0E23\u0E39\u0E49\u0E2A\u0E36\u0E01\u0E40\u0E2B\u0E19\u0E37\u0E48\u0E2D\u0E22\u0E07\u0E48\u0E32\u0E22
+      \u0E1C\u0E21\u0E40\u0E01\u0E48\u0E07 \u0E02\u0E22\u0E35\u0E49\u0E19\u0E21\u0E04\u0E23\u0E31\u0E1A
+      \u0E0A\u0E48\u0E27\u0E07\u0E19\u0E35\u0E49\u0E23\u0E39\u0E49\u0E2A\u0E36\u0E01\u0E40\u0E2B\u0E19\u0E37\u0E48\u0E2D\u0E22\u0E07\u0E48\u0E32\u0E22
       \u0E41\u0E19\u0E48\u0E19\u0E2B\u0E19\u0E49\u0E32\u0E2D\u0E01\u0E1A\u0E48\u0E2D\u0E22\u0E46
-      \u0E42\u0E14\u0E22\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E40\u0E27\u0E25\u0E32\u0E17\u0E33\u0E07\u0E32\u0E19\u0E02\u0E31\u0E1A\u0E23\u0E16\u0E14\u0E36\u0E01\u0E46
-      \u0E04\u0E23\u0E31\u0E1A"
-    lipidRiskSpeech: "\u0E27\u0E34\u0E40\u0E04\u0E23\u0E32\u0E30\u0E2B\u0E4C\u0E04\u0E27\u0E32\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07\u0E14\u0E49\u0E32\u0E19\u0E44\u0E02\u0E21\u0E31\u0E19\n\u0E1C\u0E25\u0E15\u0E23\u0E27\u0E08\u0E04\u0E2D\u0E40\u0E25\u0E2A\u0E40\u0E15\u0E2D\u0E23\u0E2D\u0E25\u0E23\u0E27\u0E21\u0E2A\u0E39\u0E07
-      260 mg/dL (LDL \u0E2A\u0E39\u0E07)\n\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07:
-      \u0E0A\u0E2D\u0E1A\u0E17\u0E32\u0E19\u0E02\u0E2D\u0E07\u0E17\u0E2D\u0E14 \u0E41\u0E01\u0E07\u0E01\u0E30\u0E17\u0E34
-      \u0E41\u0E25\u0E30\u0E2D\u0E32\u0E2B\u0E32\u0E23\u0E1F\u0E32\u0E2A\u0E15\u0E4C\u0E1F\u0E39\u0E49\u0E14\u0E23\u0E30\u0E2B\u0E27\u0E48\u0E32\u0E07\u0E02\u0E31\u0E1A\u0E23\u0E16\n\u0E04\u0E27\u0E32\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07:
-      \u0E21\u0E35\u0E20\u0E32\u0E27\u0E30\u0E44\u0E02\u0E21\u0E31\u0E19\u0E43\u0E19\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E2A\u0E39\u0E07
-      \u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07\u0E15\u0E48\u0E2D\u0E2B\u0E25\u0E2D\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E2B\u0E31\u0E27\u0E43\u0E08\u0E15\u0E35\u0E1A\u0E40\u0E09\u0E35\u0E22\u0E1A\u0E1E\u0E25\u0E31\u0E19"
-  - patientName: "\u0E41\u0E1A\u0E07\u0E0B\u0E35\u0E48 \u0E02\u0E35\u0E49\u0E44\u0E21\u0E48\u0E23\u0E32\u0E14"
-    patientAvatar: {fileID: -7771498897645875075, guid: 6a0b9a55af933974aa3a3192f0f7eb30, type: 3}
-    targetSceneName: TEST
-    generalProfile: "\u0E1B\u0E23\u0E30\u0E27\u0E31\u0E15\u0E34\u0E1C\u0E39\u0E49\u0E1B\u0E48\u0E27\u0E22:\r\n\u0E0A\u0E37\u0E48\u0E2D:
-      \u0E41\u0E1A\u0E07\u0E0B\u0E35\u0E48 \u0E02\u0E35\u0E49\u0E44\u0E21\u0E48\u0E23\u0E32\u0E14\r\n\u0E2D\u0E32\u0E22\u0E38:
-      48 \u0E1B\u0E35\r\n\u0E27\u0E31\u0E19\u0E40\u0E01\u0E34\u0E14: 22 \u0E01.\u0E22.
-      2521\r\n\u0E2D\u0E32\u0E0A\u0E35\u0E1E: \u0E40\u0E08\u0E49\u0E32\u0E02\u0E2D\u0E07\u0E23\u0E49\u0E32\u0E19\u0E40\u0E1A\u0E40\u0E01\u0E2D\u0E23\u0E35\u0E48\r\n\u0E19\u0E49\u0E33\u0E2B\u0E19\u0E31\u0E01/\u0E2A\u0E48\u0E27\u0E19\u0E2A\u0E39\u0E07:
-      68 \u0E01\u0E01. \r\n \u0E04\u0E27\u0E32\u0E21\u0E14\u0E31\u0E19\u0E42\u0E25\u0E2B\u0E34\u0E15:
-      130/85 mmHg"
+      \u0E42\u0E14\u0E22\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E40\u0E27\u0E25\u0E32\u0E02\u0E31\u0E1A\u0E23\u0E16\u0E2A\u0E48\u0E07\u0E02\u0E2D\u0E07\u0E17\u0E32\u0E07\u0E44\u0E01\u0E25
+      \u0E40\u0E25\u0E22\u0E41\u0E27\u0E30\u0E21\u0E32\u0E15\u0E23\u0E27\u0E08\u0E14\u0E39\u0E04\u0E23\u0E31\u0E1A"
+    generalProfile: "\u0E0A\u0E37\u0E48\u0E2D: \u0E19\u0E32\u0E22\u0E2A\u0E21\u0E0A\u0E32\u0E22
+      \u0E0A\u0E32\u0E0D\u0E27\u0E34\u0E17\u0E22\u0E4C (\u0E2D\u0E32\u0E22\u0E38
+      54 \u0E1B\u0E35)\n\u0E2D\u0E32\u0E0A\u0E35\u0E1E: \u0E1E\u0E19\u0E31\u0E01\u0E07\u0E32\u0E19\u0E02\u0E31\u0E1A\u0E23\u0E16\u0E1A\u0E23\u0E23\u0E17\u0E38\u0E01\u0E02\u0E19\u0E2A\u0E48\u0E07\n\u0E04\u0E27\u0E32\u0E21\u0E14\u0E31\u0E19\u0E42\u0E25\u0E2B\u0E34\u0E15:
+      145/92 mmHg (\u0E23\u0E30\u0E14\u0E31\u0E1A 1 Hypertension)"
+    topics:
+    - buttonTitle: "\u0E01\u0E32\u0E23\u0E01\u0E34\u0E19"
+      detailContent: "[\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E1B\u0E23\u0E30\u0E17\u0E32\u0E19\u0E2D\u0E32\u0E2B\u0E32\u0E23]:\n\u0E0A\u0E2D\u0E1A\u0E17\u0E32\u0E19\u0E02\u0E2D\u0E07\u0E17\u0E2D\u0E14
+        \u0E41\u0E01\u0E07\u0E01\u0E30\u0E17\u0E34 \u0E02\u0E49\u0E32\u0E27\u0E02\u0E32\u0E2B\u0E21\u0E39\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\n\u0E14\u0E37\u0E48\u0E21\u0E01\u0E32\u0E41\u0E1F\u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E23\u0E2A\u0E2B\u0E27\u0E32\u0E19\u0E27\u0E31\u0E19\u0E25\u0E30
+        2-3 \u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E41\u0E01\u0E49\u0E07\u0E48\u0E27\u0E07\n\u0E1C\u0E25\u0E15\u0E23\u0E27\u0E08\u0E04\u0E2D\u0E40\u0E25\u0E2A\u0E40\u0E15\u0E2D\u0E23\u0E2D\u0E25\u0E23\u0E27\u0E21\u0E2A\u0E39\u0E07\u0E16\u0E36\u0E07
+        260 mg/dL (\u0E44\u0E02\u0E21\u0E31\u0E19\u0E40\u0E25\u0E27 LDL \u0E2A\u0E39\u0E07)\""
+    - buttonTitle: "\u0E2A\u0E39\u0E1A\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48"
+      detailContent: "[\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E01\u0E32\u0E23\u0E2A\u0E39\u0E1A\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48]:\n\u0E2A\u0E39\u0E1A\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\u0E40\u0E09\u0E25\u0E35\u0E48\u0E22\u0E27\u0E31\u0E19\u0E25\u0E30
+        1 \u0E0B\u0E2D\u0E07 (20 \u0E21\u0E27\u0E19)\n\u0E2A\u0E39\u0E1A\u0E15\u0E48\u0E2D\u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E21\u0E32\u0E19\u0E32\u0E19\u0E01\u0E27\u0E48\u0E32
+        25 \u0E1B\u0E35\n\u0E2A\u0E48\u0E07\u0E1C\u0E25\u0E43\u0E2B\u0E49\u0E2B\u0E25\u0E2D\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E41\u0E02\u0E47\u0E07\u0E15\u0E31\u0E27\u0E41\u0E25\u0E30\u0E21\u0E35\u0E04\u0E27\u0E32\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07\u0E15\u0E48\u0E2D\u0E20\u0E32\u0E27\u0E30\u0E01\u0E25\u0E49\u0E32\u0E21\u0E40\u0E19\u0E37\u0E49\u0E2D\u0E2B\u0E31\u0E27\u0E43\u0E08\u0E02\u0E32\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E2A\u0E39\u0E07"
+  - patientName: "\u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E40\u0E25\u0E48\u0E19\u0E02\u0E35\u0E49"
+    patientAvatar: {fileID: 4592761091510274918, guid: aa23f468b3abd784b841fa0ff74031b0, type: 3}
+    targetSceneName: FippyLDL
     introductionSpeech: "\u0E2A\u0E27\u0E31\u0E2A\u0E14\u0E35\u0E04\u0E48\u0E30\u0E04\u0E38\u0E13\u0E2B\u0E21\u0E2D
-      \u0E1E\u0E31\u0E01\u0E19\u0E35\u0E49\u0E21\u0E35\u0E2D\u0E32\u0E01\u0E32\u0E23\u0E21\u0E36\u0E19\u0E2B\u0E31\u0E27
-      \u0E40\u0E27\u0E35\u0E22\u0E19\u0E28\u0E35\u0E23\u0E29\u0E30\u0E15\u0E2D\u0E19\u0E15\u0E37\u0E48\u0E19\u0E19\u0E2D\u0E19\u0E1A\u0E48\u0E2D\u0E22\u0E46
-      \u0E40\u0E25\u0E22\u0E2D\u0E22\u0E32\u0E01\u0E21\u0E32\u0E15\u0E23\u0E27\u0E08\u0E40\u0E0A\u0E47\u0E01\u0E23\u0E48\u0E32\u0E07\u0E01\u0E32\u0E22\u0E04\u0E48\u0E30"
-    lipidRiskSpeech: "\u0E27\u0E34\u0E40\u0E04\u0E23\u0E32\u0E30\u0E2B\u0E4C\u0E04\u0E27\u0E32\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07\u0E14\u0E49\u0E32\u0E19\u0E44\u0E02\u0E21\u0E31\u0E19\n\u0E23\u0E30\u0E14\u0E31\u0E1A\u0E44\u0E15\u0E23\u0E01\u0E25\u0E35\u0E40\u0E0B\u0E2D\u0E44\u0E23\u0E14\u0E4C\u0E2A\u0E39\u0E07\u0E16\u0E36\u0E07
-      230 mg/dL\n\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07:
-      \u0E0A\u0E34\u0E21\u0E02\u0E19\u0E21\u0E2B\u0E27\u0E32\u0E19 \u0E40\u0E04\u0E49\u0E01\u0E40\u0E19\u0E22\u0E2A\u0E14
-      \u0E41\u0E25\u0E30\u0E14\u0E37\u0E48\u0E21\u0E0A\u0E32\u0E19\u0E21\u0E44\u0E02\u0E48\u0E21\u0E38\u0E01\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\u0E17\u0E38\u0E01\u0E27\u0E31\u0E19\n\u0E04\u0E27\u0E32\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07:
-      \u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07\u0E15\u0E48\u0E2D\u0E20\u0E32\u0E27\u0E30\u0E44\u0E02\u0E21\u0E31\u0E19\u0E1E\u0E2D\u0E01\u0E15\u0E31\u0E1A
-      \u0E41\u0E25\u0E30\u0E20\u0E32\u0E27\u0E30\u0E2B\u0E25\u0E2D\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E2A\u0E21\u0E2D\u0E07\u0E2D\u0E38\u0E14\u0E15\u0E31\u0E19"
+      \u0E14\u0E34\u0E09\u0E31\u0E19\u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E40\u0E25\u0E48\u0E19\u0E02\u0E35\u0E49
+      \u0E0A\u0E48\u0E27\u0E07\u0E19\u0E35\u0E49\u0E15\u0E37\u0E48\u0E19\u0E19\u0E2D\u0E19\u0E21\u0E32\u0E41\u0E25\u0E49\u0E27\u0E21\u0E35\u0E2D\u0E32\u0E01\u0E32\u0E23\u0E21\u0E36\u0E19\u0E2B\u0E31\u0E27
+      \u0E40\u0E27\u0E35\u0E22\u0E19\u0E28\u0E35\u0E23\u0E29\u0E30\u0E1A\u0E48\u0E2D\u0E22\u0E46
+      \u0E40\u0E25\u0E22\u0E2D\u0E22\u0E32\u0E01\u0E21\u0E32\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E38\u0E02\u0E20\u0E32\u0E1E\u0E14\u0E39\u0E04\u0E48\u0E30"
+    generalProfile: "\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E1C\u0E39\u0E49\u0E1B\u0E48\u0E27\u0E22:\u0E0A\u0E37\u0E48\u0E2D:
+      \u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E40\u0E25\u0E48\u0E19\u0E02\u0E35\u0E49 (\u0E2D\u0E32\u0E22\u0E38
+      48 \u0E1B\u0E35)\n\u0E2D\u0E32\u0E0A\u0E35\u0E1E: \u0E40\u0E08\u0E49\u0E32\u0E02\u0E2D\u0E07\u0E23\u0E49\u0E32\u0E19\u0E40\u0E1A\u0E40\u0E01\u0E2D\u0E23\u0E35\u0E48\n
+      \u0E04\u0E27\u0E32\u0E21\u0E14\u0E31\u0E19\u0E42\u0E25\u0E2B\u0E34\u0E15: 130/85
+      mmHg"
+    topics:
+    - buttonTitle: "\u0E01\u0E32\u0E23\u0E01\u0E34\u0E19"
+      detailContent: "[\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E1B\u0E23\u0E30\u0E17\u0E32\u0E19\u0E2D\u0E32\u0E2B\u0E32\u0E23]:\n\u0E0A\u0E2D\u0E1A\u0E17\u0E32\u0E19\u0E02\u0E2D\u0E07\u0E17\u0E2D\u0E14
+        \u0E41\u0E01\u0E07\u0E01\u0E30\u0E17\u0E34 \u0E02\u0E49\u0E32\u0E27\u0E02\u0E32\u0E2B\u0E21\u0E39\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\n\u0E14\u0E37\u0E48\u0E21\u0E01\u0E32\u0E41\u0E1F\u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E23\u0E2A\u0E2B\u0E27\u0E32\u0E19\u0E27\u0E31\u0E19\u0E25\u0E30
+        2-3 \u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E41\u0E01\u0E49\u0E07\u0E48\u0E27\u0E07\n\u0E1C\u0E25\u0E15\u0E23\u0E27\u0E08\u0E04\u0E2D\u0E40\u0E25\u0E2A\u0E40\u0E15\u0E2D\u0E23\u0E2D\u0E25\u0E23\u0E27\u0E21\u0E2A\u0E39\u0E07\u0E16\u0E36\u0E07
+        260 mg/dL (\u0E44\u0E02\u0E21\u0E31\u0E19\u0E40\u0E25\u0E27 LDL \u0E2A\u0E39\u0E07)\""
 --- !u!1 &909913538
 GameObject:
   m_ObjectHideFlags: 0
@@ -2996,6 +3003,276 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 999317141}
+  m_CullTransparentMesh: 1
+--- !u!1 &1026842292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1026842293}
+  - component: {fileID: 1026842296}
+  - component: {fileID: 1026842295}
+  - component: {fileID: 1026842294}
+  m_Layer: 5
+  m_Name: smoking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1026842293
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026842292}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1100368704}
+  m_Father: {fileID: 1913876200}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -390, y: 0}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1026842294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026842292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1026842295}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 900556793}
+        m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
+        m_MethodName: OnRiskInfoButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1026842295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026842292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1026842296
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026842292}
+  m_CullTransparentMesh: 1
+--- !u!1 &1100368703
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1100368704}
+  - component: {fileID: 1100368706}
+  - component: {fileID: 1100368705}
+  m_Layer: 5
+  m_Name: Text (TMP)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1100368704
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100368703}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1026842293}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1100368705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100368703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Smoking
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
+  m_sharedMaterial: {fileID: -6936773463457069765, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4281479730
+  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 44
+  m_fontSizeBase: 44
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1100368706
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100368703}
   m_CullTransparentMesh: 1
 --- !u!1 &1122380772
 GameObject:
@@ -4087,6 +4364,143 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1734069295}
   m_CullTransparentMesh: 1
+--- !u!1 &1750201291
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1750201292}
+  - component: {fileID: 1750201294}
+  - component: {fileID: 1750201293}
+  m_Layer: 5
+  m_Name: Text (TMP)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1750201292
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1750201291}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 383937370}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1750201293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1750201291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Exercise
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
+  m_sharedMaterial: {fileID: -6936773463457069765, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4281479730
+  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 44
+  m_fontSizeBase: 44
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1750201294
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1750201291}
+  m_CullTransparentMesh: 1
 --- !u!1 &1761354340
 GameObject:
   m_ObjectHideFlags: 0
@@ -4192,7 +4606,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 627526787}
   - {fileID: 1580858467}
   m_Father: {fileID: 900556789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4376,143 +4789,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1878356840}
   m_CullTransparentMesh: 1
---- !u!1 &1910503344
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1910503345}
-  - component: {fileID: 1910503347}
-  - component: {fileID: 1910503346}
-  m_Layer: 5
-  m_Name: Text (TMP)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1910503345
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910503344}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 627526787}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1910503346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910503344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: Button
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_characterHorizontalScale: 1
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1910503347
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910503344}
-  m_CullTransparentMesh: 1
 --- !u!1 &1913876199
 GameObject:
   m_ObjectHideFlags: 0
@@ -4544,12 +4820,14 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 502897132}
+  - {fileID: 383937370}
+  - {fileID: 1026842293}
   - {fileID: 640886544}
   m_Father: {fileID: 900556789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 14, y: -72.41202}
+  m_AnchoredPosition: {x: 14, y: -66}
   m_SizeDelta: {x: 1032, y: 447.176}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1913876201
