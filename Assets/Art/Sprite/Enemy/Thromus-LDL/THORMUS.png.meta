@@ -118,10 +118,10 @@ TextureImporter:
       name: THORMUS_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 0
+        x: 2
+        y: 4
         width: 25
-        height: 27
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,10 +140,10 @@ TextureImporter:
       name: THORMUS_1
       rect:
         serializedVersion: 2
-        x: 26
-        y: 0
+        x: 27
+        y: 4
         width: 25
-        height: 27
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,10 +162,10 @@ TextureImporter:
       name: THORMUS_2
       rect:
         serializedVersion: 2
-        x: 51
-        y: 0
+        x: 53
+        y: 3
         width: 25
-        height: 27
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,10 +184,10 @@ TextureImporter:
       name: THORMUS_3
       rect:
         serializedVersion: 2
-        x: 76
-        y: 0
+        x: 80
+        y: 3
         width: 25
-        height: 27
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -206,10 +206,10 @@ TextureImporter:
       name: THORMUS_4
       rect:
         serializedVersion: 2
-        x: 101
-        y: 0
+        x: 106
+        y: 4
         width: 25
-        height: 27
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -228,10 +228,10 @@ TextureImporter:
       name: THORMUS_5
       rect:
         serializedVersion: 2
-        x: 126
-        y: 0
+        x: 131
+        y: 4
         width: 25
-        height: 27
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -250,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6cacf0985fd38784784799081778f174
+    spriteID: 4f5703eab79131541ac3e465501a211c
     internalID: 0
     vertices: []
     indices: 
@@ -258,9 +258,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":25.0,"y":27.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
       THORMUS_0: 453779152405450707
       THORMUS_1: -545751441715195601
