@@ -1496,12 +1496,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1467051573}
+  - {fileID: 1943448684}
   m_Father: {fileID: 1278415594}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.055145085, y: 0.094000004}
-  m_AnchorMax: {x: 0.94771254, y: 0.906}
-  m_AnchoredPosition: {x: -0.13702393, y: 0.09790039}
-  m_SizeDelta: {x: 0.27405, y: -0.1958}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -5.6404}
+  m_SizeDelta: {x: 0, y: -11.2808}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1078156237
 GameObject:
@@ -2589,7 +2590,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2600,12 +2601,11 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278415592}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1943448684}
   - {fileID: 910667122}
   m_Father: {fileID: 1566125617}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2978,7 +2978,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 3.5, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1467051574
@@ -4241,12 +4241,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1278415594}
+  m_Father: {fileID: 910667122}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000030517578}
-  m_SizeDelta: {x: 0, y: 0.000061035}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 176.478, y: 28.95}
+  m_SizeDelta: {x: 391.0045, y: 70.347}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1943448685
 MonoBehaviour:
@@ -4831,7 +4831,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 534322496820327794, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2127904605825691214, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_CollisionDetection

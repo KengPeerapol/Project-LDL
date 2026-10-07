@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5415413731850972136}
   - component: {fileID: 1109239934466314788}
   - component: {fileID: 7743717874343307880}
+  - component: {fileID: 2436252376745450940}
   m_Layer: 3
   m_Name: Enemy Test
   m_TagString: Enemy
@@ -85,12 +86,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -8013367284926725170, guid: 82b2ff1c770831641ae29ea8692696b9, type: 3}
+  m_Sprite: {fileID: 723151328481627841, guid: 82b2ff1c770831641ae29ea8692696b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.375, y: 1.375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -205,3 +206,25 @@ MonoBehaviour:
   hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.08
   deathEffectPrefab: {fileID: 0}
+--- !u!95 &2436252376745450940
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5118996002469163254}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5e7310bd282fd3744a292881827dc885, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

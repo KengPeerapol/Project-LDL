@@ -3,8 +3,20 @@ guid: 82b2ff1c770831641ae29ea8692696b9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8013367284926725170
-    second: LDL-_0
+      213: 1429898136730862320
+    second: LDL_0
+  - first:
+      213: -1203443228715871174
+    second: LDL_1
+  - first:
+      213: -5952983639655573661
+    second: LDL_2
+  - first:
+      213: 430397696270238605
+    second: LDL_3
+  - first:
+      213: 723151328481627841
+    second: LDL_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +112,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: LDL-_0
+      name: LDL_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 1
         y: 3
-        width: 16
-        height: 18
+        width: 22
+        height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ec3c43739eccac090800000000000000
-      internalID: -8013367284926725170
+      spriteID: 0f206d887c408d310800000000000000
+      internalID: 1429898136730862320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LDL_1
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 5
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a349a0572c28c4fe0800000000000000
+      internalID: -1203443228715871174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LDL_2
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 6
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3671e948be0c26da0800000000000000
+      internalID: -5952983639655573661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LDL_3
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 5
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d838556ac6419f500800000000000000
+      internalID: 430397696270238605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LDL_4
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 4
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cecff44d46290a00800000000000000
+      internalID: 723151328481627841
       vertices: []
       indices: 
       edges: []
@@ -125,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 31a3a4843c3784c44adf1e31008d819a
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      LDL-_0: -8013367284926725170
+      LDL_0: 1429898136730862320
+      LDL_1: -1203443228715871174
+      LDL_2: -5952983639655573661
+      LDL_3: 430397696270238605
+      LDL_4: 723151328481627841
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

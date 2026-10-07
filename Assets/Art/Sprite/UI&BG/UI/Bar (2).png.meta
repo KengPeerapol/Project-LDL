@@ -103,13 +103,13 @@ TextureImporter:
       name: Bar (2)_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 4
+        y: 4
         width: 60
         height: 11
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 3, y: 1, z: 3, w: 1}
+      border: {x: 4, y: 4, z: 4, w: 4}
       customData: 
       outline: []
       physicsShape: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d209be1b003fe92458819d6217195f49
+    spriteID: b61a3a062a2cbbf4a8e63567167c1069
     internalID: 0
     vertices: []
     indices: 
