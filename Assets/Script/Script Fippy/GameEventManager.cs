@@ -225,6 +225,18 @@ public class GameEventManager : MonoBehaviour
         GameObject warningObj = Instantiate(warningPrefab);
         SpriteRenderer warningRenderer = warningObj.GetComponentInChildren<SpriteRenderer>();
 
+        // --- 1. เล่นเสียงแจ้งเตือน (Alert) ตอนที่ป้ายโผล่มา ---
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+            if (audioManager != null && audioManager.Alert != null)
+            {
+                audioManager.PlaySFX(audioManager.Alert);
+            }
+        }
+        // ------------------------------------------------
+
         float elapsed = 0f;
         float lockedY = (playerController != null) ? playerController.transform.position.y : 0f;
 
@@ -265,6 +277,17 @@ public class GameEventManager : MonoBehaviour
         // ปล่อยจรวด
         Vector3 spawnPos = new Vector3(missileSpawnRightX + 1f, lockedY, 0f);
         Instantiate(missilePrefab, spawnPos, Quaternion.identity);
+
+        // --- 2. เล่นเสียงจรวดโผล่ออกมา (MidSide) ---
+        if (audioObj != null)
+        {
+            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+            if (audioManager != null && audioManager.MidSide != null)
+            {
+                audioManager.PlaySFX(audioManager.MidSide);
+            }
+        }
+        // ----------------------------------------
     }
 
     // ================= DEBUG GUI & GIZMOS =================

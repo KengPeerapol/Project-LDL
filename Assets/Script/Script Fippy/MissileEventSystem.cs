@@ -121,14 +121,12 @@ public class MissileEventSystem : MonoBehaviour
     {
         if (warningPrefab == null || missilePrefab == null) yield break;
 
-        // สร้างไอคอนเตือนทางขวาของจอ
         GameObject warningObj = Instantiate(warningPrefab);
         SpriteRenderer warningRenderer = warningObj.GetComponentInChildren<SpriteRenderer>();
 
         float elapsed = 0f;
         float lockedY = (playerController != null) ? playerController.transform.position.y : 0f;
 
-        // ช่วงที่ 1: ไฟเตือนเลื่อนตามแกน Y ของ Player
         while (elapsed < trackingDuration)
         {
             elapsed += Time.deltaTime;
@@ -140,7 +138,6 @@ public class MissileEventSystem : MonoBehaviour
 
             warningObj.transform.position = new Vector3(spawnRightX, lockedY, 0f);
 
-            // กะพริบไฟเตือนเป็นจังหวะช้า
             if (warningRenderer != null)
             {
                 warningRenderer.enabled = (Mathf.PingPong(elapsed * 5f, 1f) > 0.4f);
@@ -149,7 +146,6 @@ public class MissileEventSystem : MonoBehaviour
             yield return null;
         }
 
-        // ช่วงที่ 2: ล็อกตำแหน่ง Y นิ่งสนิท แล้วกะพริบเตือนถี่ๆ ก่อนยิง
         float remainingTime = totalWarningDuration - trackingDuration;
         float flashTimer = 0f;
 
@@ -158,7 +154,6 @@ public class MissileEventSystem : MonoBehaviour
             flashTimer += Time.deltaTime;
             warningObj.transform.position = new Vector3(spawnRightX, lockedY, 0f);
 
-            // กะพริบเตือนรัวๆ เร็วขึ้น
             if (warningRenderer != null)
             {
                 warningRenderer.enabled = (Mathf.PingPong(flashTimer * 12f, 1f) > 0.3f);
@@ -167,7 +162,6 @@ public class MissileEventSystem : MonoBehaviour
             yield return null;
         }
 
-        // ลบป้ายเตือนออก แล้วปล่อยจรวดพุ่งออกมาที่ตำแหน่ง lockedY
         Destroy(warningObj);
 
         Vector3 spawnPos = new Vector3(spawnRightX + 1f, lockedY, 0f);
