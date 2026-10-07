@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenuManager : MonoBehaviour
+public class MainMenu : MonoBehaviour
 {
     // ฟังก์ชันสำหรับปุ่ม Play
     public void PlayGame()

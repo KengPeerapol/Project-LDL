@@ -413,14 +413,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.12321895, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2413806693520163455, guid: 93e286f120ba0284b9da170785e3a720, type: 3}
+  m_Sprite: {fileID: -6142374563283994760, guid: 0a3862cb6d4767944aa958ef150825c4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1281,10 +1281,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc69c0ec933992a4fb2a2eeefb55afe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEventManager
-  cooldownTime: 5
-  globalEventChance: 75
-  wallWeight: 50
-  missileWeight: 50
+  cooldownTime: 3
+  globalEventChance: 100
+  wallWeight: 1
+  missileWeight: 100
   topWall: {fileID: 1157801743}
   bottomWall: {fileID: 492009001}
   wallMoveSpeed: 6
@@ -4831,7 +4831,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 534322496820327794, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2127904605825691214, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_CollisionDetection
