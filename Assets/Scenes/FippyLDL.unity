@@ -2837,6 +2837,7 @@ MonoBehaviour:
   Die: {fileID: 8300000, guid: 6548a0be1d9d087488a9af77e50a661d, type: 3}
   Alert: {fileID: 8300000, guid: 7a98b1c339d78054583675e79f78bce1, type: 3}
   MidSide: {fileID: 8300000, guid: 509ac0cedec8fea478e11a7348a350b6, type: 3}
+  missileSfxCooldown: 0.9
 --- !u!4 &1398041598
 Transform:
   m_ObjectHideFlags: 0
@@ -4833,7 +4834,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 534322496820327794, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2127904605825691214, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_CollisionDetection
