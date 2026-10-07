@@ -742,7 +742,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.15
+  m_Volume: 0.12
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2833,8 +2833,10 @@ MonoBehaviour:
   Shoot: {fileID: 8300000, guid: 2e9078aea510f9a49a05bea3d1e7435d, type: 3}
   Pick: {fileID: 8300000, guid: 75b4eb3ff7e4ee746858177a367ad103, type: 3}
   Time: {fileID: 8300000, guid: 10cb641937816034eb68a4facbade175, type: 3}
-  Player: {fileID: 0}
-  Die: {fileID: 0}
+  Hurt: {fileID: 8300000, guid: 0da0e883677e8414f94d2f440f7562d4, type: 3}
+  Die: {fileID: 8300000, guid: 6548a0be1d9d087488a9af77e50a661d, type: 3}
+  Alert: {fileID: 8300000, guid: 7a98b1c339d78054583675e79f78bce1, type: 3}
+  MidSide: {fileID: 8300000, guid: 509ac0cedec8fea478e11a7348a350b6, type: 3}
 --- !u!4 &1398041598
 Transform:
   m_ObjectHideFlags: 0

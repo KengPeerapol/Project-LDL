@@ -11,8 +11,10 @@ public class AudioManger : MonoBehaviour
     public AudioClip Shoot;
     public AudioClip Pick;
     public AudioClip Time;
-    public AudioClip Player;
+    public AudioClip Hurt;
     public AudioClip Die;
+    public AudioClip Alert;   // ⭐ เพิ่มตัวแปรเสียงป้ายเตือน
+    public AudioClip MidSide; // ⭐ เพิ่มตัวแปรเสียงจรวดออก
 
     private void Start()
     {
@@ -27,5 +29,13 @@ public class AudioManger : MonoBehaviour
     public void PlaySFX(AudioClip clip)
     {
         SFXSource.PlayOneShot(clip);
+    }
+
+    public void StopMusic()
+    {
+        if (musicSource != null)
+        {
+            musicSource.Stop();
+        }
     }
 }

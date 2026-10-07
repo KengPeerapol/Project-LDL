@@ -120,6 +120,18 @@ public class PlayerHealthTest : MonoBehaviour
             Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
         }
 
+        // --- โค้ดเรียกเสียงตอนโดนโจมตี (แก้จาก Hit เป็น Hurt) ---
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+            if (audioManager != null && audioManager.Hurt != null) // เปลี่ยนเป็น Hurt
+            {
+                audioManager.PlaySFX(audioManager.Hurt); // เปลี่ยนเป็น Hurt
+            }
+        }
+        // ---------------------------------
+
         // ⭐ ทำงาน Hit Flash
         if (enableHitFlash && playerBodySprite != null && gameObject.activeInHierarchy)
         {
@@ -237,6 +249,25 @@ public class PlayerHealthTest : MonoBehaviour
         }
 
         if (hpBarFill != null) hpBarFill.fillAmount = 0f;
+
+        // --- เพิ่มโค้ดสั่งหยุดเพลงพื้นหลัง และเล่นเสียงตายตรงนี้ ---
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+            if (audioManager != null)
+            {
+                // 1. หยุดเพลงพื้นหลัง
+                audioManager.StopMusic();
+
+                // 2. เล่นเสียงตาย
+                if (audioManager.Die != null)
+                {
+                    audioManager.PlaySFX(audioManager.Die);
+                }
+            }
+        }
+        // ---------------------------------
 
         StartCoroutine(DeathSequenceRoutine());
     }
