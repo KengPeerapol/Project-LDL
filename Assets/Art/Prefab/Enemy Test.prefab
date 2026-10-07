@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementTest
   speed: 5
-  rotateTowardsDirection: 1
+  rotateTowardsDirection: 0
   minAngle: -30
   maxAngle: 30
   wallTag: Wall
