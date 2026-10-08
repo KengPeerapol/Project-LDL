@@ -17,7 +17,7 @@ public class SettingsMenuAnimator : MonoBehaviour
     private RectTransform rectTransform;
     private Canvas parentCanvas;
     private Coroutine currentRoutine;
-    private bool isOpened = false; // ⭐ ใช้ป้องกันคำสั่งซ่อนตัวมาแย่งทำงานตอนเริ่ม
+    private bool isOpened = false;
 
     private void Awake()
     {
@@ -52,7 +52,10 @@ public class SettingsMenuAnimator : MonoBehaviour
     // ⭐ เรียกใช้จากปุ่มเปิด Setting
     public void OpenSettings()
     {
-        isOpened = true; // มาร์กไว้ว่ากำลังเปิด ไม่ให้ระบบสั่งซ่อนตัว
+        // ⭐ บล็อกทันทีถ้าหน้าต่างเปิดอยู่แล้ว หรือกำลังเปิดอยู่ ป้องกันการกดปุ่มรัว
+        if (isOpened) return;
+
+        isOpened = true;
         InitializeComponents();
 
         Time.timeScale = 1f;
@@ -83,6 +86,9 @@ public class SettingsMenuAnimator : MonoBehaviour
     // ⭐ เรียกใช้จากปุ่มปิด Setting
     public void CloseSettings()
     {
+        // ⭐ บล็อกทันทีถ้าหน้าต่างปิดอยู่แล้ว ป้องกันการสั่งปิดซ้ำ
+        if (!isOpened) return;
+
         isOpened = false;
         InitializeComponents();
 

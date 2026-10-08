@@ -841,19 +841,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 383937372}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 900556793}
-        m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
-        m_MethodName: OnRiskInfoButtonClicked
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &383937372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -974,19 +962,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 502897134}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 900556793}
-        m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
-        m_MethodName: ShowDetail
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &502897134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2066,7 +2042,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0E04\u0E25\u0E34\u0E01 GAME \u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E40\u0E25\u0E48\u0E19"
+  m_text: "\u0E22\u0E34\u0E19\u0E14\u0E35\u0E15\u0E49\u0E2D\u0E19\u0E23\u0E31\u0E1A\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48
+    ArterySavior \u0E01\u0E23\u0E38\u0E13\u0E32\u0E40\u0E25\u0E37\u0E2D\u0E01 GAME
+    \u0E40\u0E1B\u0E34\u0E14\u0E40\u0E04\u0E2A\u0E1C\u0E39\u0E49\u0E1B\u0E48\u0E27\u0E22\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E17\u0E33\u0E01\u0E32\u0E23\u0E27\u0E34\u0E19\u0E34\u0E08\u0E09\u0E31\u0E22"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
   m_sharedMaterial: {fileID: -6936773463457069765, guid: 9fa73ad9ee3a04b46822fc2285928323, type: 2}
@@ -2290,14 +2268,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PatientSystemManager
   avatarDisplayImage: {fileID: 652003240}
   patientNameText: {fileID: 1580858468}
-  profileBoxText: {fileID: 640886545}
-  contentBoxText: {fileID: 769868766}
+  profileDetailText: {fileID: 640886545}
+  npcImage: {fileID: 1761354342}
+  defaultNpcSprite: {fileID: -7363413924607640347, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
+  speechBoxText: {fileID: 769868766}
+  defaultSpeechText: "\u0E22\u0E34\u0E19\u0E14\u0E35\u0E15\u0E49\u0E2D\u0E19\u0E23\u0E31\u0E1A\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48
+    ArterySavior \u0E01\u0E23\u0E38\u0E13\u0E32\u0E40\u0E25\u0E37\u0E2D\u0E01 GAME
+    \u0E40\u0E1B\u0E34\u0E14\u0E40\u0E04\u0E2A\u0E1C\u0E39\u0E49\u0E1B\u0E48\u0E27\u0E22\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E17\u0E33\u0E01\u0E32\u0E23\u0E27\u0E34\u0E19\u0E34\u0E08\u0E09\u0E31\u0E22"
   topicButtons:
   - {fileID: 502897133}
   - {fileID: 383937371}
   - {fileID: 1026842294}
   patients:
-  - patientName: "\u0E40\u0E01\u0E48\u0E07 \u0E02\u0E22\u0E35\u0E49\u0E19\u0E21"
+  - patientName: "\u0E40\u0E01\u0E48\u0E07 \u0E28\u0E23\u0E35\u0E19\u0E27\u0E25"
     patientAvatar: {fileID: 4592761091510274918, guid: aa23f468b3abd784b841fa0ff74031b0, type: 3}
     targetSceneName: FippyLDL
     introductionSpeech: "\u0E2A\u0E27\u0E31\u0E2A\u0E14\u0E35\u0E04\u0E23\u0E31\u0E1A\u0E04\u0E38\u0E13\u0E2B\u0E21\u0E2D
@@ -2306,6 +2289,7 @@ MonoBehaviour:
       \u0E41\u0E19\u0E48\u0E19\u0E2B\u0E19\u0E49\u0E32\u0E2D\u0E01\u0E1A\u0E48\u0E2D\u0E22\u0E46
       \u0E42\u0E14\u0E22\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E40\u0E27\u0E25\u0E32\u0E02\u0E31\u0E1A\u0E23\u0E16\u0E2A\u0E48\u0E07\u0E02\u0E2D\u0E07\u0E17\u0E32\u0E07\u0E44\u0E01\u0E25
       \u0E40\u0E25\u0E22\u0E41\u0E27\u0E30\u0E21\u0E32\u0E15\u0E23\u0E27\u0E08\u0E14\u0E39\u0E04\u0E23\u0E31\u0E1A"
+    patientIntroNpcSprite: {fileID: -7363413924607640347, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
     generalProfile: "\u0E0A\u0E37\u0E48\u0E2D: \u0E19\u0E32\u0E22\u0E2A\u0E21\u0E0A\u0E32\u0E22
       \u0E0A\u0E32\u0E0D\u0E27\u0E34\u0E17\u0E22\u0E4C (\u0E2D\u0E32\u0E22\u0E38
       54 \u0E1B\u0E35)\n\u0E2D\u0E32\u0E0A\u0E35\u0E1E: \u0E1E\u0E19\u0E31\u0E01\u0E07\u0E32\u0E19\u0E02\u0E31\u0E1A\u0E23\u0E16\u0E1A\u0E23\u0E23\u0E17\u0E38\u0E01\u0E02\u0E19\u0E2A\u0E48\u0E07\n\u0E04\u0E27\u0E32\u0E21\u0E14\u0E31\u0E19\u0E42\u0E25\u0E2B\u0E34\u0E15:
@@ -2316,18 +2300,21 @@ MonoBehaviour:
         \u0E41\u0E01\u0E07\u0E01\u0E30\u0E17\u0E34 \u0E02\u0E49\u0E32\u0E27\u0E02\u0E32\u0E2B\u0E21\u0E39\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\n\u0E14\u0E37\u0E48\u0E21\u0E01\u0E32\u0E41\u0E1F\u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E23\u0E2A\u0E2B\u0E27\u0E32\u0E19\u0E27\u0E31\u0E19\u0E25\u0E30
         2-3 \u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E41\u0E01\u0E49\u0E07\u0E48\u0E27\u0E07\n\u0E1C\u0E25\u0E15\u0E23\u0E27\u0E08\u0E04\u0E2D\u0E40\u0E25\u0E2A\u0E40\u0E15\u0E2D\u0E23\u0E2D\u0E25\u0E23\u0E27\u0E21\u0E2A\u0E39\u0E07\u0E16\u0E36\u0E07
         260 mg/dL (\u0E44\u0E02\u0E21\u0E31\u0E19\u0E40\u0E25\u0E27 LDL \u0E2A\u0E39\u0E07)\""
+      topicNpcSprite: {fileID: 4217565692946668088, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
     - buttonTitle: "\u0E2A\u0E39\u0E1A\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48"
       detailContent: "[\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E01\u0E32\u0E23\u0E2A\u0E39\u0E1A\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48]:\n\u0E2A\u0E39\u0E1A\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\u0E40\u0E09\u0E25\u0E35\u0E48\u0E22\u0E27\u0E31\u0E19\u0E25\u0E30
         1 \u0E0B\u0E2D\u0E07 (20 \u0E21\u0E27\u0E19)\n\u0E2A\u0E39\u0E1A\u0E15\u0E48\u0E2D\u0E40\u0E19\u0E37\u0E48\u0E2D\u0E07\u0E21\u0E32\u0E19\u0E32\u0E19\u0E01\u0E27\u0E48\u0E32
         25 \u0E1B\u0E35\n\u0E2A\u0E48\u0E07\u0E1C\u0E25\u0E43\u0E2B\u0E49\u0E2B\u0E25\u0E2D\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E41\u0E02\u0E47\u0E07\u0E15\u0E31\u0E27\u0E41\u0E25\u0E30\u0E21\u0E35\u0E04\u0E27\u0E32\u0E21\u0E40\u0E2A\u0E35\u0E48\u0E22\u0E07\u0E15\u0E48\u0E2D\u0E20\u0E32\u0E27\u0E30\u0E01\u0E25\u0E49\u0E32\u0E21\u0E40\u0E19\u0E37\u0E49\u0E2D\u0E2B\u0E31\u0E27\u0E43\u0E08\u0E02\u0E32\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E14\u0E2A\u0E39\u0E07"
-  - patientName: "\u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E40\u0E25\u0E48\u0E19\u0E02\u0E35\u0E49"
-    patientAvatar: {fileID: 4592761091510274918, guid: aa23f468b3abd784b841fa0ff74031b0, type: 3}
+      topicNpcSprite: {fileID: 4217565692946668088, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
+  - patientName: "\u0E2B\u0E19\u0E39\u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E21\u0E32\u0E25\u0E35 "
+    patientAvatar: {fileID: -7771498897645875075, guid: 6a0b9a55af933974aa3a3192f0f7eb30, type: 3}
     targetSceneName: FippyLDL
     introductionSpeech: "\u0E2A\u0E27\u0E31\u0E2A\u0E14\u0E35\u0E04\u0E48\u0E30\u0E04\u0E38\u0E13\u0E2B\u0E21\u0E2D
       \u0E14\u0E34\u0E09\u0E31\u0E19\u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E40\u0E25\u0E48\u0E19\u0E02\u0E35\u0E49
       \u0E0A\u0E48\u0E27\u0E07\u0E19\u0E35\u0E49\u0E15\u0E37\u0E48\u0E19\u0E19\u0E2D\u0E19\u0E21\u0E32\u0E41\u0E25\u0E49\u0E27\u0E21\u0E35\u0E2D\u0E32\u0E01\u0E32\u0E23\u0E21\u0E36\u0E19\u0E2B\u0E31\u0E27
       \u0E40\u0E27\u0E35\u0E22\u0E19\u0E28\u0E35\u0E23\u0E29\u0E30\u0E1A\u0E48\u0E2D\u0E22\u0E46
       \u0E40\u0E25\u0E22\u0E2D\u0E22\u0E32\u0E01\u0E21\u0E32\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E38\u0E02\u0E20\u0E32\u0E1E\u0E14\u0E39\u0E04\u0E48\u0E30"
+    patientIntroNpcSprite: {fileID: -7363413924607640347, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
     generalProfile: "\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E1C\u0E39\u0E49\u0E1B\u0E48\u0E27\u0E22:\u0E0A\u0E37\u0E48\u0E2D:
       \u0E41\u0E1A\u0E07\u0E15\u0E4C \u0E40\u0E25\u0E48\u0E19\u0E02\u0E35\u0E49 (\u0E2D\u0E32\u0E22\u0E38
       48 \u0E1B\u0E35)\n\u0E2D\u0E32\u0E0A\u0E35\u0E1E: \u0E40\u0E08\u0E49\u0E32\u0E02\u0E2D\u0E07\u0E23\u0E49\u0E32\u0E19\u0E40\u0E1A\u0E40\u0E01\u0E2D\u0E23\u0E35\u0E48\n
@@ -2339,6 +2326,7 @@ MonoBehaviour:
         \u0E41\u0E01\u0E07\u0E01\u0E30\u0E17\u0E34 \u0E02\u0E49\u0E32\u0E27\u0E02\u0E32\u0E2B\u0E21\u0E39\u0E40\u0E1B\u0E47\u0E19\u0E1B\u0E23\u0E30\u0E08\u0E33\n\u0E14\u0E37\u0E48\u0E21\u0E01\u0E32\u0E41\u0E1F\u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E23\u0E2A\u0E2B\u0E27\u0E32\u0E19\u0E27\u0E31\u0E19\u0E25\u0E30
         2-3 \u0E01\u0E23\u0E30\u0E1B\u0E4B\u0E2D\u0E07\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E41\u0E01\u0E49\u0E07\u0E48\u0E27\u0E07\n\u0E1C\u0E25\u0E15\u0E23\u0E27\u0E08\u0E04\u0E2D\u0E40\u0E25\u0E2A\u0E40\u0E15\u0E2D\u0E23\u0E2D\u0E25\u0E23\u0E27\u0E21\u0E2A\u0E39\u0E07\u0E16\u0E36\u0E07
         260 mg/dL (\u0E44\u0E02\u0E21\u0E31\u0E19\u0E40\u0E25\u0E27 LDL \u0E2A\u0E39\u0E07)\""
+      topicNpcSprite: {fileID: 4217565692946668088, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
 --- !u!1 &909913538
 GameObject:
   m_ObjectHideFlags: 0
@@ -3086,19 +3074,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1026842295}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 900556793}
-        m_TargetAssemblyTypeName: PatientSystemManager, Assembly-CSharp
-        m_MethodName: OnRiskInfoButtonClicked
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1026842295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4558,7 +4534,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4217565692946668088, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
+  m_Sprite: {fileID: -7363413924607640347, guid: 1b50530155fcbc747b2c9477532e9854, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

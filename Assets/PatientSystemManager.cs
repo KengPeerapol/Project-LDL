@@ -1,65 +1,79 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization; // ช่วยจำค่า Reference เดิมใน Inspector
 using TMPro;
 
 public class PatientSystemManager : MonoBehaviour
 {
-    // ⭐ คลาสข้อมูลปุ่มหัวข้อของแต่ละคน
+    // ⭐ ข้อมูลหัวข้อพฤติกรรมของแต่ละคนไข้
     [System.Serializable]
     public class PatientTopic
     {
-        [Tooltip("ชื่อบนปุ่ม (เช่น การกิน, ออกกำลังกาย, สูบบุหรี่)")]
+        [Tooltip("ชื่อบนปุ่ม (เช่น การกิน, สูบบุหรี่)")]
         public string buttonTitle = "หัวข้อ";
 
         [TextArea(4, 8)]
-        [Tooltip("เนื้อหาที่จะแสดงในกล่องข้อความเมื่อคลิกปุ่มนี้")]
+        [Tooltip("เนื้อหาพฤติกรรมที่จะแสดงในกล่องเขียวเมื่อกดปุ่มนี้")]
         public string detailContent;
+
+        [Tooltip("ลาก Sprite คนสีเทาท่าทางเฉพาะของหัวข้อนี้มาใส่")]
+        public Sprite topicNpcSprite;
     }
 
-    // ⭐ คลาสข้อมูลผู้ป่วย
+    // ⭐ ข้อมูลผู้ป่วยแต่ละคน (สามารถกรอกและลากรูปใส่ใน Inspector ได้เลย)
     [System.Serializable]
     public class PatientData
     {
         [Tooltip("ชื่อ-นามสกุลของผู้ป่วย")]
         public string patientName;
 
-        [Tooltip("รูปภาพประจำตัวผู้ป่วย")]
+        [Tooltip("รูปภาพประจำตัวผู้ป่วย (กล่องซ้ายบน)")]
         public Sprite patientAvatar;
 
         [Tooltip("ชื่อ Scene ด่านที่จะเล่นสำหรับคนนี้")]
         public string targetSceneName = "FippyLDL";
 
         [TextArea(3, 6)]
-        [Tooltip("บทพูดแนะนำตัวของผู้ป่วย (จะแสดงขึ้นมาก่อนกดปุ่มหัวข้อ)")]
+        [Tooltip("บทพูดแนะนำตัวของผู้ป่วย (จะขึ้นในกล่องเขียวก่อนกดปุ่ม)")]
         public string introductionSpeech;
 
+        [Tooltip("รูปคนสีเทาตอนแนะนำตัว (ถ้าไม่มีจะใช้ Default Npc Sprite)")]
+        public Sprite patientIntroNpcSprite;
+
         [TextArea(3, 6)]
-        [Tooltip("ประวัติทั่วไปในกล่องบนขวา (อายุ วันเกิด อาชีพ ฯลฯ)")]
+        [Tooltip("ประวัติทั่วไปในกล่องฟ้า")]
         public string generalProfile;
 
-        [Tooltip("รายการปุ่มหัวข้อ (คนแรกใส่ 3 ปุ่ม, คนที่สองใส่ 2 ปุ่ม)")]
+        [Tooltip("รายการปุ่มหัวข้อของคนนี้")]
         public PatientTopic[] topics;
     }
 
-    [Header("UI Displays (หน้าจอแสดงผล)")]
-    [Tooltip("รูปภาพผู้ป่วย")]
-    public Image avatarDisplayImage;
+    [Header("UI Displays (หน้าจอคนไข้)")]
+    [Tooltip("รูปภาพคนไข้มุมซ้ายบน")]
+    public Image avatarDisplayImage; // ⭐ Profile (Image)
 
-    [Tooltip("Text สำหรับแสดงชื่อผู้ป่วย")]
-    public TextMeshProUGUI patientNameText;
+    [Tooltip("Text ป้ายชื่อคนไข้ (มุมขวาบน)")]
+    public TextMeshProUGUI patientNameText; // ⭐ Name Button Text
 
-    [Tooltip("Text กล่องบนขวา (แสดงประวัติ/อายุ/อาชีพ)")]
-    public TextMeshProUGUI profileBoxText;
+    [Tooltip("Text ในกล่องฟ้า (แสดงประวัติทั่วไป)")]
+    public TextMeshProUGUI profileDetailText; // ⭐ Profile Box Text
 
-    [FormerlySerializedAs("detailBoxText")]
-    [FormerlySerializedAs("speechBoxText")]
-    [Tooltip("กล่องข้อความหลัก (แสดงบทแนะนำตัวก่อน พอคลิกปุ่มหัวข้อจะเปลี่ยนเป็นข้อมูล)")]
-    public TextMeshProUGUI contentBoxText; // ⭐ รวมเป็นช่องเดียว
+    [Header("NPC & Speech (คนสีเทาและกล่องเขียวด้านขวา)")]
+    [Tooltip("คอมโพเนนต์ Image ของตัวละครคนสีเทา")]
+    public Image npcImage; // ⭐ NPC (Image)
 
-    [Header("Topic Buttons (สล็อตปุ่มในฉาก)")]
-    [Tooltip("ลากปุ่มที่มีในฉากมาใส่ที่นี่ตามลำดับ (เช่น ปุ่ม 1, 2, 3)")]
+    [Tooltip("รูป Sprite เริ่มต้นของคนสีเทา (ท่ายิ้มชี้มือเดิม)")]
+    public Sprite defaultNpcSprite; // ⭐ Npc_0
+
+    [Tooltip("Text ในกล่องสีเขียวทางขวามือ (แสดงบทพูดและพฤติกรรม)")]
+    public TextMeshProUGUI speechBoxText; // ⭐ Speech Box Text
+
+    [TextArea(3, 5)]
+    [Tooltip("ข้อความเริ่มต้นของกล่องเขียวเมื่อปิดหน้าต่าง Panel")]
+    public string defaultSpeechText = "ยินดีต้อนรับเข้าสู่ ArterySavior กรุณาเลือกเปิดเคสผู้ป่วยเพื่อทำการวินิจฉัย";
+
+    [Header("Topic Buttons (สล็อตปุ่มในกล่องฟ้า)")]
+    [Tooltip("ลากปุ่มหัวข้อ (Eat, Smoking ฯลฯ) มาใส่ตามลำดับ")]
     public Button[] topicButtons;
 
     [Header("Patient Database")]
@@ -69,24 +83,33 @@ public class PatientSystemManager : MonoBehaviour
 
     private void Start()
     {
+        // สร้างข้อมูลเริ่มต้นให้อัตโนมัติ เฉพาะกรณีที่ใน Inspector ยังไม่ได้เพิ่มข้อมูลไว้
         if (patients == null || patients.Length == 0)
         {
             SetupDefaultPatients();
         }
+    }
 
+    private void OnEnable()
+    {
         UpdatePatientDisplay();
+    }
+
+    private void OnDisable()
+    {
+        ResetToDefaultMenuState();
     }
 
     private void SetupDefaultPatients()
     {
         patients = new PatientData[2];
 
-        // ----------------- ผู้ป่วยคนที่ 1 (มี 3 ปุ่ม) -----------------
+        // ผู้ป่วยคนที่ 1
         patients[0] = new PatientData
         {
-            patientName = "นายสมชาย ชาญวิทย์",
+            patientName = "เก่ง ขยี้หนม",
             targetSceneName = "FippyLDL",
-            introductionSpeech = "สวัสดีครับคุณหมอ ผมสมชายครับ ช่วงนี้รู้สึกเหนื่อยง่าย แน่นหน้าอกบ่อยๆ โดยเฉพาะเวลาขับรถส่งของทางไกล เลยแวะมาตรวจดูครับ",
+            introductionSpeech = "สวัสดีครับคุณหมอ ผมเก่ง ขยี้หนมครับ ช่วงนี้รู้สึกเหนื่อยง่าย แน่นหน้าอกบ่อยๆ โดยเฉพาะเวลาขับรถส่งของทางไกล เลยแวะมาตรวจดูครับ",
             generalProfile = "<b>ข้อมูลผู้ป่วย:</b>\n" +
                              "• ชื่อ: นายสมชาย ชาญวิทย์ (อายุ 54 ปี)\n" +
                              "• อาชีพ: พนักงานขับรถบรรทุกขนส่ง\n" +
@@ -96,34 +119,20 @@ public class PatientSystemManager : MonoBehaviour
                 new PatientTopic
                 {
                     buttonTitle = "การกิน",
-                    detailContent = "<b>[พฤติกรรมการรับประทานอาหาร]:</b>\n" +
-                                    "• ชอบทานของทอด แกงกะทิ ข้าวขาหมูเป็นประจำ\n" +
-                                    "• ดื่มกาแฟกระป๋องรสหวานวันละ 2-3 กระป๋องเพื่อแก้ง่วง\n" +
-                                    "• ผลตรวจคอเลสเตอรอลรวมสูงถึง 260 mg/dL (ไขมันเลว LDL สูง)"
-                },
-                new PatientTopic
-                {
-                    buttonTitle = "ออกกำลังกาย",
-                    detailContent = "<b>[พฤติกรรมการออกกำลังกาย]:</b>\n" +
-                                    "• แทบไม่ได้ออกกำลังกายเลยเนื่องจากต้องขับรถทางไกล\n" +
-                                    "• นั่งอยู่กับที่ติดต่อกันมากกว่า 10-12 ชั่วโมงต่อวัน\n" +
-                                    "• มีอาการปวดหลังและเหนื่อยง่ายเวลาเดินขึ้นบันได"
+                    detailContent = "<b>[พฤติกรรมการรับประทานอาหาร]:</b>\n• ชอบทานของทอด แกงกะทิ ข้าวขาหมูเป็นประจำ\n• ดื่มกาแฟหวานจัดวันละหลายกระป๋องเพื่อแก้ง่วง\n• คอเลสเตอรอลรวมสูง 260 mg/dL"
                 },
                 new PatientTopic
                 {
                     buttonTitle = "สูบบุหรี่",
-                    detailContent = "<b>[พฤติกรรมการสูบบุหรี่]:</b>\n" +
-                                    "• สูบบุหรี่เป็นประจำเฉลี่ยวันละ 1 ซอง (20 มวน)\n" +
-                                    "• สูบต่อเนื่องมานานกว่า 25 ปี\n" +
-                                    "• ส่งผลให้หลอดเลือดแข็งตัวและมีความเสี่ยงต่อภาวะกล้ามเนื้อหัวใจขาดเลือดสูง"
+                    detailContent = "<b>[พฤติกรรมการสูบบุหรี่]:</b>\n• สูบบุหรี่เป็นประจำเฉลี่ยวันละ 1 ซอง (20 มวน)\n• สูบต่อเนื่องมานานกว่า 25 ปี\n• หลอดเลือดแดงแข็งตัวและเสี่ยงต่อภาวะกล้ามเนื้อหัวใจขาดเลือดสูง"
                 }
             }
         };
 
-        // ----------------- ผู้ป่วยคนที่ 2 (มี 2 ปุ่ม) -----------------
+        // ผู้ป่วยคนที่ 2
         patients[1] = new PatientData
         {
-            patientName = "นางวรรณา สว่างจิต",
+            patientName = "วรรณา เบเกอรี่",
             targetSceneName = "TEST",
             introductionSpeech = "สวัสดีค่ะคุณหมอ ดิฉันวรรณาค่ะ ช่วงนี้ตื่นนอนมาแล้วมีอาการมึนหัว เวียนศีรษะบ่อยๆ เลยอยากมาตรวจสุขภาพดูค่ะ",
             generalProfile = "<b>ข้อมูลผู้ป่วย:</b>\n" +
@@ -135,51 +144,48 @@ public class PatientSystemManager : MonoBehaviour
                 new PatientTopic
                 {
                     buttonTitle = "การกิน",
-                    detailContent = "<b>[พฤติกรรมการรับประทานอาหาร]:</b>\n" +
-                                    "• ชิมเค้กเนยสด ขนมปังหวาน และดื่มชานมไข่มุกทุกวัน\n" +
-                                    "• บริโภคน้ำตาลและไขมันทรานส์สะสมในปริมาณสูง\n" +
-                                    "• ผลตรวจไตรกลีเซอไรด์สูงถึง 230 mg/dL เสี่ยงต่อไขมันพอกตับ"
+                    detailContent = "<b>[พฤติกรรมการรับประทานอาหาร]:</b>\n• ชิมเค้กเนยสด ขนมปังหวาน และดื่มชานมไข่มุกทุกวัน\n• ไตรกลีเซอไรด์สูงถึง 230 mg/dL เสี่ยงต่อไขมันพอกตับ"
                 },
                 new PatientTopic
                 {
                     buttonTitle = "ออกกำลังกาย",
-                    detailContent = "<b>[พฤติกรรมการออกกำลังกาย]:</b>\n" +
-                                    "• ยืนทำขนมหน้าเตาเกือบทั้งวัน แต่ไม่ได้ออกกำลังกายแบบคาร์ดิโอ\n" +
-                                    "• พักผ่อนน้อย นอนดึกตื่นเช้าเพื่อเตรียมวัตถุดิบ\n" +
-                                    "• การเผาผลาญไขมันในร่างกายทำงานได้ช้าลงตามวัย"
+                    detailContent = "<b>[พฤติกรรมการออกกำลังกาย]:</b>\n• ยืนทำขนมหน้าเตาเกือบทั้งวัน แทบไม่ได้ออกกำลังกายแบบคาร์ดิโอ\n• ร่างกายเผาผลาญไขมันช้าลง"
                 }
             }
         };
     }
 
-    private void UpdatePatientDisplay()
+    public void UpdatePatientDisplay()
     {
         if (patients == null || patients.Length == 0) return;
-
         PatientData current = patients[currentIndex];
 
-        // 1. เปลี่ยนรูปภาพผู้ป่วย
+        // 1. เปลี่ยนรูปคนไข้ซ้ายบน
         if (avatarDisplayImage != null && current.patientAvatar != null)
-        {
             avatarDisplayImage.sprite = current.patientAvatar;
-        }
 
-        // 2. แสดงชื่อผู้ป่วย
+        // 2. แสดงชื่อคนไข้
         if (patientNameText != null)
-        {
             patientNameText.text = current.patientName;
-        }
 
-        // 3. แสดงประวัติในกล่องบนขวา
-        if (profileBoxText != null)
+        // 3. แสดงประวัติทั่วไปในกล่องฟ้า
+        if (profileDetailText != null)
+            profileDetailText.text = current.generalProfile;
+
+        // 4. แสดงบทพูดแนะนำตัวก่อนในกล่องเขียว
+        if (speechBoxText != null)
+            speechBoxText.text = $"<b>{current.patientName}:</b>\n\"{current.introductionSpeech}\"";
+
+        // 5. เปลี่ยนรูปคนสีเทาเริ่มต้น
+        if (npcImage != null)
         {
-            profileBoxText.text = current.generalProfile;
+            if (current.patientIntroNpcSprite != null)
+                npcImage.sprite = current.patientIntroNpcSprite;
+            else if (defaultNpcSprite != null)
+                npcImage.sprite = defaultNpcSprite;
         }
 
-        // 4. ⭐ แสดงบทพูดแนะนำตัวก่อนเสมอในกล่องข้อความ
-        ShowIntroduction();
-
-        // 5. จัดการปุ่มหัวข้อ (เปิด/ปิด และผูกคำสั่งคลิก)
+        // 6. ผูกปุ่มหัวข้อ
         if (topicButtons != null)
         {
             for (int i = 0; i < topicButtons.Length; i++)
@@ -200,7 +206,7 @@ public class PatientSystemManager : MonoBehaviour
                     topicButtons[i].onClick.RemoveAllListeners();
                     topicButtons[i].onClick.AddListener(() =>
                     {
-                        ShowDetail(current.topics[topicIndex].detailContent);
+                        OnTopicButtonClicked(current.topics[topicIndex]);
                     });
                 }
                 else
@@ -211,32 +217,35 @@ public class PatientSystemManager : MonoBehaviour
         }
     }
 
-    // ⭐ แสดงบทพูดแนะนำตัวในกล่องหลัก
-    public void ShowIntroduction()
+    // ⭐ เมื่อกดปุ่มหัวข้อ (การกิน / สูบบุหรี่)
+    public void OnTopicButtonClicked(PatientTopic topic)
     {
-        if (patients == null || patients.Length == 0) return;
-        PatientData current = patients[currentIndex];
-
-        if (contentBoxText != null)
+        // 1. ส่งข้อความพฤติกรรมไปแสดงในกล่องเขียว
+        if (speechBoxText != null)
         {
-            contentBoxText.text = $"<b>{current.patientName}:</b>\n\"{current.introductionSpeech}\"";
+            speechBoxText.text = topic.detailContent;
+        }
+
+        // 2. เปลี่ยนรูปคนสีเทาตามหัวข้อที่คลิก (ถ้ามีใส่รูปไว้)
+        if (npcImage != null && topic.topicNpcSprite != null)
+        {
+            npcImage.sprite = topic.topicNpcSprite;
         }
     }
 
-    // ⭐ แสดงรายละเอียดหัวข้อเมื่อกดปุ่ม (การกิน / ออกกำลังกาย / สูบบุหรี่)
-    public void ShowDetail(string content)
+    // คืนค่าหน้าต่างเมื่อปิด Panel
+    public void ResetToDefaultMenuState()
     {
-        if (contentBoxText != null)
-        {
-            contentBoxText.text = content;
-        }
+        if (speechBoxText != null)
+            speechBoxText.text = defaultSpeechText;
+
+        if (npcImage != null && defaultNpcSprite != null)
+            npcImage.sprite = defaultNpcSprite;
     }
 
-    // ⭐ ปุ่ม PLAY
     public void PlaySelectedPatientScene()
     {
         if (patients == null || patients.Length == 0) return;
-
         string sceneToLoad = patients[currentIndex].targetSceneName;
         if (!string.IsNullOrEmpty(sceneToLoad))
         {
@@ -244,25 +253,18 @@ public class PatientSystemManager : MonoBehaviour
         }
     }
 
-    // ⭐ ปุ่มลูกศรขวา (คนถัดไป)
     public void NextPatient()
     {
         if (patients == null || patients.Length == 0) return;
-
         currentIndex = (currentIndex + 1) % patients.Length;
         UpdatePatientDisplay();
     }
 
-    // ⭐ ปุ่มลูกศรซ้าย (คนก่อนหน้า)
     public void PreviousPatient()
     {
         if (patients == null || patients.Length == 0) return;
-
         currentIndex--;
-        if (currentIndex < 0)
-        {
-            currentIndex = patients.Length - 1;
-        }
+        if (currentIndex < 0) currentIndex = patients.Length - 1;
         UpdatePatientDisplay();
     }
 }

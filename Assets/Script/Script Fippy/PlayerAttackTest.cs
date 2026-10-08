@@ -9,6 +9,12 @@ public class PlayerAttackTest : MonoBehaviour
     [Tooltip("องศาชดเชย (Sprite แคปซูลแนวตั้งให้ใช้ -90 เพื่อให้ชี้ไปทางขวา)")]
     public float gunRotationOffset = -90f;  // ชดเชยให้ปลายแคปซูลชี้ตรงกับเมาส์
 
+    [Header("Shooting Animation")]
+    [Tooltip("Animator ของปืน (ถ้าเว้นว่างไว้ ระบบจะค้นหาจาก GunPivot ให้อัตโนมัติ)")]
+    public Animator gunAnimator;            // ⭐ คอมโพเนนต์ Animator สำหรับเล่นท่าทางปืน
+    [Tooltip("ชื่อ Animation State ที่ต้องการเล่นตอนยิง")]
+    public string fireAnimationName = "fire";
+
     [Header("Shooting Settings")]
     public GameObject bulletPrefab;
     public Transform firePoint;
@@ -35,7 +41,6 @@ public class PlayerAttackTest : MonoBehaviour
     private Camera mainCamera;
     private Vector2 currentAimDirection = Vector2.right;
 
-    // ⭐ อ้างอิงเฉพาะ PlayerHealthTest ตัวเดียว
     private PlayerHealthTest playerHealthTest;
     private PlayerControllerTest playerController;
 
@@ -44,10 +49,36 @@ public class PlayerAttackTest : MonoBehaviour
         mainCamera = Camera.main;
         playerHealthTest = GetComponent<PlayerHealthTest>();
         playerController = GetComponent<PlayerControllerTest>();
+
+        // ดึงคอมโพเนนต์ Animator ของปืนอัตโนมัติหากยังไม่ได้ลากใส่ช่อง
+        if (gunAnimator == null)
+        {
+            if (gunPivot != null)
+            {
+                gunAnimator = gunPivot.GetComponent<Animator>();
+                if (gunAnimator == null)
+                {
+                    gunAnimator = gunPivot.GetComponentInChildren<Animator>();
+                }
+            }
+
+            if (gunAnimator == null)
+            {
+                gunAnimator = GetComponentInChildren<Animator>();
+            }
+        }
     }
 
     private void Update()
     {
+        // บล็อกการเล็งปืน, ชาร์จ และยิงทั้งหมด เมื่อเกม Pause หรือเวลาหยุดเดิน
+        if (Time.timeScale <= 0f || PauseMenuManager.isGamePaused)
+        {
+            isCharging = false;
+            currentChargeTimer = 0f;
+            return;
+        }
+
         // บล็อกไม่ให้เล็งหรือยิง หากตัวละครตาย หรืออยู่ในช่วงบิน Intro เข้าจอ / ชนะเกม
         if (IsPlayerDead() || (playerController != null && !playerController.CanShootAndControl))
         {
@@ -75,7 +106,6 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    // ⭐ ตรวจสอบสถานะการตายผ่าน PlayerHealthTest เพียงตัวเดียว
     private bool IsPlayerDead()
     {
         if (playerHealthTest != null && playerHealthTest.currentHealth <= 0f)
@@ -178,6 +208,7 @@ public class PlayerAttackTest : MonoBehaviour
     {
         if (bulletPrefab == null || firePoint == null) return;
 
+        // 1. สร้างกระสุน
         GameObject newBullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         BulletTest bulletScript = newBullet.GetComponent<BulletTest>();
         if (bulletScript != null)
@@ -185,7 +216,10 @@ public class PlayerAttackTest : MonoBehaviour
             bulletScript.Setup(currentAimDirection, damage, scale);
         }
 
-        // เรียกเล่นเสียงยิงปืน
+        // 2. ⭐ สั่งเล่น Animation ทันทีที่ยิง
+        PlayShootAnimation();
+
+        // 3. เล่นเสียงยิงปืน
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
@@ -197,8 +231,18 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
+    private void PlayShootAnimation()
+    {
+        if (gunAnimator != null)
+        {
+            // ⭐ เปลี่ยนจาก -1 เป็น 0 (Base Layer) เพื่อแก้ Error Layer Index
+            gunAnimator.Play(fireAnimationName, 0, 0f);
+        }
+    }
+
     private void OnGUI()
     {
+        if (Time.timeScale <= 0f || PauseMenuManager.isGamePaused) return;
         if (playerController != null && !playerController.CanShootAndControl) return;
 
         GUIStyle style = new GUIStyle();

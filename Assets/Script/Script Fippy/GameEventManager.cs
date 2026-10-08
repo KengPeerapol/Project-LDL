@@ -45,6 +45,9 @@ public class GameEventManager : MonoBehaviour
     public float minY = -3.8f;
     public float maxY = 3.8f;
 
+    [Tooltip("องศาการหมุนของ Sprite ขีปนาวุธ (เช่น 0, 90, 180, -90 เพื่อให้หัวจรวดชี้ถูกทิศทาง)")]
+    public float missileRotationZ = 0f; // ⭐ เพิ่มช่องปรับมุมหมุนของ Missile ที่นี่
+
     [Header("Shared Spawners (ปิดตอนมี Event)")]
     public GameObject enemySpawner;
     public GameObject itemSpawner;
@@ -58,7 +61,6 @@ public class GameEventManager : MonoBehaviour
     [Tooltip("แสดงเส้นกรอบและจุดเล็งในหน้า Scene")]
     public bool showGizmos = true;
 
-    // ตัวแปรสำหรับระบบ Debug
     private string currentStatus = "Initializing";
     private string currentEventDetail = "None";
     private float timerDisplay = 0f;
@@ -84,7 +86,6 @@ public class GameEventManager : MonoBehaviour
     {
         while (true)
         {
-            // 1. ช่วงคูลดาวน์พักเบรก
             currentStatus = "Cooldown";
             currentEventDetail = "Waiting for next cycle";
             timerDisplay = cooldownTime;
@@ -99,7 +100,6 @@ public class GameEventManager : MonoBehaviour
             }
             timerDisplay = 0f;
 
-            // 2. สุ่มทอยโอกาสเกิด
             currentStatus = "Rolling Event Chance";
             lastRollResult = Random.Range(0f, 100f);
 
@@ -117,7 +117,6 @@ public class GameEventManager : MonoBehaviour
 
     private IEnumerator RunRandomEvent()
     {
-        // ปิด Spawner ปกติ
         if (enemySpawner != null) enemySpawner.SetActive(false);
         if (itemSpawner != null) itemSpawner.SetActive(false);
 
@@ -133,14 +132,12 @@ public class GameEventManager : MonoBehaviour
             yield return StartCoroutine(MissileEventRoutine());
         }
 
-        // เปิด Spawner กลับมาทำงานเมื่อ Event จบ
         if (enemySpawner != null) enemySpawner.SetActive(true);
         if (itemSpawner != null) itemSpawner.SetActive(true);
 
         Debug.Log("<color=green>[GameEvent] จบ Event สมบูรณ์ คืนค่า Spawner และเริ่มนับคูลดาวน์ใหม่</color>");
     }
 
-    // ================= WALL EVENT =================
     private IEnumerator WallEventRoutine()
     {
         currentStatus = "Wall Warning";
@@ -191,7 +188,6 @@ public class GameEventManager : MonoBehaviour
         if (bottomWall != null) bottomWall.position = bottomStartPos;
     }
 
-    // ================= MISSILE EVENT =================
     private IEnumerator MissileEventRoutine()
     {
         int count = Random.Range(minMissiles, maxMissiles + 1);
@@ -225,7 +221,6 @@ public class GameEventManager : MonoBehaviour
         GameObject warningObj = Instantiate(warningPrefab);
         SpriteRenderer warningRenderer = warningObj.GetComponentInChildren<SpriteRenderer>();
 
-        // --- 1. เล่นเสียงแจ้งเตือน (Alert) ตอนที่ป้ายโผล่มา ---
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
@@ -235,12 +230,10 @@ public class GameEventManager : MonoBehaviour
                 audioManager.PlaySFX(audioManager.Alert);
             }
         }
-        // ------------------------------------------------
 
         float elapsed = 0f;
         float lockedY = (playerController != null) ? playerController.transform.position.y : 0f;
 
-        // ช่วงที่ 1: เลื่อนไฟเตือนตามแกน Y
         while (elapsed < trackingDuration)
         {
             elapsed += Time.deltaTime;
@@ -257,7 +250,6 @@ public class GameEventManager : MonoBehaviour
             yield return null;
         }
 
-        // ช่วงที่ 2: ล็อกเป้าและกะพริบถี่
         float remainingTime = totalWarningDuration - trackingDuration;
         float flashTimer = 0f;
 
@@ -274,11 +266,11 @@ public class GameEventManager : MonoBehaviour
 
         Destroy(warningObj);
 
-        // ปล่อยจรวด
+        // ⭐ ปล่อยจรวดพร้อมกำหนดมุมหมุน Rotation
         Vector3 spawnPos = new Vector3(missileSpawnRightX + 1f, lockedY, 0f);
-        Instantiate(missilePrefab, spawnPos, Quaternion.identity);
+        Quaternion spawnRotation = Quaternion.Euler(0f, 0f, missileRotationZ);
+        Instantiate(missilePrefab, spawnPos, spawnRotation);
 
-        // --- 2. เล่นเสียงจรวดโผล่ออกมา (MidSide) ---
         if (audioObj != null)
         {
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
@@ -287,10 +279,7 @@ public class GameEventManager : MonoBehaviour
                 audioManager.PlaySFX(audioManager.MidSide);
             }
         }
-        // ----------------------------------------
     }
-
-    // ================= DEBUG GUI & GIZMOS =================
 
     private void OnGUI()
     {
@@ -310,7 +299,6 @@ public class GameEventManager : MonoBehaviour
         float startX = 20f;
         float startY = Screen.height - 140f;
 
-        // สีของสถานะหลัก
         if (currentStatus.Contains("Warning"))
         {
             headerStyle.normal.textColor = Color.red;
@@ -327,11 +315,9 @@ public class GameEventManager : MonoBehaviour
             GUI.Label(new Rect(startX, startY, 450, 22), $"[STATUS] {currentStatus} (Next check: {timerDisplay:F1}s)", headerStyle);
         }
 
-        // รายละเอียดเสริม
         subStyle.normal.textColor = Color.white;
         GUI.Label(new Rect(startX, startY + 24, 450, 20), $"Detail: {currentEventDetail}", subStyle);
 
-        // อัตราส่วนและผลการสุ่มล่าสุด
         int totalWeight = Mathf.Max(1, wallWeight + missileWeight);
         float wallRate = (wallWeight / (float)totalWeight) * 100f;
         float missileRate = (missileWeight / (float)totalWeight) * 100f;
@@ -346,7 +332,6 @@ public class GameEventManager : MonoBehaviour
     {
         if (!showGizmos) return;
 
-        // 1. เส้นทางกำแพงเลื่อน (สีเหลือง)
         Gizmos.color = Color.yellow;
         if (topWall != null)
         {
@@ -363,7 +348,6 @@ public class GameEventManager : MonoBehaviour
             Gizmos.DrawWireCube(target, bottomWall.localScale);
         }
 
-        // 2. ขอบเขตและจุดปล่อยจรวดมิสไซล์ (สีแดง)
         Gizmos.color = Color.red;
         Vector3 topSpawnPoint = new Vector3(missileSpawnRightX, maxY, 0f);
         Vector3 bottomSpawnPoint = new Vector3(missileSpawnRightX, minY, 0f);
