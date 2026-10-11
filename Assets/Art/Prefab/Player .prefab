@@ -88,7 +88,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: 93e286f120ba0284b9da170785e3a720, type: 3}
+  m_Sprite: {fileID: 1442604990281400167, guid: 85c8626365365fd42baeb0b3edcb3c14, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -209,6 +209,13 @@ MonoBehaviour:
   hpBarFill: {fileID: 0}
   gameOverUI: {fileID: 0}
   playerBodySprite: {fileID: 0}
+  enableHitFlash: 1
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.12
+  enableScreenShake: 1
+  shakeDuration: 0.18
+  shakeMagnitude: 0.22
+  targetCamera: {fileID: 0}
   showDebugOnScreen: 1
   enableConsoleLogs: 1
 --- !u!114 &6681081217590678989
@@ -225,6 +232,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttackTest
   gunPivot: {fileID: 2782616154711866475}
   gunRotationOffset: -90
+  gunAnimator: {fileID: 0}
+  fireAnimationName: fire
   bulletPrefab: {fileID: 1505545788687779975, guid: 91d68bb20114991469ca0e6e72903f4f, type: 3}
   firePoint: {fileID: 389275437577739927}
   fireRate: 0.1
@@ -317,7 +326,7 @@ Transform:
   m_GameObject: {fileID: 2668569694580819669}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -372,7 +381,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -6628414004274166170, guid: 8abea86ebf221fc498fa13ad7f92c1ae, type: 3}
+  m_Sprite: {fileID: 4072456338834442009, guid: 85c8626365365fd42baeb0b3edcb3c14, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -430,7 +439,7 @@ Transform:
   m_GameObject: {fileID: 5352712393223089078}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.004, y: 0.764, z: 0}
+  m_LocalPosition: {x: 0, y: 0.625, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
