@@ -79,7 +79,7 @@ public class PlayerHealthTest : MonoBehaviour
         UpdateHealthBar();
     }
 
-    public void TakeDamage(float damageAmount)
+    public void TakeDamage(float damageAmount, string damageSource = "Default")
     {
         if (isDead) return;
 
@@ -87,18 +87,10 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (enableConsoleLogs)
         {
-            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
+            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} จาก {damageSource} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
         }
 
-        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
-        if (audioObj != null)
-        {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Hurt != null)
-            {
-                audioManager.PlaySFX(audioManager.Hurt);
-            }
-        }
+        PlayHurtAudio(damageSource);
 
         if (enableHitFlash && playerBodySprite != null && gameObject.activeInHierarchy)
         {
@@ -127,9 +119,59 @@ public class PlayerHealthTest : MonoBehaviour
         }
     }
 
+    public void TakeDamage(int damageAmount, string damageSource)
+    {
+        TakeDamage((float)damageAmount, damageSource);
+    }
+
+    public void TakeDamage(float damageAmount)
+    {
+        TakeDamage(damageAmount, "Default");
+    }
+
     public void TakeDamage(int damageAmount)
     {
-        TakeDamage((float)damageAmount);
+        TakeDamage((float)damageAmount, "Default");
+    }
+
+    private void PlayHurtAudio(string damageSource)
+    {
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj == null) return;
+
+        AudioManger audioManager = audioObj.GetComponent<AudioManger>();
+        if (audioManager == null) return;
+
+        AudioClip clipToPlay = null;
+
+        switch (damageSource.ToLower())
+        {
+            case "spike":
+                clipToPlay = audioManager.HurtSpike;
+                break;
+            case "missile":
+                clipToPlay = audioManager.HurtMissile;
+                break;
+            case "plaque":
+            case "wall":
+                clipToPlay = audioManager.HurtPlaque;
+                break;
+            case "ldl":
+            case "enemy":
+                clipToPlay = audioManager.HurtLDL;
+                break;
+            default:
+                if (audioManager.HurtLDL != null) clipToPlay = audioManager.HurtLDL;
+                else if (audioManager.HurtSpike != null) clipToPlay = audioManager.HurtSpike;
+                else if (audioManager.HurtMissile != null) clipToPlay = audioManager.HurtMissile;
+                else if (audioManager.HurtPlaque != null) clipToPlay = audioManager.HurtPlaque;
+                break;
+        }
+
+        if (clipToPlay != null)
+        {
+            audioManager.PlaySFX(clipToPlay);
+        }
     }
 
     private IEnumerator HitFlashRoutine()
@@ -232,7 +274,6 @@ public class PlayerHealthTest : MonoBehaviour
     {
         if (playerController != null) playerController.TriggerDeath();
 
-        // 1. เอฟเฟกต์ตัวสั่นก่อนตาย (ใช้ unscaledDeltaTime เพื่อไม่ให้หยุดชะงัก)
         float shakeDuration = 0.8f;
         float elapsed = 0f;
         Vector3 originalPos = transform.position;
@@ -249,7 +290,6 @@ public class PlayerHealthTest : MonoBehaviour
 
         transform.position = originalPos;
 
-        // 2. ซ่อนตัวละครและปิด Collider
         foreach (SpriteRenderer sprite in allSprites)
         {
             if (sprite != null) sprite.enabled = false;
@@ -262,10 +302,9 @@ public class PlayerHealthTest : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        // ⭐ 3. เรียกหน้าต่างสรุปดาวทันที
         if (StarResultManager.Instance != null)
         {
-            StarResultManager.Instance.ShowResult(reachedFinishLine: false);
+            StarResultManager.Instance.ShowResult(false);
         }
         else if (gameOverUI != null)
         {
