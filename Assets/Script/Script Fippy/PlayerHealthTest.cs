@@ -11,25 +11,18 @@ public class PlayerHealthTest : MonoBehaviour
     [Header("UI หลอดเลือด (ตั้ง Image Type เป็น Filled)")]
     public Image hpBarFill;
 
-    [Header("หน้าต่าง UI ตอนแพ้ (GameOverPanel)")]
+    [Header("หน้าต่าง UI ตอนแพ้ (กรณีไม่ได้ใช้ StarResultManager)")]
     public GameObject gameOverUI;
 
     [Header("Sprite Settings (สไปรต์ของตัว Player)")]
-    [Tooltip("ลาก SpriteRenderer ลำตัวมาใส่ (ถ้าเว้นว่างไว้จะค้นหาให้อัตโนมัติ)")]
     public SpriteRenderer playerBodySprite;
 
     [Header("Hit Flash Effect (แสงกะพริบตอนโดนโจมตี)")]
-    [Tooltip("เปิดใช้งานเอฟเฟกต์กะพริบตอนโดนดาเมจหรือไม่")]
     public bool enableHitFlash = true;
-
-    [Tooltip("สีแฟลช (แนะนำสีแดงจัด Color.red หรือสีส้ม เพื่อให้ตัดกับสีเดิมชัดเจน)")]
     public Color hitFlashColor = Color.red;
-
-    [Tooltip("ระยะเวลาที่กะพริบ (วินาที แนะนำ 0.1 - 0.15)")]
     public float flashDuration = 0.12f;
 
     [Header("Screen Shake Settings (กล้องสั่นเมื่อโดนดาเมจ)")]
-    [Tooltip("เปิดใช้งานระบบจอสั่นหรือไม่")]
     public bool enableScreenShake = true;
     public float shakeDuration = 0.18f;
     public float shakeMagnitude = 0.22f;
@@ -46,8 +39,6 @@ public class PlayerHealthTest : MonoBehaviour
     private Collider2D playerCollider;
 
     private Color color100, color80, color60, color40, color20;
-    private WaitForSeconds deathWaitTime = new WaitForSeconds(0.3f);
-
     private Coroutine flashRoutine;
     private Coroutine shakeRoutine;
     private Vector3 cameraOriginalPos;
@@ -79,13 +70,6 @@ public class PlayerHealthTest : MonoBehaviour
             cameraOriginalPos = targetCamera.transform.localPosition;
         }
 
-        if (gameOverUI == null && GameScoreManager.Instance != null)
-        {
-            gameOverUI = GameScoreManager.Instance.gameOverPanel;
-        }
-
-        ValidateComponents();
-
         ColorUtility.TryParseHtmlString("#e9ff69", out color100);
         ColorUtility.TryParseHtmlString("#fff56e", out color80);
         ColorUtility.TryParseHtmlString("#ffd869", out color60);
@@ -95,20 +79,7 @@ public class PlayerHealthTest : MonoBehaviour
         UpdateHealthBar();
     }
 
-    private void ValidateComponents()
-    {
-        if (playerBodySprite == null)
-            Debug.LogError("<color=red>[Health Debug] ไม่พบ SpriteRenderer สำหรับทำ Hit Flash!</color>");
-
-        if (hpBarFill == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก Image หลอดเลือดมาใส่</color>");
-
-        if (gameOverUI == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก GameOverPanel มาใส่</color>");
-    }
-
-    // ⭐ เพิ่มตัวแปร damageType (ค่าเริ่มต้นคือ "Default") เพื่อใช้เช็กว่าโดนอะไรมา
-    public void TakeDamage(float damageAmount, string damageType = "Default")
+    public void TakeDamage(float damageAmount)
     {
         if (isDead) return;
 
@@ -116,45 +87,18 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (enableConsoleLogs)
         {
-            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} จาก {damageType} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
+            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
         }
 
-        // --- โค้ดเรียกเสียงตอนโดนโจมตี (แยกระบบ 4 แบบ) ---
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null)
+            if (audioManager != null && audioManager.Hurt != null)
             {
-                AudioClip clipToPlay = null;
-
-                // เช็กชื่อ Tag หรือประเภทที่ส่งมา แล้วเลือกไฟล์เสียงให้ตรง
-                switch (damageType)
-                {
-                    case "LDL":
-                        clipToPlay = audioManager.HurtLDL;
-                        break;
-                    case "Spike":
-                        clipToPlay = audioManager.HurtSpike;
-                        break;
-                    case "Missile":
-                        clipToPlay = audioManager.HurtMissile;
-                        break;
-                    case "Plaque":
-                        clipToPlay = audioManager.HurtPlaque;
-                        break;
-                    default:
-                        clipToPlay = audioManager.HurtLDL; // ถ้าไม่ได้ระบุ ให้ใช้เสียง LDL เป็นค่าเริ่มต้น
-                        break;
-                }
-
-                if (clipToPlay != null)
-                {
-                    audioManager.PlaySFX(clipToPlay);
-                }
+                audioManager.PlaySFX(audioManager.Hurt);
             }
         }
-        // ---------------------------------
 
         if (enableHitFlash && playerBodySprite != null && gameObject.activeInHierarchy)
         {
@@ -183,10 +127,9 @@ public class PlayerHealthTest : MonoBehaviour
         }
     }
 
-    // ⭐ อัปเดตฟังก์ชันนี้ให้รองรับ damageType ด้วย
-    public void TakeDamage(int damageAmount, string damageType = "Default")
+    public void TakeDamage(int damageAmount)
     {
-        TakeDamage((float)damageAmount, damageType);
+        TakeDamage((float)damageAmount);
     }
 
     private IEnumerator HitFlashRoutine()
@@ -200,6 +143,7 @@ public class PlayerHealthTest : MonoBehaviour
     private IEnumerator ScreenShakeRoutine()
     {
         float elapsed = 0f;
+
         while (elapsed < shakeDuration)
         {
             float offsetX = Random.Range(-1f, 1f) * shakeMagnitude;
@@ -214,6 +158,7 @@ public class PlayerHealthTest : MonoBehaviour
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
+
         targetCamera.transform.localPosition = cameraOriginalPos;
         shakeRoutine = null;
     }
@@ -254,6 +199,7 @@ public class PlayerHealthTest : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
         isDead = true;
 
         if (flashRoutine != null) StopCoroutine(flashRoutine);
@@ -286,7 +232,8 @@ public class PlayerHealthTest : MonoBehaviour
     {
         if (playerController != null) playerController.TriggerDeath();
 
-        float shakeDuration = 1f;
+        // 1. เอฟเฟกต์ตัวสั่นก่อนตาย (ใช้ unscaledDeltaTime เพื่อไม่ให้หยุดชะงัก)
+        float shakeDuration = 0.8f;
         float elapsed = 0f;
         Vector3 originalPos = transform.position;
 
@@ -296,12 +243,13 @@ public class PlayerHealthTest : MonoBehaviour
             float y = originalPos.y + Random.Range(-0.2f, 0.2f);
             transform.position = new Vector3(x, y, originalPos.z);
 
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
 
         transform.position = originalPos;
 
+        // 2. ซ่อนตัวละครและปิด Collider
         foreach (SpriteRenderer sprite in allSprites)
         {
             if (sprite != null) sprite.enabled = false;
@@ -309,14 +257,21 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (playerCollider != null) playerCollider.enabled = false;
 
-        yield return deathWaitTime;
+        yield return new WaitForSecondsRealtime(0.2f);
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        if (gameOverUI != null) gameOverUI.SetActive(true);
-
-        Time.timeScale = 0f;
+        // ⭐ 3. เรียกหน้าต่างสรุปดาวทันที
+        if (StarResultManager.Instance != null)
+        {
+            StarResultManager.Instance.ShowResult(reachedFinishLine: false);
+        }
+        else if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+            Time.timeScale = 0f;
+        }
     }
 
     private void OnGUI()
@@ -338,7 +293,6 @@ public class PlayerHealthTest : MonoBehaviour
         else
         {
             float hpPercent = (currentHealth / maxHealth) * 100f;
-
             if (hpPercent > 60f) style.normal.textColor = Color.green;
             else if (hpPercent > 30f) style.normal.textColor = Color.yellow;
             else style.normal.textColor = new Color(1f, 0.3f, 0f);

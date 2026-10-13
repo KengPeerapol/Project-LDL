@@ -5,13 +5,13 @@ public class PlayerAttackTest : MonoBehaviour
 {
     [Header("Gun & Aiming Settings")]
     [Tooltip("ลาก GameObject 'GunPivot' ที่สร้างไว้มาใส่ช่องนี้")]
-    public Transform gunPivot;              // ตัวควบคุมจุดหมุนปืน
+    public Transform gunPivot;
     [Tooltip("องศาชดเชย (Sprite แคปซูลแนวตั้งให้ใช้ -90 เพื่อให้ชี้ไปทางขวา)")]
-    public float gunRotationOffset = -90f;  // ชดเชยให้ปลายแคปซูลชี้ตรงกับเมาส์
+    public float gunRotationOffset = -90f;
 
     [Header("Shooting Animation")]
     [Tooltip("Animator ของปืน (ถ้าเว้นว่างไว้ ระบบจะค้นหาจาก GunPivot ให้อัตโนมัติ)")]
-    public Animator gunAnimator;            // ⭐ คอมโพเนนต์ Animator สำหรับเล่นท่าทางปืน
+    public Animator gunAnimator;
     [Tooltip("ชื่อ Animation State ที่ต้องการเล่นตอนยิง")]
     public string fireAnimationName = "fire";
 
@@ -32,6 +32,13 @@ public class PlayerAttackTest : MonoBehaviour
     public int chargedDamage = 100;
     public float chargedBulletScale = 2.5f;
 
+    [Header("Bounce Settings (การเด้งกำแพง)")]
+    [Tooltip("จำนวนครั้งที่กระสุนธรรมดาเด้งกำแพงได้ (0 = ไม่เด้ง ชนกำแพงแล้วแตกทันที)")]
+    public int normalBulletBounces = 0; // ⭐ กระสุนปกติเด้งได้กี่ครั้ง
+
+    [Tooltip("จำนวนครั้งที่กระสุนชาร์จเด้งกำแพงได้ (เช่น 2 - 4 ครั้ง)")]
+    public int chargedBulletBounces = 3; // ⭐ กระสุนชาร์จเด้งได้กี่ครั้ง
+
     private float nextFireTime = 0f;
     private float currentChargeTimer = 0f;
     private float chargeCooldownTimer = 0f;
@@ -50,7 +57,6 @@ public class PlayerAttackTest : MonoBehaviour
         playerHealthTest = GetComponent<PlayerHealthTest>();
         playerController = GetComponent<PlayerControllerTest>();
 
-        // ดึงคอมโพเนนต์ Animator ของปืนอัตโนมัติหากยังไม่ได้ลากใส่ช่อง
         if (gunAnimator == null)
         {
             if (gunPivot != null)
@@ -71,7 +77,6 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void Update()
     {
-        // บล็อกการเล็งปืน, ชาร์จ และยิงทั้งหมด เมื่อเกม Pause หรือเวลาหยุดเดิน
         if (Time.timeScale <= 0f || PauseMenuManager.isGamePaused)
         {
             isCharging = false;
@@ -79,7 +84,6 @@ public class PlayerAttackTest : MonoBehaviour
             return;
         }
 
-        // บล็อกไม่ให้เล็งหรือยิง หากตัวละครตาย หรืออยู่ในช่วงบิน Intro เข้าจอ / ชนะเกม
         if (IsPlayerDead() || (playerController != null && !playerController.CanShootAndControl))
         {
             currentChargeTimer = 0f;
@@ -147,7 +151,6 @@ public class PlayerAttackTest : MonoBehaviour
     {
         if (Mouse.current == null) return;
 
-        // 1. เริ่มคลิกซ้าย
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             isCharging = true;
@@ -155,7 +158,6 @@ public class PlayerAttackTest : MonoBehaviour
             hasLoggedFullCharge = false;
         }
 
-        // 2. คลิกซ้ายค้างเพื่อชาร์จ
         if (Mouse.current.leftButton.isPressed && isCharging)
         {
             currentChargeTimer += Time.deltaTime;
@@ -165,7 +167,7 @@ public class PlayerAttackTest : MonoBehaviour
                 hasLoggedFullCharge = true;
                 if (chargeCooldownTimer <= 0f)
                 {
-                    Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! ปล่อยคลิกซ้ายเพื่อยิงกระสุนยักษ์</color>");
+                    Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! ยิงเพื่อเจาะทะลุและเด้งกำแพง</color>");
                 }
                 else
                 {
@@ -174,7 +176,6 @@ public class PlayerAttackTest : MonoBehaviour
             }
         }
 
-        // 3. ปล่อยคลิกซ้ายเพื่อปล่อยกระสุน
         if (Mouse.current.leftButton.wasReleasedThisFrame && isCharging)
         {
             isCharging = false;
@@ -183,19 +184,22 @@ public class PlayerAttackTest : MonoBehaviour
             {
                 if (chargeCooldownTimer <= 0f)
                 {
-                    FireBullet(chargedDamage, chargedBulletScale);
+                    // ⭐ กระสุนชาร์จ: เจาะทะลุศัตรู + เด้งกำแพงได้ตาม chargedBulletBounces
+                    FireBullet(chargedDamage, chargedBulletScale, isPiercing: true, bounces: chargedBulletBounces);
                     chargeCooldownTimer = chargeCooldown;
-                    Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จสำเร็จ! ดาเมจ {chargedDamage}</color>");
+                    Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จ! เจาะทะลุ + เด้งกำแพง {chargedBulletBounces} ครั้ง</color>");
                 }
                 else
                 {
-                    FireBullet(normalDamage, 1.0f);
+                    // ติดคูลดาวน์: ยิงกระสุนธรรมดา
+                    FireBullet(normalDamage, 1.0f, isPiercing: false, bounces: normalBulletBounces);
                     Debug.LogWarning("[Charged Shot] ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
                 }
             }
             else if (Time.time >= nextFireTime)
             {
-                FireBullet(normalDamage, 1.0f);
+                // ยิงเคาะปกติ: ตามค่า normalBulletBounces
+                FireBullet(normalDamage, 1.0f, isPiercing: false, bounces: normalBulletBounces);
                 nextFireTime = Time.time + fireRate;
             }
 
@@ -204,22 +208,20 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    private void FireBullet(int damage, float scale)
+    private void FireBullet(int damage, float scale, bool isPiercing = false, int bounces = 0)
     {
         if (bulletPrefab == null || firePoint == null) return;
 
-        // 1. สร้างกระสุน
         GameObject newBullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         BulletTest bulletScript = newBullet.GetComponent<BulletTest>();
         if (bulletScript != null)
         {
-            bulletScript.Setup(currentAimDirection, damage, scale);
+            // ส่งค่า piercing และจำนวนครั้งที่เด้งได้ให้กระสุน
+            bulletScript.Setup(currentAimDirection, damage, scale, isPiercing, bounces);
         }
 
-        // 2. ⭐ สั่งเล่น Animation ทันทีที่ยิง
         PlayShootAnimation();
 
-        // 3. เล่นเสียงยิงปืน
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
@@ -235,7 +237,6 @@ public class PlayerAttackTest : MonoBehaviour
     {
         if (gunAnimator != null)
         {
-            // ⭐ เปลี่ยนจาก -1 เป็น 0 (Base Layer) เพื่อแก้ Error Layer Index
             gunAnimator.Play(fireAnimationName, 0, 0f);
         }
     }

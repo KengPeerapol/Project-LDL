@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,25 +15,18 @@ public class PlayerControllerTest : MonoBehaviour
     [Tooltip("ความเร็วในการพุ่งเข้ามาในจอ")]
     public float introDashSpeed = 10f;
 
-    [Header("ตั้งค่าการบิน: กดครั้งเดียว (Tap)")]
-    [Tooltip("แรงยกตัวเมื่อกดเคาะ 1 ครั้ง (ค่ายิ่งน้อย ยิ่งขึ้นทีละนิด เช่น 2.8 - 3.2)")]
-    public float tapForce = 3.0f;
+    [Header("ตั้งค่าการบิน: กดค้าง (Hold Only)")]
+    [Tooltip("ความเร่งในการพุ่งขึ้นตอนกดค้าง (ยิ่งเยอะยิ่งลอยขึ้นเร็ว)")]
+    public float holdAcceleration = 18f;
 
-    [Header("ตั้งค่าการบิน: กดค้าง (Hold)")]
-    [Tooltip("เวลากดค้างขั้นต่ำที่จะเริ่มเร่งเครื่องพุ่งไว (วินาที)")]
-    public float holdThreshold = 0.12f;
-
-    [Tooltip("ความเร่งในการพุ่งขึ้นตอนกดค้าง")]
-    public float holdAcceleration = 16f;
-
-    [Tooltip("เพดานความเร็วลอยขึ้นสูงสุดตอนกดค้าง")]
-    public float maxHoldAscentSpeed = 5.2f;
+    [Tooltip("เพดานความเร็วลอยขึ้นสูงสุด")]
+    public float maxAscentSpeed = 5.5f;
 
     [Header("ตั้งค่าการหล่น / แรงโน้มถ่วง")]
-    [Tooltip("ค่าแรงโน้มถ่วง (ค่ายิ่งน้อย ยิ่งตกช้าลง เช่น 0.5 - 0.7)")]
+    [Tooltip("ค่าแรงโน้มถ่วงตอนปล่อยมือ (ค่ายิ่งน้อย ยิ่งตกช้าลง เช่น 0.5 - 0.7)")]
     public float customGravityScale = 0.6f;
 
-    [Tooltip("จำกัดความเร็วตกสูงสุด ไม่ให้ตกเร็วเกินไปเวลาทิ้งดิ่ง")]
+    [Tooltip("จำกัดความเร็วตกสูงสุด ไม่ให้ตกเร็วเกินไป")]
     public float maxFallSpeed = 4f;
 
     [Header("ตั้งค่าการเอียงตัว")]
@@ -61,20 +53,17 @@ public class PlayerControllerTest : MonoBehaviour
     private bool isWinning = false;
     private bool isDead = false;
 
-    // ตัวแปรจับสถานะ Tap / Hold
+    // ตัวแปรจับสถานะการกดค้าง
     private bool isHoldingInput = false;
-    private bool tapRequested = false;
-    private float holdTimer = 0f;
     private float lastDamageTime = -999f;
 
-    // ⭐ Property สำหรับให้สคริปต์อื่นเช็กว่าพร้อมควบคุมหรือยัง
+    // ⭐ Property สำหรับให้สคริปต์อื่นเช็กสถานะตัวละคร
     public bool CanShootAndControl => canControl && !isIntroPlaying && !isWinning && !isDead;
     private bool IsActive => !isWinning && !isDead && !isIntroPlaying;
     private bool CanFly => IsActive && canControl;
 
     private void Awake()
     {
-        // ค้นหา AudioManager ในฉากอย่างปลอดภัย
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
@@ -132,30 +121,11 @@ public class PlayerControllerTest : MonoBehaviour
     {
         if (isWinning || isDead || isIntroPlaying) return;
 
-        // ตรวจจับการกดปุ่มเฟรมแรก (Tap)
-        bool mouseTap = Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
-        bool spaceTap = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
-
-        // ตรวจจับการกดค้าง (Hold)
+        // ⭐ ตรวจจับเฉพาะการกดค้าง (คลิกขวา หรือ Spacebar)
         bool mouseHold = Mouse.current != null && Mouse.current.rightButton.isPressed;
         bool spaceHold = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
 
         isHoldingInput = mouseHold || spaceHold;
-
-        if (mouseTap || spaceTap)
-        {
-            tapRequested = true;
-            holdTimer = 0f;
-        }
-
-        if (isHoldingInput)
-        {
-            holdTimer += Time.deltaTime;
-        }
-        else
-        {
-            holdTimer = 0f;
-        }
 
         if (IsActive)
         {
@@ -175,20 +145,16 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (CanFly)
         {
-            // 2. กดค้างเกินกำหนด (Hold) -> ค่อยๆ เร่งระดับความเร็วขึ้นอย่างนุ่มนวล
-            if (isHoldingInput && holdTimer >= holdThreshold)
+            // ⭐ เมื่อกดค้าง: เร่งความเร็วลอยตัวขึ้นสู่ maxAscentSpeed ทันที
+            if (isHoldingInput)
             {
                 float currentY = rb.linearVelocity.y;
-                float targetY = Mathf.MoveTowards(currentY, maxHoldAscentSpeed, holdAcceleration * Time.fixedDeltaTime);
-                rb.linearVelocity = new Vector2(0f, Mathf.Max(targetY, tapForce));
+                float targetY = Mathf.MoveTowards(currentY, maxAscentSpeed, holdAcceleration * Time.fixedDeltaTime);
+                rb.linearVelocity = new Vector2(0f, targetY);
             }
         }
-        else
-        {
-            tapRequested = false;
-        }
 
-        // จำกัดความเร็วตกสูงสุด
+        // จำกัดความเร็วตอนตก ไม่ให้ทิ้งดิ่งเร็วเกินไป
         if (rb.linearVelocity.y < -maxFallSpeed)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallSpeed);
@@ -211,19 +177,16 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Wall"))
         {
-            // คิดดาเมจเมื่อเลย Cooldown
             if (Time.time >= lastDamageTime + damageCooldown)
             {
                 lastDamageTime = Time.time;
 
                 if (TryGetComponent(out PlayerHealthTest healthTest))
                 {
-                    // ⭐ พี่แก้ตรงนี้ให้มันส่งคำว่า "Plaque" ไปตอนชนกำแพงแล้วครับ
-                    healthTest.TakeDamage(wallDamage, "Plaque");
+                    healthTest.TakeDamage(wallDamage);
                 }
             }
 
-            // ⭐ หาเวกเตอร์แรงสะท้อนจากผิวสัมผัสจริง
             float pushDirectionY = 0f;
             if (collision.contactCount > 0)
             {
@@ -234,13 +197,11 @@ public class PlayerControllerTest : MonoBehaviour
                 }
             }
 
-            // Fallback
             if (pushDirectionY == 0f)
             {
                 pushDirectionY = (transform.position.y >= collision.collider.bounds.center.y) ? 1f : -1f;
             }
 
-            // สะท้อนเด้งออกจากผิวกำแพง
             rb.linearVelocity = new Vector2(0f, pushDirectionY * wallBounceForce);
             transform.position += new Vector3(0f, pushDirectionY * 0.15f, 0f);
 
@@ -277,7 +238,6 @@ public class PlayerControllerTest : MonoBehaviour
     {
         isWinning = true;
         canControl = false;
-        tapRequested = false;
         isHoldingInput = false;
 
         rb.gravityScale = 0f;
@@ -298,18 +258,8 @@ public class PlayerControllerTest : MonoBehaviour
     {
         isDead = true;
         canControl = false;
-        tapRequested = false;
         isHoldingInput = false;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Point"))
-        {
-            GameScoreManager.Instance.AddScore(20);
-            Destroy(other.gameObject);
-        }
     }
 }
