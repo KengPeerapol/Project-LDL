@@ -240,6 +240,7 @@ public class PlayerHealthTest : MonoBehaviour
     private void Die()
     {
         isDead = true;
+        
 
         if (flashRoutine != null) StopCoroutine(flashRoutine);
         if (shakeRoutine != null)

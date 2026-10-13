@@ -9,6 +9,8 @@ TagManager:
   - Spike
   - Item
   - Audio
+  - Point
+  - Bullet
   layers:
   - Default
   - TransparentFX

@@ -46,6 +46,8 @@ public class EnemyHealthTest : MonoBehaviour
     [Header("Death Effects")]
     public GameObject deathEffectPrefab;
 
+    public GameObject pointPrefab;
+
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
     private Coroutine flashCoroutine;
@@ -129,6 +131,7 @@ public class EnemyHealthTest : MonoBehaviour
             if (healthTest != null) //[cite: 13]
             {
                 healthTest.TakeDamage(contactDamage); //[cite: 13]
+                GameScoreManager.Instance.AddScore(scoreReward);
                 Debug.Log($"<color=red>[Enemy Collision] ชน Player! ลดเลือด {contactDamage}</color>"); //[cite: 13]
             }
             else
@@ -153,14 +156,15 @@ public class EnemyHealthTest : MonoBehaviour
         isDead = true; //[cite: 13]
 
         // 1. เพิ่มแต้มเข้า GameManager
-        if (GameScoreManager.Instance != null) //[cite: 13]
+        /*if (GameScoreManager.Instance != null) //[cite: 13]
         {
             GameScoreManager.Instance.AddScore(scoreReward); //[cite: 13]
-        }
+        }*/
 
         // 2. ปล่อยหนามพุ่งกระจายรอบตัว
         if (spawnSpikesOnDeath && spikePrefab != null) //[cite: 13]
         {
+            Instantiate(pointPrefab, transform.position, Quaternion.identity);
             SpawnBouncingSpikes(); //[cite: 13]
         }
 

@@ -9,6 +9,7 @@ public class BulletTest : MonoBehaviour
     public int damage = 25;
 
     private Rigidbody2D rb;
+    public GameObject pointPrefab;
 
     // เพิ่มการรับค่าดาเมจและขนาดของกระสุน
     public void Setup(Vector2 direction, int bulletDamage, float sizeMultiplier = 1f)
@@ -44,6 +45,7 @@ public class BulletTest : MonoBehaviour
             }
 
             Destroy(gameObject);
+            Instantiate(pointPrefab, transform.position, Quaternion.identity);
         }
     }
 }

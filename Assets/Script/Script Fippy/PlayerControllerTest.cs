@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -306,5 +307,14 @@ public class PlayerControllerTest : MonoBehaviour
         isHoldingInput = false;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Point"))
+        {
+            GameScoreManager.Instance.AddScore(20);
+            Destroy(other.gameObject);
+        }
     }
 }

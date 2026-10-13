@@ -206,6 +206,7 @@ MonoBehaviour:
   hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.08
   deathEffectPrefab: {fileID: 0}
+  pointPrefab: {fileID: 5118996002469163254, guid: 082f74f54a9b0f14caf42c41d3d3d94c, type: 3}
 --- !u!95 &2436252376745450940
 Animator:
   serializedVersion: 7
