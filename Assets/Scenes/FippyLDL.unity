@@ -1640,8 +1640,8 @@ MonoBehaviour:
   wallPreWarningTime: 2.5
   warningPrefab: {fileID: 1919442258139172247, guid: 45a3158c6d78cff41986552f9bf3809d, type: 3}
   missilePrefab: {fileID: 4783931667091252217, guid: 76aa89af7611a144589d4689e458bf77, type: 3}
-  minMissiles: 1
-  maxMissiles: 3
+  minMissiles: 5
+  maxMissiles: 5
   delayBetweenMissiles: 0.8
   totalWarningDuration: 2
   trackingDuration: 1.3
@@ -6020,7 +6020,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2127904605825691214, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_Simulated
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2127904605825691214, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_CollisionDetection
@@ -6067,8 +6067,28 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: maxFallSpeed
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: holdThreshold
+      value: 0.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: holdAcceleration
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: tiltUpwardOffset
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: customGravityScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: maxHoldAscentSpeed
+      value: 10.4
       objectReference: {fileID: 0}
     - target: {fileID: 2546566106318458565, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: tiltDownwardOffset

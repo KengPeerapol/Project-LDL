@@ -175,13 +175,13 @@ public class PlayerControllerTest : MonoBehaviour
         if (CanFly)
         {
             // 1. เคาะ 1 ครั้ง (Tap)
-            if (tapRequested)
+            /*if (tapRequested)
             {
                 rb.linearVelocity = new Vector2(0f, tapForce);
                 tapRequested = false;
-            }
+            }*/
             // 2. กดค้างเกินกำหนด (Hold) -> ค่อยๆ เร่งระดับความเร็วขึ้นอย่างนุ่มนวล
-            else if (isHoldingInput && holdTimer >= holdThreshold)
+            if (isHoldingInput && holdTimer >= holdThreshold)
             {
                 float currentY = rb.linearVelocity.y;
                 float targetY = Mathf.MoveTowards(currentY, maxHoldAscentSpeed, holdAcceleration * Time.fixedDeltaTime);
