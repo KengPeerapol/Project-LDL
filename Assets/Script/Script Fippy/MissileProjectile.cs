@@ -39,7 +39,7 @@ public class MissileProjectile : MonoBehaviour
         {
             if (hitObj.TryGetComponent(out PlayerHealthTest healthTest))
             {
-                healthTest.TakeDamage(damage);
+                healthTest.TakeDamage(damage, "Missile");
             }
 
             Destroy(gameObject);
