@@ -16,12 +16,12 @@ public class EnemyHealthTest : MonoBehaviour
 
     [Header("Spawn On Death (เกิดตัวใหม่/แต้มเมื่อตาย - เป็นตัวเลือก)")]
     [Tooltip("Prefab ศัตรูที่จะเกิดออกมาแทนที่เมื่อตัวนี้ตาย (เช่น Boomer แตกตัวเป็นตัวปกติ ถ้าไม่ใส่จะข้าม)")]
-    public GameObject nextEnemyPrefab; // ⭐ ตัวเลือก: เสกมอนตัวใหม่
+    public GameObject nextEnemyPrefab;
 
-    [Tooltip("Prefab แต้มคะแนนที่จะเกิดตอนตาย (เช่น ตัวปกติตายกลายเป็น Point ถ้าไม่ใส่จะไม่ดรอปแต้ม)")]
-    public GameObject pointPrefab; // ⭐ ตัวเลือก: เสกแต้ม Point
+    [Tooltip("Prefab แต้มคะแนนที่จะเกิดตอนตายจากการยิง (ถ้าไม่ใส่จะไม่ดรอปแต้ม)")]
+    public GameObject pointPrefab;
 
-    [Tooltip("คะแนนที่จะได้รับเมื่อผู้เล่นเก็บวัตถุแต้มนี้")]
+    [Tooltip("คะแนนที่จะได้รับเมื่อกำจัดศัตรูตัวนี้ได้")]
     public int scoreReward = 20;
 
     [Tooltip("ให้ตัวที่เกิดใหม่ (ศัตรู/แต้ม) เคลื่อนที่ตามทิศทางและความเร็วเดิมของตัวนี้")]
@@ -30,6 +30,9 @@ public class EnemyHealthTest : MonoBehaviour
     [Header("Player Collision (การชนกับผู้เล่น)")]
     [Tooltip("ดาเมจที่ทำใส่ Player เมื่อบินชนกัน")]
     public int contactDamage = 15;
+
+    [Tooltip("ติ๊กถูกเพื่อให้ผู้เล่นได้รับคะแนนทันทีเมื่อบินชนกัน")]
+    public bool giveScoreOnPlayerHit = true; // ⭐ ให้แต้มทันทีเมื่อชนผู้เล่น
 
     [Tooltip("เมื่อชน Player แล้ว ศัตรูตัวนี้จะระเบิด/ตายทันทีหรือไม่")]
     public bool destroyOnHitPlayer = true;
@@ -60,6 +63,7 @@ public class EnemyHealthTest : MonoBehaviour
     private Color originalColor;
     private Coroutine flashCoroutine;
     private bool isDead = false;
+    private bool killedByPlayerCollision = false; // ตรวจจับว่าตายจากการชน Player หรือไม่
 
     private void Awake()
     {
@@ -139,8 +143,16 @@ public class EnemyHealthTest : MonoBehaviour
                 Debug.Log($"<color=red>[Enemy Collision] ชน Player! ลดเลือด {contactDamage}</color>");
             }
 
+            // ⭐ 1. เพิ่มแต้มให้ผู้เล่นทันทีเมื่อเกิดการบินชนกัน
+            if (giveScoreOnPlayerHit && GameScoreManager.Instance != null)
+            {
+                GameScoreManager.Instance.AddScore(scoreReward);
+                Debug.Log($"<color=green>[Enemy Collision] ชนศัตรูสำเร็จ! ได้รับคะแนน: +{scoreReward}</color>");
+            }
+
             if (destroyOnHitPlayer)
             {
+                killedByPlayerCollision = true; // มาร์กไว้ว่าตายจากการชน
                 Die();
             }
         }
@@ -151,7 +163,6 @@ public class EnemyHealthTest : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // ดึงความเร็วและทิศทางของตัวนี้ก่อนตาย
         Vector2 enemyVelocity = Vector2.left * 4f;
         if (TryGetComponent<Rigidbody2D>(out var rb))
         {
@@ -161,17 +172,15 @@ public class EnemyHealthTest : MonoBehaviour
             }
         }
 
-        // ⭐ 1. ตัวเลือก: เสกศัตรูตัวใหม่ (เช่น Boomer แตกตัวเป็น Enemy ปกติ)
+        // 1. ตัวเลือก: เสกศัตรูตัวใหม่ (เช่น Boomer แตกตัวเป็น Enemy ปกติ)
         if (nextEnemyPrefab != null)
         {
-            // เสกด้วย Quaternion.identity เพื่อไม่ให้มุมควงสว่านของ Boomer ติดไป
             GameObject spawnedEnemy = Instantiate(nextEnemyPrefab, transform.position, Quaternion.identity);
 
             if (inheritVelocity && spawnedEnemy.TryGetComponent<Rigidbody2D>(out var spawnedRb))
             {
                 spawnedRb.linearVelocity = enemyVelocity;
 
-                // สั่งให้ตัวที่เกิดใหม่หันหน้าตามทิศทางพุ่งทันที
                 if (spawnedEnemy.TryGetComponent<MovementTest>(out var moveScript))
                 {
                     moveScript.UpdateRotation();
@@ -179,8 +188,8 @@ public class EnemyHealthTest : MonoBehaviour
             }
         }
 
-        // ⭐ 2. ตัวเลือก: ดรอปแต้ม Point Prefab (เช่น Enemy ปกติตายกลายเป็น Point)
-        if (pointPrefab != null)
+        // ⭐ 2. ดรอปแต้ม Point Prefab (จะดรอปเฉพาะตอนโดนยิงตายเท่านั้น เพื่อไม่ให้ได้แต้มซ้ำซ้อนตอนบินชน)
+        if (pointPrefab != null && (!killedByPlayerCollision || !giveScoreOnPlayerHit))
         {
             GameObject dropPoint = Instantiate(pointPrefab, transform.position, Quaternion.identity);
 
@@ -190,7 +199,7 @@ public class EnemyHealthTest : MonoBehaviour
             }
         }
 
-        // 3. ปล่อยหนามกระจายรอบตัว (ถ้าเปิดใช้งาน)
+        // 3. ปล่อยหนามกระจายรอบตัว
         if (spawnSpikesOnDeath && spikePrefab != null)
         {
             SpawnBouncingSpikes();

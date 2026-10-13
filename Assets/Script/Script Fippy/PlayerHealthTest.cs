@@ -11,25 +11,18 @@ public class PlayerHealthTest : MonoBehaviour
     [Header("UI หลอดเลือด (ตั้ง Image Type เป็น Filled)")]
     public Image hpBarFill;
 
-    [Header("หน้าต่าง UI ตอนแพ้ (GameOverPanel)")]
+    [Header("หน้าต่าง UI ตอนแพ้ (กรณีไม่ได้ใช้ StarResultManager)")]
     public GameObject gameOverUI;
 
     [Header("Sprite Settings (สไปรต์ของตัว Player)")]
-    [Tooltip("ลาก SpriteRenderer ลำตัวมาใส่ (ถ้าเว้นว่างไว้จะค้นหาให้อัตโนมัติ)")]
     public SpriteRenderer playerBodySprite;
 
     [Header("Hit Flash Effect (แสงกะพริบตอนโดนโจมตี)")]
-    [Tooltip("เปิดใช้งานเอฟเฟกต์กะพริบตอนโดนดาเมจหรือไม่")]
     public bool enableHitFlash = true;
-
-    [Tooltip("สีแฟลช (แนะนำสีแดงจัด Color.red หรือสีส้ม เพื่อให้ตัดกับสีเดิมชัดเจน)")]
-    public Color hitFlashColor = Color.red; // ⭐ เปลี่ยนเป็นสีแดงเพื่อให้เห็นชัดเจน 100%
-
-    [Tooltip("ระยะเวลาที่กะพริบ (วินาที แนะนำ 0.1 - 0.15)")]
+    public Color hitFlashColor = Color.red;
     public float flashDuration = 0.12f;
 
     [Header("Screen Shake Settings (กล้องสั่นเมื่อโดนดาเมจ)")]
-    [Tooltip("เปิดใช้งานระบบจอสั่นหรือไม่")]
     public bool enableScreenShake = true;
     public float shakeDuration = 0.18f;
     public float shakeMagnitude = 0.22f;
@@ -46,8 +39,6 @@ public class PlayerHealthTest : MonoBehaviour
     private Collider2D playerCollider;
 
     private Color color100, color80, color60, color40, color20;
-    private WaitForSeconds deathWaitTime = new WaitForSeconds(0.3f);
-
     private Coroutine flashRoutine;
     private Coroutine shakeRoutine;
     private Vector3 cameraOriginalPos;
@@ -56,7 +47,6 @@ public class PlayerHealthTest : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // 1. ค้นหา SpriteRenderer (ตรวจทั้งตัวแม่และตัวลูก)
         if (playerBodySprite == null)
         {
             playerBodySprite = GetComponent<SpriteRenderer>();
@@ -80,14 +70,6 @@ public class PlayerHealthTest : MonoBehaviour
             cameraOriginalPos = targetCamera.transform.localPosition;
         }
 
-        if (gameOverUI == null && GameScoreManager.Instance != null)
-        {
-            gameOverUI = GameScoreManager.Instance.gameOverPanel;
-        }
-
-        ValidateComponents();
-
-        // ระดับสีเลือด (100% -> 20%)
         ColorUtility.TryParseHtmlString("#e9ff69", out color100);
         ColorUtility.TryParseHtmlString("#fff56e", out color80);
         ColorUtility.TryParseHtmlString("#ffd869", out color60);
@@ -95,18 +77,6 @@ public class PlayerHealthTest : MonoBehaviour
         ColorUtility.TryParseHtmlString("#fb5017", out color20);
 
         UpdateHealthBar();
-    }
-
-    private void ValidateComponents()
-    {
-        if (playerBodySprite == null)
-            Debug.LogError("<color=red>[Health Debug] ไม่พบ SpriteRenderer สำหรับทำ Hit Flash! กรุณาลากใส่ในช่อง 'Player Body Sprite'</color>");
-
-        if (hpBarFill == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก Image หลอดเลือดมาใส่ในช่อง 'Hp Bar Fill'</color>");
-
-        if (gameOverUI == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก GameOverPanel มาใส่ในช่อง 'Game Over UI'</color>");
     }
 
     public void TakeDamage(float damageAmount)
@@ -120,26 +90,22 @@ public class PlayerHealthTest : MonoBehaviour
             Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
         }
 
-        // --- โค้ดเรียกเสียงตอนโดนโจมตี (แก้จาก Hit เป็น Hurt) ---
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Hurt != null) // เปลี่ยนเป็น Hurt
+            if (audioManager != null && audioManager.Hurt != null)
             {
-                audioManager.PlaySFX(audioManager.Hurt); // เปลี่ยนเป็น Hurt
+                audioManager.PlaySFX(audioManager.Hurt);
             }
         }
-        // ---------------------------------
 
-        // ⭐ ทำงาน Hit Flash
         if (enableHitFlash && playerBodySprite != null && gameObject.activeInHierarchy)
         {
             if (flashRoutine != null) StopCoroutine(flashRoutine);
             flashRoutine = StartCoroutine(HitFlashRoutine());
         }
 
-        // ⭐ ทำงาน Screen Shake
         if (enableScreenShake && targetCamera != null)
         {
             if (shakeRoutine != null)
@@ -166,14 +132,11 @@ public class PlayerHealthTest : MonoBehaviour
         TakeDamage((float)damageAmount);
     }
 
-    // ⭐ Coroutine แฟลชสีแดง แล้วสลับกลับเป็นสีเดิม
     private IEnumerator HitFlashRoutine()
     {
         playerBodySprite.color = hitFlashColor;
-
         yield return new WaitForSeconds(flashDuration);
-
-        HandlePlayerColor(); // คืนค่าสีตามระดับเลือดปัจจุบัน
+        HandlePlayerColor();
         flashRoutine = null;
     }
 
@@ -203,7 +166,6 @@ public class PlayerHealthTest : MonoBehaviour
     public void Heal(float healAmount)
     {
         if (isDead) return;
-
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
         UpdateHealthBar();
     }
@@ -215,7 +177,6 @@ public class PlayerHealthTest : MonoBehaviour
             hpBarFill.fillAmount = currentHealth / maxHealth;
         }
 
-        // ถ้าไม่ได้กำลังเล่น Hit Flash อยู่ ให้ปรับสีตามเลือดปกติ
         if (flashRoutine == null)
         {
             HandlePlayerColor();
@@ -227,7 +188,6 @@ public class PlayerHealthTest : MonoBehaviour
         if (playerBodySprite == null) return;
 
         Color targetColor;
-
         if (currentHealth <= 20f) targetColor = color20;
         else if (currentHealth <= 40f) targetColor = color40;
         else if (currentHealth <= 60f) targetColor = color60;
@@ -239,6 +199,7 @@ public class PlayerHealthTest : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
         isDead = true;
 
         if (flashRoutine != null) StopCoroutine(flashRoutine);
@@ -250,24 +211,19 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (hpBarFill != null) hpBarFill.fillAmount = 0f;
 
-        // --- เพิ่มโค้ดสั่งหยุดเพลงพื้นหลัง และเล่นเสียงตายตรงนี้ ---
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
             if (audioManager != null)
             {
-                // 1. หยุดเพลงพื้นหลัง
                 audioManager.StopMusic();
-
-                // 2. เล่นเสียงตาย
                 if (audioManager.Die != null)
                 {
                     audioManager.PlaySFX(audioManager.Die);
                 }
             }
         }
-        // ---------------------------------
 
         StartCoroutine(DeathSequenceRoutine());
     }
@@ -276,7 +232,8 @@ public class PlayerHealthTest : MonoBehaviour
     {
         if (playerController != null) playerController.TriggerDeath();
 
-        float shakeDuration = 1f;
+        // 1. เอฟเฟกต์ตัวสั่นก่อนตาย (ใช้ unscaledDeltaTime เพื่อไม่ให้หยุดชะงัก)
+        float shakeDuration = 0.8f;
         float elapsed = 0f;
         Vector3 originalPos = transform.position;
 
@@ -286,12 +243,13 @@ public class PlayerHealthTest : MonoBehaviour
             float y = originalPos.y + Random.Range(-0.2f, 0.2f);
             transform.position = new Vector3(x, y, originalPos.z);
 
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
 
         transform.position = originalPos;
 
+        // 2. ซ่อนตัวละครและปิด Collider
         foreach (SpriteRenderer sprite in allSprites)
         {
             if (sprite != null) sprite.enabled = false;
@@ -299,14 +257,21 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (playerCollider != null) playerCollider.enabled = false;
 
-        yield return deathWaitTime;
+        yield return new WaitForSecondsRealtime(0.2f);
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        if (gameOverUI != null) gameOverUI.SetActive(true);
-
-        Time.timeScale = 0f;
+        // ⭐ 3. เรียกหน้าต่างสรุปดาวทันที
+        if (StarResultManager.Instance != null)
+        {
+            StarResultManager.Instance.ShowResult(reachedFinishLine: false);
+        }
+        else if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+            Time.timeScale = 0f;
+        }
     }
 
     private void OnGUI()
@@ -328,7 +293,6 @@ public class PlayerHealthTest : MonoBehaviour
         else
         {
             float hpPercent = (currentHealth / maxHealth) * 100f;
-
             if (hpPercent > 60f) style.normal.textColor = Color.green;
             else if (hpPercent > 30f) style.normal.textColor = Color.yellow;
             else style.normal.textColor = new Color(1f, 0.3f, 0f);

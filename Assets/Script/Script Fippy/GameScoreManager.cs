@@ -24,10 +24,6 @@ public class GameScoreManager : MonoBehaviour
     public TextMeshProUGUI distanceText;
     public Slider distanceSlider;
 
-    [Header("UI Panels")]
-    public GameObject winPanel;
-    public GameObject gameOverPanel;
-
     private float initialDistance = 0f;
     private bool isGameEnded = false;
 
@@ -61,8 +57,6 @@ public class GameScoreManager : MonoBehaviour
         }
 
         UpdateScoreUI();
-        if (winPanel != null) winPanel.SetActive(false);
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
     }
 
     private void Update()
@@ -80,7 +74,8 @@ public class GameScoreManager : MonoBehaviour
 
         if (distanceText != null)
         {
-            distanceText.text = $"Distance: {remainingDistance:F0}m";
+            // ปัดเศษลง (Mathf.Floor) เพื่อให้ตัวเลขลดลงอย่างเป็นธรรมชาติ
+            distanceText.text = $"Distance: {Mathf.FloorToInt(remainingDistance)}m";
         }
 
         if (distanceSlider != null && initialDistance > 0f)
@@ -106,93 +101,37 @@ public class GameScoreManager : MonoBehaviour
         }
     }
 
-    // ⭐ ตรวจสอบผลแพ้-ชนะเมื่อชนเส้นชัย
+    // ⭐ เมื่อผู้เล่นชนเส้นชัย
     public void CheckFinishLine(PlayerControllerTest playerController)
     {
         if (isGameEnded) return;
         isGameEnded = true;
 
-        if (currentScore >= targetScore)
+        // ⭐ บังคับเซ็ตระยะทางให้เป็น 0m และหลอดเต็ม 100% ทันทีที่ชนเส้นชัย
+        if (distanceText != null)
         {
-            // ชนะ: คะแนนครบ -> บินพุ่งทะลุจอให้เสร็จก่อน ค่อยเปิดหน้าชนะ
-            StartCoroutine(WinSequenceRoutine(playerController));
+            distanceText.text = "Distance: 0m";
         }
-        else
+        if (distanceSlider != null)
         {
-            // แพ้: คะแนนไม่ครบ -> ให้ผู้เล่นตายก่อน รอ 1 วินาที ค่อยหยุดเกมและเปิดหน้าแพ้
-            StartCoroutine(LoseSequenceRoutine(playerController));
+            distanceSlider.value = 1f;
         }
+
+        StartCoroutine(FinishSequenceRoutine(playerController));
     }
 
-    // ⭐ Coroutine กรณีชนะ: รอให้ Player บินทะลุขอบจอไปทางขวาก่อน
-    private IEnumerator WinSequenceRoutine(PlayerControllerTest playerController)
+    private IEnumerator FinishSequenceRoutine(PlayerControllerTest playerController)
     {
         if (playerController != null)
         {
             playerController.TriggerWinDash();
         }
 
-        Camera cam = Camera.main;
-        float maxTimeout = 3f;
-        float timer = 0f;
+        yield return new WaitForSeconds(0.8f);
 
-        while (timer < maxTimeout)
+        if (StarResultManager.Instance != null)
         {
-            timer += Time.deltaTime;
-
-            if (playerController != null && cam != null)
-            {
-                Vector3 viewPos = cam.WorldToViewportPoint(playerController.transform.position);
-                if (viewPos.x > 1.15f)
-                {
-                    break;
-                }
-            }
-            yield return null;
+            StarResultManager.Instance.ShowResult(reachedFinishLine: true);
         }
-
-        yield return new WaitForSeconds(0.2f);
-
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        if (winPanel != null) winPanel.SetActive(true);
-        Time.timeScale = 0f;
-    }
-
-    // ⭐ Coroutine กรณีแพ้: สั่งตาย -> รอ 1 วินาที -> เปิดหน้า Game Over และหยุดเกม
-    private IEnumerator LoseSequenceRoutine(PlayerControllerTest playerController)
-    {
-        Debug.Log("<color=red>[Defeat] แต้มไม่ครบตามเป้าหมาย! กำลังเริ่มอนิเมชันการตาย...</color>");
-
-        // 1. สั่งให้ผู้เล่นเข้าสู่สถานะตาย
-        if (playerController != null)
-        {
-            // สั่งลดเลือดจนหมดเพื่อให้ PlayerHealthTest เล่นอนิเมชันสั่นตัวละคร
-            if (playerController.TryGetComponent(out PlayerHealthTest healthTest))
-            {
-                healthTest.TakeDamage(healthTest.maxHealth);
-            }
-            else
-            {
-                playerController.TriggerDeath();
-            }
-        }
-
-        // 2. หน่วงเวลา 1.0 วินาที ให้เห็นการตาย/สั่นตัวละครอย่างชัดเจน
-        yield return new WaitForSeconds(1.0f);
-
-        // 3. เปิดเคอร์เซอร์เมาส์ให้คลิกปุ่ม UI ได้
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        // 4. แสดงหน้าต่าง Game Over
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(true);
-        }
-
-        // 5. หยุดเวลาเกมทั้งหมด
-        Time.timeScale = 0f;
     }
 }
