@@ -174,13 +174,12 @@ public class BouncingSpikeTest : MonoBehaviour
 
             if (target.TryGetComponent(out PlayerHealthTest playerTest))
             {
-                playerTest.TakeDamage(damage);
+                playerTest.TakeDamage(damage, "Spike");
             }
             else if (target.TryGetComponent(out PlayerHealthTest player))
             {
-                player.TakeDamage(damage);
+                player.TakeDamage(damage, "Spike");
             }
-
             Destroy(gameObject);
         }
     }

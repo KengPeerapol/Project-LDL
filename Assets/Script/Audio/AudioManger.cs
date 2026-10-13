@@ -12,14 +12,27 @@ public class AudioManger : MonoBehaviour
     public AudioClip Shoot;
     public AudioClip Pick;
     public AudioClip Time;
-    public AudioClip Hurt;
+
+    // ⭐ เปลี่ยนจาก Hurt ตัวเดียว เป็นแยก 4 ชนิดตามที่บิวต้องการ
+    [Header("--- Player Hurt Sounds ---")]
+    public AudioClip HurtLDL;
+    public AudioClip HurtSpike;     // หนาม
+    public AudioClip HurtMissile;   // จรวด
+    public AudioClip HurtPlaque;    // Plaque
+
+    [Header("--- Other SFX ---")]
     public AudioClip Die;
     public AudioClip Alert;
     public AudioClip MidSide;
 
     [Header("-------- Anti-Spam Settings ----------")]
     [Tooltip("ระยะเวลาดีเลย์เฉพาะเสียงเตือนและจรวด (วินาที)")]
-    public float missileSfxCooldown = 0.8f; // ⭐ เปลี่ยนชื่อให้ชัดเจนว่าเป็นดีเลย์ของจรวด
+    public float missileSfxCooldown = 0.8f;
+
+    [Header("-------- Random Pitch Settings ----------")]
+    [Tooltip("ค่าความต่ำ-สูงของเสียงยิงปืน (ปกติคือ 1)")]
+    public float minPitch = 0.75f;
+    public float maxPitch = 1.25f;
 
     // ตัวแปรแบบ Dictionary เพื่อจำเวลาเฉพาะเสียงที่ต้องการหน่วง
     private Dictionary<AudioClip, float> soundTimers = new Dictionary<AudioClip, float>();
@@ -37,23 +50,27 @@ public class AudioManger : MonoBehaviour
     {
         if (clip == null) return;
 
-        // ⭐ ตรวจสอบว่าเสียงที่ส่งมา คือเสียง Alert หรือ MidSide ใช่หรือไม่?
         if (clip == Alert || clip == MidSide)
         {
-            // ถ้าใช่ ให้เข้าสู่ระบบตรวจสอบ Cooldown (กันเสียงนัวเนีย)
             if (soundTimers.ContainsKey(clip))
             {
                 if (UnityEngine.Time.time - soundTimers[clip] < missileSfxCooldown)
                 {
-                    return; // ถ้าเวลายังไม่พ้นคูลดาวน์ ให้ยกเลิกการเล่นเสียงนี้ไปเลย
+                    return;
                 }
             }
-
-            // บันทึกเวลาล่าสุดที่เสียงนี้ดังขึ้น
             soundTimers[clip] = UnityEngine.Time.time;
         }
 
-        // ⭐ ถ้าเป็นเสียงอื่นๆ (เช่น เสียงปืน Shoot) จะข้ามการเช็กด้านบนมาที่บรรทัดนี้ แล้วเล่นทันที!
+        if (clip == Shoot)
+        {
+            SFXSource.pitch = Random.Range(minPitch, maxPitch);
+        }
+        else
+        {
+            SFXSource.pitch = 1f;
+        }
+
         SFXSource.PlayOneShot(clip);
     }
 

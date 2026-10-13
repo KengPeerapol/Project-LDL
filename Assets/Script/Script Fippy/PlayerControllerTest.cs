@@ -175,12 +175,6 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (CanFly)
         {
-            // 1. เคาะ 1 ครั้ง (Tap)
-            /*if (tapRequested)
-            {
-                rb.linearVelocity = new Vector2(0f, tapForce);
-                tapRequested = false;
-            }*/
             // 2. กดค้างเกินกำหนด (Hold) -> ค่อยๆ เร่งระดับความเร็วขึ้นอย่างนุ่มนวล
             if (isHoldingInput && holdTimer >= holdThreshold)
             {
@@ -224,11 +218,12 @@ public class PlayerControllerTest : MonoBehaviour
 
                 if (TryGetComponent(out PlayerHealthTest healthTest))
                 {
-                    healthTest.TakeDamage(wallDamage);
+                    // ⭐ พี่แก้ตรงนี้ให้มันส่งคำว่า "Plaque" ไปตอนชนกำแพงแล้วครับ
+                    healthTest.TakeDamage(wallDamage, "Plaque");
                 }
             }
 
-            // ⭐ หาเวกเตอร์แรงสะท้อนจากผิวสัมผัสจริง (Normal Vector จะชี้ผลักออกจากผิวกำแพงเสมอ)
+            // ⭐ หาเวกเตอร์แรงสะท้อนจากผิวสัมผัสจริง
             float pushDirectionY = 0f;
             if (collision.contactCount > 0)
             {
@@ -239,7 +234,7 @@ public class PlayerControllerTest : MonoBehaviour
                 }
             }
 
-            // Fallback: หากชนเข้าขอบตรงๆ ให้เทียบตำแหน่ง Player กับแนวกึ่งกลางกำแพง
+            // Fallback
             if (pushDirectionY == 0f)
             {
                 pushDirectionY = (transform.position.y >= collision.collider.bounds.center.y) ? 1f : -1f;

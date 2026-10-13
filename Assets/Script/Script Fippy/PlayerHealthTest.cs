@@ -23,7 +23,7 @@ public class PlayerHealthTest : MonoBehaviour
     public bool enableHitFlash = true;
 
     [Tooltip("สีแฟลช (แนะนำสีแดงจัด Color.red หรือสีส้ม เพื่อให้ตัดกับสีเดิมชัดเจน)")]
-    public Color hitFlashColor = Color.red; // ⭐ เปลี่ยนเป็นสีแดงเพื่อให้เห็นชัดเจน 100%
+    public Color hitFlashColor = Color.red;
 
     [Tooltip("ระยะเวลาที่กะพริบ (วินาที แนะนำ 0.1 - 0.15)")]
     public float flashDuration = 0.12f;
@@ -56,7 +56,6 @@ public class PlayerHealthTest : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // 1. ค้นหา SpriteRenderer (ตรวจทั้งตัวแม่และตัวลูก)
         if (playerBodySprite == null)
         {
             playerBodySprite = GetComponent<SpriteRenderer>();
@@ -87,7 +86,6 @@ public class PlayerHealthTest : MonoBehaviour
 
         ValidateComponents();
 
-        // ระดับสีเลือด (100% -> 20%)
         ColorUtility.TryParseHtmlString("#e9ff69", out color100);
         ColorUtility.TryParseHtmlString("#fff56e", out color80);
         ColorUtility.TryParseHtmlString("#ffd869", out color60);
@@ -100,16 +98,17 @@ public class PlayerHealthTest : MonoBehaviour
     private void ValidateComponents()
     {
         if (playerBodySprite == null)
-            Debug.LogError("<color=red>[Health Debug] ไม่พบ SpriteRenderer สำหรับทำ Hit Flash! กรุณาลากใส่ในช่อง 'Player Body Sprite'</color>");
+            Debug.LogError("<color=red>[Health Debug] ไม่พบ SpriteRenderer สำหรับทำ Hit Flash!</color>");
 
         if (hpBarFill == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก Image หลอดเลือดมาใส่ในช่อง 'Hp Bar Fill'</color>");
+            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก Image หลอดเลือดมาใส่</color>");
 
         if (gameOverUI == null)
-            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก GameOverPanel มาใส่ในช่อง 'Game Over UI'</color>");
+            Debug.LogWarning("<color=orange>[Health Debug] ยังไม่ได้ลาก GameOverPanel มาใส่</color>");
     }
 
-    public void TakeDamage(float damageAmount)
+    // ⭐ เพิ่มตัวแปร damageType (ค่าเริ่มต้นคือ "Default") เพื่อใช้เช็กว่าโดนอะไรมา
+    public void TakeDamage(float damageAmount, string damageType = "Default")
     {
         if (isDead) return;
 
@@ -117,29 +116,52 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (enableConsoleLogs)
         {
-            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
+            Debug.Log($"<color=orange>[Health Debug] ได้รับดาเมจ: -{damageAmount} จาก {damageType} | HP คงเหลือ: {Mathf.Max(0, currentHealth):F0}/{maxHealth}</color>");
         }
 
-        // --- โค้ดเรียกเสียงตอนโดนโจมตี (แก้จาก Hit เป็น Hurt) ---
+        // --- โค้ดเรียกเสียงตอนโดนโจมตี (แยกระบบ 4 แบบ) ---
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Hurt != null) // เปลี่ยนเป็น Hurt
+            if (audioManager != null)
             {
-                audioManager.PlaySFX(audioManager.Hurt); // เปลี่ยนเป็น Hurt
+                AudioClip clipToPlay = null;
+
+                // เช็กชื่อ Tag หรือประเภทที่ส่งมา แล้วเลือกไฟล์เสียงให้ตรง
+                switch (damageType)
+                {
+                    case "LDL":
+                        clipToPlay = audioManager.HurtLDL;
+                        break;
+                    case "Spike":
+                        clipToPlay = audioManager.HurtSpike;
+                        break;
+                    case "Missile":
+                        clipToPlay = audioManager.HurtMissile;
+                        break;
+                    case "Plaque":
+                        clipToPlay = audioManager.HurtPlaque;
+                        break;
+                    default:
+                        clipToPlay = audioManager.HurtLDL; // ถ้าไม่ได้ระบุ ให้ใช้เสียง LDL เป็นค่าเริ่มต้น
+                        break;
+                }
+
+                if (clipToPlay != null)
+                {
+                    audioManager.PlaySFX(clipToPlay);
+                }
             }
         }
         // ---------------------------------
 
-        // ⭐ ทำงาน Hit Flash
         if (enableHitFlash && playerBodySprite != null && gameObject.activeInHierarchy)
         {
             if (flashRoutine != null) StopCoroutine(flashRoutine);
             flashRoutine = StartCoroutine(HitFlashRoutine());
         }
 
-        // ⭐ ทำงาน Screen Shake
         if (enableScreenShake && targetCamera != null)
         {
             if (shakeRoutine != null)
@@ -161,26 +183,23 @@ public class PlayerHealthTest : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damageAmount)
+    // ⭐ อัปเดตฟังก์ชันนี้ให้รองรับ damageType ด้วย
+    public void TakeDamage(int damageAmount, string damageType = "Default")
     {
-        TakeDamage((float)damageAmount);
+        TakeDamage((float)damageAmount, damageType);
     }
 
-    // ⭐ Coroutine แฟลชสีแดง แล้วสลับกลับเป็นสีเดิม
     private IEnumerator HitFlashRoutine()
     {
         playerBodySprite.color = hitFlashColor;
-
         yield return new WaitForSeconds(flashDuration);
-
-        HandlePlayerColor(); // คืนค่าสีตามระดับเลือดปัจจุบัน
+        HandlePlayerColor();
         flashRoutine = null;
     }
 
     private IEnumerator ScreenShakeRoutine()
     {
         float elapsed = 0f;
-
         while (elapsed < shakeDuration)
         {
             float offsetX = Random.Range(-1f, 1f) * shakeMagnitude;
@@ -195,7 +214,6 @@ public class PlayerHealthTest : MonoBehaviour
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
-
         targetCamera.transform.localPosition = cameraOriginalPos;
         shakeRoutine = null;
     }
@@ -203,7 +221,6 @@ public class PlayerHealthTest : MonoBehaviour
     public void Heal(float healAmount)
     {
         if (isDead) return;
-
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
         UpdateHealthBar();
     }
@@ -215,7 +232,6 @@ public class PlayerHealthTest : MonoBehaviour
             hpBarFill.fillAmount = currentHealth / maxHealth;
         }
 
-        // ถ้าไม่ได้กำลังเล่น Hit Flash อยู่ ให้ปรับสีตามเลือดปกติ
         if (flashRoutine == null)
         {
             HandlePlayerColor();
@@ -227,7 +243,6 @@ public class PlayerHealthTest : MonoBehaviour
         if (playerBodySprite == null) return;
 
         Color targetColor;
-
         if (currentHealth <= 20f) targetColor = color20;
         else if (currentHealth <= 40f) targetColor = color40;
         else if (currentHealth <= 60f) targetColor = color60;
@@ -240,7 +255,6 @@ public class PlayerHealthTest : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        
 
         if (flashRoutine != null) StopCoroutine(flashRoutine);
         if (shakeRoutine != null)
@@ -251,24 +265,19 @@ public class PlayerHealthTest : MonoBehaviour
 
         if (hpBarFill != null) hpBarFill.fillAmount = 0f;
 
-        // --- เพิ่มโค้ดสั่งหยุดเพลงพื้นหลัง และเล่นเสียงตายตรงนี้ ---
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
             AudioManger audioManager = audioObj.GetComponent<AudioManger>();
             if (audioManager != null)
             {
-                // 1. หยุดเพลงพื้นหลัง
                 audioManager.StopMusic();
-
-                // 2. เล่นเสียงตาย
                 if (audioManager.Die != null)
                 {
                     audioManager.PlaySFX(audioManager.Die);
                 }
             }
         }
-        // ---------------------------------
 
         StartCoroutine(DeathSequenceRoutine());
     }
