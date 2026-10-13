@@ -193,6 +193,7 @@ MonoBehaviour:
   autoDestroy: 1
   lifeTime: 6
   maxHealth: 25
+  pointPrefab: {fileID: 4363381124587479592, guid: 2b2db21f5d02dc54886dc6748b74ebe1, type: 3}
   scoreReward: 10
   contactDamage: 15
   destroyOnHitPlayer: 1

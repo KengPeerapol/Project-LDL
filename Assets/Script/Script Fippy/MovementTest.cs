@@ -35,11 +35,22 @@ public class MovementTest : MonoBehaviour
 
     private void Start()
     {
-        float randomAngle = Random.Range(minAngle, maxAngle);
-        Vector2 moveDirection = Quaternion.Euler(0f, 0f, randomAngle) * Vector2.left;
+        // ⭐ หากได้รับความเร็วส่งต่อมาจากตัวก่อนหน้าอยู่แล้ว ให้ใช้ความเร็วนั้นต่อไปเลย ห้ามสุ่มทับ
+        if (rb.linearVelocity.sqrMagnitude > 0.1f)
+        {
+            lastVelocity = rb.linearVelocity;
+        }
+        else
+        {
+            // ถ้าเกิดจาก Spawner ตามปกติ (ยังไม่มีความเร็วเดิม) ให้สุ่มองศาพุ่งใหม่
+            float randomAngle = Random.Range(minAngle, maxAngle);
+            Vector2 moveDirection = Quaternion.Euler(0f, 0f, randomAngle) * Vector2.left;
 
-        rb.linearVelocity = moveDirection * speed;
-        lastVelocity = rb.linearVelocity;
+            rb.linearVelocity = moveDirection * speed;
+            lastVelocity = rb.linearVelocity;
+        }
+
+        UpdateRotation();
     }
 
     private void FixedUpdate()
@@ -52,9 +63,15 @@ public class MovementTest : MonoBehaviour
 
     private void Update()
     {
+        UpdateRotation();
+    }
+
+    // ⭐ ปรับมุมหันหน้าให้ชี้ไปตามทิศทางพุ่งปัจจุบัน
+    public void UpdateRotation()
+    {
         if (!rotateTowardsDirection) return;
 
-        Vector2 currentVelocity = rb.linearVelocity;
+        Vector2 currentVelocity = rb != null ? rb.linearVelocity : lastVelocity;
         if (currentVelocity != Vector2.zero)
         {
             float angle = Mathf.Atan2(currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg;
@@ -62,7 +79,6 @@ public class MovementTest : MonoBehaviour
         }
     }
 
-    // รองรับการเด้งผ่านระบบ Trigger (ไม่ขัดจังหวะ Player)
     private void OnTriggerEnter2D(Collider2D collision)
     {
         HandleBounce(collision.gameObject);
@@ -75,7 +91,7 @@ public class MovementTest : MonoBehaviour
 
     private void HandleBounce(GameObject target)
     {
-        // 1. เด้งสะท้อนกำแพง (Wall)
+        // 1. เด้งสะท้อนกำแพงบน-ล่าง (Wall)
         if (target.CompareTag(wallTag))
         {
             float normalY = (transform.position.y > target.transform.position.y) ? 1f : -1f;
@@ -83,10 +99,9 @@ public class MovementTest : MonoBehaviour
 
             ReflectVelocity(wallNormal, false);
         }
-        // 2. ชนกับ Enemy หรือ Item (ให้เบี่ยงขึ้น-ลง แต่ห้ามเด้งย้อนกลับไปทางขวา)
+        // 2. เด้งสะท้อนเมื่อชนกับ Enemy หรือ Item
         else if (bounceWithEntities && (target.CompareTag("Enemy") || target.CompareTag("Item")))
         {
-            // ตัวที่อยู่สูงกว่าให้เบี่ยงขึ้นบน ตัวที่อยู่ต่ำกว่าให้เบี่ยงลงล่าง
             float diffY = transform.position.y - target.transform.position.y;
             float normalY = (diffY >= 0f) ? 1f : -1f;
 
@@ -101,10 +116,9 @@ public class MovementTest : MonoBehaviour
 
         if (isEntityBounce)
         {
-            // ⭐ บังคับให้แกน X ติดลบเสมอ (พุ่งไปทางซ้ายตลอดเวลา ห้ามย้อนไปทางขวา)
+            // บังคับให้แกน X มุ่งไปทางซ้ายเสมอ ห้ามสะท้อนย้อนไปขวา
             reflectDir.x = -Mathf.Abs(reflectDir.x);
 
-            // ให้มีแรงส่งไปทางซ้ายขั้นต่ำ ป้องกันการลอยขึ้นลงอยู่กับที่
             if (reflectDir.x > -0.4f)
             {
                 reflectDir.x = -0.6f;
@@ -113,7 +127,6 @@ public class MovementTest : MonoBehaviour
         }
         else
         {
-            // ชนกำแพง: บังคับให้แกน X ยังคงมุ่งหน้าไปทางซ้ายเช่นกัน
             reflectDir.x = -Mathf.Abs(reflectDir.x);
             reflectDir = reflectDir.normalized;
         }
@@ -121,10 +134,6 @@ public class MovementTest : MonoBehaviour
         rb.linearVelocity = reflectDir * speed;
         lastVelocity = rb.linearVelocity;
 
-        if (rotateTowardsDirection)
-        {
-            float angle = Mathf.Atan2(reflectDir.y, reflectDir.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        }
+        UpdateRotation();
     }
 }
