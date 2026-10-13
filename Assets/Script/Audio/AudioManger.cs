@@ -13,12 +13,11 @@ public class AudioManger : MonoBehaviour
     public AudioClip Pick;
     public AudioClip Time;
 
-    // ⭐ เปลี่ยนจาก Hurt ตัวเดียว เป็นแยก 4 ชนิดตามที่บิวต้องการ
     [Header("--- Player Hurt Sounds ---")]
     public AudioClip HurtLDL;
-    public AudioClip HurtSpike;     // หนาม
-    public AudioClip HurtMissile;   // จรวด
-    public AudioClip HurtPlaque;    // Plaque
+    public AudioClip HurtSpike;
+    public AudioClip HurtMissile;
+    public AudioClip HurtPlaque;
 
     [Header("--- Other SFX ---")]
     public AudioClip Die;
@@ -26,15 +25,14 @@ public class AudioManger : MonoBehaviour
     public AudioClip MidSide;
 
     [Header("-------- Anti-Spam Settings ----------")]
-    [Tooltip("ระยะเวลาดีเลย์เฉพาะเสียงเตือนและจรวด (วินาที)")]
-    public float missileSfxCooldown = 0.8f;
+    [Tooltip("ระยะเวลาดีเลย์ขั้นต่ำระหว่างเสียงมิสไซล์ (วินาที) แนะนำ 0.15s เพื่อให้ดังครบทุกจำนวนลูก")]
+    public float missileSfxCooldown = 0.15f; // ⭐ ปรับลดจาก 0.8f เหลือ 0.15f เพื่อให้เสียงจรวดลูกถัดไปดังทันที
 
     [Header("-------- Random Pitch Settings ----------")]
     [Tooltip("ค่าความต่ำ-สูงของเสียงยิงปืน (ปกติคือ 1)")]
     public float minPitch = 0.75f;
     public float maxPitch = 1.25f;
 
-    // ตัวแปรแบบ Dictionary เพื่อจำเวลาเฉพาะเสียงที่ต้องการหน่วง
     private Dictionary<AudioClip, float> soundTimers = new Dictionary<AudioClip, float>();
 
     private void Start()
@@ -50,6 +48,7 @@ public class AudioManger : MonoBehaviour
     {
         if (clip == null) return;
 
+        // ดักคูลดาวน์เฉพาะช่วงที่สั้นมากๆ เพื่อป้องกันการเปิดซ้ำซ้อนในเฟรมเดียวกัน แต่ยังดังครบตามจำนวนลูก
         if (clip == Alert || clip == MidSide)
         {
             if (soundTimers.ContainsKey(clip))
@@ -65,6 +64,11 @@ public class AudioManger : MonoBehaviour
         if (clip == Shoot)
         {
             SFXSource.pitch = Random.Range(minPitch, maxPitch);
+        }
+        else if (clip == Alert || clip == MidSide)
+        {
+            // สุ่มระดับเสียงเล็กน้อย (0.95 - 1.05) เพื่อให้เสียงมิสไซล์แต่ละลูกมีมิติและไม่กลืนกัน
+            SFXSource.pitch = Random.Range(0.95f, 1.05f);
         }
         else
         {

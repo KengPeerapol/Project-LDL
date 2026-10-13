@@ -1779,7 +1779,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc69c0ec933992a4fb2a2eeefb55afe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEventManager
-  cooldownTime: 15
+  cooldownTime: 5
   globalEventChance: 100
   wallWeight: 1
   missileWeight: 50
@@ -1790,7 +1790,7 @@ MonoBehaviour:
   wallPreWarningTime: 2.5
   warningPrefab: {fileID: 1919442258139172247, guid: 45a3158c6d78cff41986552f9bf3809d, type: 3}
   missilePrefab: {fileID: 4783931667091252217, guid: 76aa89af7611a144589d4689e458bf77, type: 3}
-  minMissiles: 1
+  minMissiles: 3
   maxMissiles: 3
   delayBetweenMissiles: 0.8
   totalWarningDuration: 2
@@ -5365,7 +5365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1951567000
 MonoBehaviour:
   m_ObjectHideFlags: 0
