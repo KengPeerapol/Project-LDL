@@ -86,6 +86,7 @@ public class PauseMenuManager : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        AudioListener.pause = true;
     }
 
     public void ResumeGame()
@@ -97,6 +98,7 @@ public class PauseMenuManager : MonoBehaviour
         if (pauseButtonOnScreen != null) pauseButtonOnScreen.SetActive(true);
 
         Cursor.visible = false;
+        AudioListener.pause = false;
     }
 
     public void RestartGame()
@@ -106,6 +108,7 @@ public class PauseMenuManager : MonoBehaviour
         isGameOver = false;
         Cursor.visible = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        AudioListener.pause = false;
     }
 
     public void LoadMainMenu()
@@ -116,5 +119,6 @@ public class PauseMenuManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         SceneManager.LoadScene("MainMenu");
+        AudioListener.pause = false;
     }
 }
