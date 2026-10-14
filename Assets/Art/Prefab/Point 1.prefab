@@ -13,9 +13,11 @@ GameObject:
   - component: {fileID: 4844534075335140904}
   - component: {fileID: 2169651926957714010}
   - component: {fileID: 3665678273213082530}
+  - component: {fileID: 1278973323535906058}
+  - component: {fileID: 3817171551565115131}
   m_Layer: 3
   m_Name: Point 1
-  m_TagString: Point
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -186,3 +188,53 @@ MonoBehaviour:
   maxAngle: 30
   wallTag: Wall
   bounceWithEntities: 0
+--- !u!114 &1278973323535906058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593860426822094936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb25081f947c3c45bf780f9624425a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PointItem
+  scoreValue: 20
+  lifeTime: 8
+  moveVelocity: {x: -4, y: 0}
+  bounceOnWall: 1
+  wallTag: Wall
+  collectEffect: {fileID: 0}
+--- !u!114 &3817171551565115131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593860426822094936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f1a9f50b6e76e64da7291d3677c5f8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
+  autoDestroy: 1
+  lifeTime: 4
+  maxHealth: 50
+  nextEnemyPrefab: {fileID: 0}
+  pointPrefab: {fileID: 5118996002469163254, guid: 082f74f54a9b0f14caf42c41d3d3d94c, type: 3}
+  scoreReward: 20
+  inheritVelocity: 1
+  contactDamage: 15
+  giveScoreOnPlayerHit: 1
+  destroyOnHitPlayer: 1
+  damageCooldown: 0.5
+  spawnSpikesOnDeath: 1
+  spikePrefab: {fileID: 0}
+  spikeCount: 4
+  spikeSpeed: 6
+  randomizeSpikeAngle: 1
+  useEnemyRotation: 1
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.08
+  deathEffectPrefab: {fileID: 0}

@@ -11,11 +11,12 @@ GameObject:
   - component: {fileID: 4770527269750185511}
   - component: {fileID: 1898701536459691197}
   - component: {fileID: 4032359386100455040}
-  - component: {fileID: 1865259839830350476}
   - component: {fileID: 6498324591219093926}
-  m_Layer: 8
+  - component: {fileID: 1053558879213286644}
+  - component: {fileID: -6209528318163180236}
+  m_Layer: 3
   m_Name: Point
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -131,24 +132,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &1865259839830350476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4363381124587479592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb25081f947c3c45bf780f9624425a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PointItem
-  scoreValue: 20
-  lifeTime: 10
-  moveVelocity: {x: -4, y: 0}
-  bounceOnWall: 1
-  wallTag: Wall
-  collectEffect: {fileID: 0}
 --- !u!50 &6498324591219093926
 Rigidbody2D:
   serializedVersion: 5
@@ -176,3 +159,53 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &1053558879213286644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363381124587479592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f1a9f50b6e76e64da7291d3677c5f8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
+  autoDestroy: 1
+  lifeTime: 4
+  maxHealth: 50
+  nextEnemyPrefab: {fileID: 0}
+  pointPrefab: {fileID: 8593860426822094936, guid: b3c889a23a007fe45b228f53b883760f, type: 3}
+  scoreReward: 20
+  inheritVelocity: 1
+  contactDamage: 0
+  giveScoreOnPlayerHit: 1
+  destroyOnHitPlayer: 1
+  damageCooldown: 0.5
+  spawnSpikesOnDeath: 1
+  spikePrefab: {fileID: 0}
+  spikeCount: 4
+  spikeSpeed: 6
+  randomizeSpikeAngle: 1
+  useEnemyRotation: 1
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.08
+  deathEffectPrefab: {fileID: 0}
+--- !u!114 &-6209528318163180236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363381124587479592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f8812e9a80a8943a36a1ce67bdf1fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovementTest
+  speed: 5
+  rotateTowardsDirection: 1
+  minAngle: -30
+  maxAngle: 30
+  wallTag: Wall
+  bounceWithEntities: 1

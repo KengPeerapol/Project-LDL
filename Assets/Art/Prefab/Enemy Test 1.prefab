@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 5415413731850972136}
   - component: {fileID: 1109239934466314788}
   - component: {fileID: 2436252376745450940}
+  - component: {fileID: -7334847438742241577}
   m_Layer: 3
   m_Name: Enemy Test 1
-  m_TagString: Point
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -199,3 +200,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-7334847438742241577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5118996002469163254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb25081f947c3c45bf780f9624425a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PointItem
+  scoreValue: 20
+  lifeTime: 8
+  moveVelocity: {x: -4, y: 0}
+  bounceOnWall: 1
+  wallTag: Wall
+  collectEffect: {fileID: 0}
