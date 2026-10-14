@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5415413731850972136}
   - component: {fileID: 1109239934466314788}
   - component: {fileID: 2436252376745450940}
-  - component: {fileID: -7334847438742241577}
+  - component: {fileID: -322925863638043018}
   m_Layer: 3
   m_Name: Enemy Test 1
   m_TagString: Enemy
@@ -200,7 +200,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-7334847438742241577
+--- !u!114 &-322925863638043018
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -209,12 +209,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 5118996002469163254}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb25081f947c3c45bf780f9624425a7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f1a9f50b6e76e64da7291d3677c5f8f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PointItem
-  scoreValue: 20
-  lifeTime: 8
-  moveVelocity: {x: -4, y: 0}
-  bounceOnWall: 1
-  wallTag: Wall
-  collectEffect: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
+  autoDestroy: 1
+  lifeTime: 4
+  maxHealth: 50
+  nextEnemyPrefab: {fileID: 0}
+  pointPrefab: {fileID: 0}
+  scoreReward: 30
+  inheritVelocity: 1
+  contactDamage: 0
+  giveScoreOnPlayerHit: 1
+  destroyOnHitPlayer: 1
+  damageCooldown: 0.5
+  spawnSpikesOnDeath: 1
+  spikePrefab: {fileID: 0}
+  spikeCount: 4
+  spikeSpeed: 6
+  randomizeSpikeAngle: 1
+  useEnemyRotation: 1
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.08
+  deathEffectPrefab: {fileID: 0}
