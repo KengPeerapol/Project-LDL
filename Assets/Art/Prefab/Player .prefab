@@ -177,10 +177,8 @@ MonoBehaviour:
   playIntroDash: 1
   introSpawnOffsetX: 8
   introDashSpeed: 10
-  tapForce: 3.2
-  holdThreshold: 0.12
   holdAcceleration: 15
-  maxHoldAscentSpeed: 5.2
+  maxAscentSpeed: 5.5
   customGravityScale: 0.5
   maxFallSpeed: 4
   baseRotationZ: 0
@@ -235,15 +233,26 @@ MonoBehaviour:
   gunAnimator: {fileID: 0}
   fireAnimationName: fire
   bulletPrefab: {fileID: 1505545788687779975, guid: 91d68bb20114991469ca0e6e72903f4f, type: 3}
+  chargedBulletPrefab: {fileID: 0}
   firePoint: {fileID: 389275437577739927}
   fireRate: 0.1
   firePointDistance: 0.7
   maxAimAngle: 90
+  enableChargeAttack: 1
   chargeTimeRequired: 1
   chargeCooldown: 15
   normalDamage: 25
   chargedDamage: 100
   chargedBulletScale: 2.5
+  enableGunScale: 1
+  gunVisual: {fileID: 5452238140646497903}
+  chargedGunScale: 1.5
+  gunScaleSmoothSpeed: 14
+  enableSlowMotion: 1
+  slowMotionTimeScale: 0.25
+  slowMotionDelay: 0.3
+  normalBulletBounces: 0
+  chargedBulletBounces: 3
 --- !u!95 &2688016314515295588
 Animator:
   serializedVersion: 7

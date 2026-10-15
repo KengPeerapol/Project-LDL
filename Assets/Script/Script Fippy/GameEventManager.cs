@@ -33,6 +33,13 @@ public class GameEventManager : MonoBehaviour
     public float slideDistance = 25f;
     public float wallPreWarningTime = 2.5f;
 
+    [Header("--- Spawner Control in Wall Event (ติ๊กถูกให้เกิดตอน Wall Event) ---")]
+    [Tooltip("ติ๊กถูก = ให้สร้าง Enemy ต่อตอนกำแพงเลื่อน (ถ้าติ๊กออกจะหยุดสร้าง)")]
+    public bool spawnEnemyDuringWall = false; // ⭐ ตัวเลือก Enemy ตอน Wall Event
+
+    [Tooltip("ติ๊กถูก = ให้สร้าง Item ต่อตอนกำแพงเลื่อน (ถ้าติ๊กออกจะหยุดสร้าง)")]
+    public bool spawnItemDuringWall = false;  // ⭐ ตัวเลือก Item ตอน Wall Event
+
     [Header("--- Missile Event Settings ---")]
     public GameObject warningPrefab;
     public GameObject missilePrefab;
@@ -46,9 +53,16 @@ public class GameEventManager : MonoBehaviour
     public float maxY = 3.8f;
 
     [Tooltip("องศาการหมุนของ Sprite ขีปนาวุธ (เช่น 0, 90, 180, -90 เพื่อให้หัวจรวดชี้ถูกทิศทาง)")]
-    public float missileRotationZ = 0f; // ⭐ เพิ่มช่องปรับมุมหมุนของ Missile ที่นี่
+    public float missileRotationZ = 0f;
 
-    [Header("Shared Spawners (ปิดตอนมี Event)")]
+    [Header("--- Spawner Control in Missile Event (ติ๊กถูกให้เกิดตอน Missile Event) ---")]
+    [Tooltip("ติ๊กถูก = ให้สร้าง Enemy ต่อตอนมิสไซล์มา (ถ้าติ๊กออกจะหยุดสร้าง)")]
+    public bool spawnEnemyDuringMissile = false; // ⭐ ตัวเลือก Enemy ตอน Missile Event
+
+    [Tooltip("ติ๊กถูก = ให้สร้าง Item ต่อตอนมิสไซล์มา (ถ้าติ๊กออกจะหยุดสร้าง)")]
+    public bool spawnItemDuringMissile = false;  // ⭐ ตัวเลือก Item ตอน Missile Event
+
+    [Header("Shared Spawners (อ้างอิง Spawner ในฉาก)")]
     public GameObject enemySpawner;
     public GameObject itemSpawner;
 
@@ -67,6 +81,7 @@ public class GameEventManager : MonoBehaviour
     private float lastRollResult = -1f;
     private Vector3 topStartPos;
     private Vector3 bottomStartPos;
+    private AudioManger audioManager;
 
     private void Start()
     {
@@ -77,6 +92,12 @@ public class GameEventManager : MonoBehaviour
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) playerController = p.GetComponentInParent<PlayerControllerTest>();
+        }
+
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            audioManager = audioObj.GetComponent<AudioManger>();
         }
 
         StartCoroutine(MasterEventLoop());
@@ -117,31 +138,39 @@ public class GameEventManager : MonoBehaviour
 
     private IEnumerator RunRandomEvent()
     {
-        if (enemySpawner != null) enemySpawner.SetActive(false);
-        if (itemSpawner != null) itemSpawner.SetActive(false);
-
         int totalWeight = wallWeight + missileWeight;
         int choiceRoll = Random.Range(0, totalWeight);
 
         if (choiceRoll < wallWeight)
         {
+            // ⭐ 1. ปรับการทำงานของ Spawner ตามค่าที่ติ๊กไว้สำหรับ Wall Event
+            SetSpawnersActive(spawnEnemyDuringWall, spawnItemDuringWall);
             yield return StartCoroutine(WallEventRoutine());
         }
         else
         {
+            // ⭐ 2. ปรับการทำงานของ Spawner ตามค่าที่ติ๊กไว้สำหรับ Missile Event
+            SetSpawnersActive(spawnEnemyDuringMissile, spawnItemDuringMissile);
             yield return StartCoroutine(MissileEventRoutine());
         }
 
-        if (enemySpawner != null) enemySpawner.SetActive(true);
-        if (itemSpawner != null) itemSpawner.SetActive(true);
+        // ⭐ 3. เมื่อจบ Event สั่งให้ Spawner ทั้งหมดกลับมาทำงานปกติตามเดิม
+        SetSpawnersActive(true, true);
 
         Debug.Log("<color=green>[GameEvent] จบ Event สมบูรณ์ คืนค่า Spawner และเริ่มนับคูลดาวน์ใหม่</color>");
+    }
+
+    // ฟังก์ชันช่วยเปิด/ปิด Spawner ตามสถานะ
+    private void SetSpawnersActive(bool enemyActive, bool itemActive)
+    {
+        if (enemySpawner != null) enemySpawner.SetActive(enemyActive);
+        if (itemSpawner != null) itemSpawner.SetActive(itemActive);
     }
 
     private IEnumerator WallEventRoutine()
     {
         currentStatus = "Wall Warning";
-        currentEventDetail = "Spawners paused";
+        currentEventDetail = "Spawners paused/running based on settings";
         timerDisplay = wallPreWarningTime;
 
         while (timerDisplay > 0f)
@@ -221,14 +250,9 @@ public class GameEventManager : MonoBehaviour
         GameObject warningObj = Instantiate(warningPrefab);
         SpriteRenderer warningRenderer = warningObj.GetComponentInChildren<SpriteRenderer>();
 
-        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
-        if (audioObj != null)
+        if (audioManager != null && audioManager.Alert != null)
         {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Alert != null)
-            {
-                audioManager.PlaySFX(audioManager.Alert);
-            }
+            audioManager.PlaySFX(audioManager.Alert);
         }
 
         float elapsed = 0f;
@@ -266,18 +290,13 @@ public class GameEventManager : MonoBehaviour
 
         Destroy(warningObj);
 
-        // ⭐ ปล่อยจรวดพร้อมกำหนดมุมหมุน Rotation
         Vector3 spawnPos = new Vector3(missileSpawnRightX + 1f, lockedY, 0f);
         Quaternion spawnRotation = Quaternion.Euler(0f, 0f, missileRotationZ);
         Instantiate(missilePrefab, spawnPos, spawnRotation);
 
-        if (audioObj != null)
+        if (audioManager != null && audioManager.MidSide != null)
         {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.MidSide != null)
-            {
-                audioManager.PlaySFX(audioManager.MidSide);
-            }
+            audioManager.PlaySFX(audioManager.MidSide);
         }
     }
 

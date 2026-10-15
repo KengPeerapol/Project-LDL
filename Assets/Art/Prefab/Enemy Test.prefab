@@ -193,11 +193,33 @@ MonoBehaviour:
   autoDestroy: 1
   lifeTime: 6
   maxHealth: 25
-  nextEnemyPrefab: {fileID: 0}
-  pointPrefab: {fileID: 4363381124587479592, guid: 2b2db21f5d02dc54886dc6748b74ebe1, type: 3}
-  scoreReward: 10
-  inheritVelocity: 1
   contactDamage: 15
+  scoreReward: 5
+  isInvulnerable: 0
+  evolutionChain:
+  - stageName: Next Stage
+    enemyPrefab: {fileID: 5118996002469163254, guid: 082f74f54a9b0f14caf42c41d3d3d94c, type: 3}
+    maxHealth: 20
+    contactDamage: 10
+    scoreReward: 10
+    isInvulnerable: 0
+  - stageName: Next Stage
+    enemyPrefab: {fileID: 4363381124587479592, guid: 2b2db21f5d02dc54886dc6748b74ebe1, type: 3}
+    maxHealth: 20
+    contactDamage: 0
+    scoreReward: 15
+    isInvulnerable: 0
+  - stageName: Next Stage
+    enemyPrefab: {fileID: 8593860426822094936, guid: b3c889a23a007fe45b228f53b883760f, type: 3}
+    maxHealth: 20
+    contactDamage: 0
+    scoreReward: 20
+    isInvulnerable: 1
+  currentChainIndex: 0
+  defaultFlySpeed: 4
+  spawnGracePeriod: 0.25
+  pointPrefab: {fileID: 0}
+  inheritVelocity: 1
   giveScoreOnPlayerHit: 1
   destroyOnHitPlayer: 1
   damageCooldown: 0.5

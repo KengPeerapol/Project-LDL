@@ -174,11 +174,14 @@ MonoBehaviour:
   autoDestroy: 1
   lifeTime: 4
   maxHealth: 50
-  nextEnemyPrefab: {fileID: 0}
-  pointPrefab: {fileID: 8593860426822094936, guid: b3c889a23a007fe45b228f53b883760f, type: 3}
-  scoreReward: 20
-  inheritVelocity: 1
   contactDamage: 0
+  scoreReward: 20
+  evolutionChain: []
+  currentChainIndex: 0
+  spawnForwardOffset: 0.5
+  spawnGracePeriod: 0.25
+  pointPrefab: {fileID: 0}
+  inheritVelocity: 1
   giveScoreOnPlayerHit: 1
   destroyOnHitPlayer: 1
   damageCooldown: 0.5

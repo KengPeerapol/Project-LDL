@@ -3,52 +3,75 @@ using UnityEngine;
 
 public class EnemyHealthTest : MonoBehaviour
 {
-    [Header("Lifetime Settings (ระยะเวลาการคงอยู่)")]
-    [Tooltip("เปิดใช้งานให้ศัตรูหายไปเองอัตโนมัติหรือไม่")]
-    public bool autoDestroy = true;
+    [System.Serializable]
+    public class EvolutionStage
+    {
+        [Tooltip("ชื่อร่างช่วยจำ (เช่น ร่างที่ 2, Point วงกลม, Point 1)")]
+        public string stageName = "Next Stage";
 
-    [Tooltip("ระยะเวลาที่ศัตรูจะมีชีวิตอยู่ก่อนจะหายไป (วินาที)")]
-    public float lifeTime = 4f;
+        [Tooltip("Prefab ของศัตรู/แต้มร่างนี้")]
+        public GameObject enemyPrefab;
+
+        [Tooltip("เลือดของร่างนี้ (ใส่ 0 = ใช้เลือดตาม Prefab เดิม)")]
+        public float maxHealth = 0f;
+
+        [Tooltip("ดาเมจที่ทำใส่ Player เมื่อชน (ใส่ 0 = ชนแล้วไม่เสียเลือด เป็นแต้มฟรี)")]
+        public int contactDamage = 0;
+
+        [Tooltip("คะแนนที่จะได้รับจากร่างนี้")]
+        public int scoreReward = 15;
+
+        [Tooltip("⭐ ติ๊กถูก = ร่างนี้จะไม่สามารถโดนยิงหรือตายได้ (กระสุนยิงทะลุผ่าน) แต่ผู้เล่นยังบินชนเก็บแต้มได้")]
+        public bool isInvulnerable = false; // ช่องติ๊กถูกในแต่ละร่าง
+    }
+
+    [Header("Lifetime Settings (ระยะเวลาการคงอยู่)")]
+    public bool autoDestroy = true;
+    public float lifeTime = 5f;
 
     [Header("Health Settings (การตั้งค่าเลือด)")]
     public float maxHealth = 50f;
     private float currentHealth;
 
-    [Header("Spawn On Death (เกิดตัวใหม่/แต้มเมื่อตาย - เป็นตัวเลือก)")]
-    [Tooltip("Prefab ศัตรูที่จะเกิดออกมาแทนที่เมื่อตัวนี้ตาย (เช่น Boomer แตกตัวเป็นตัวปกติ ถ้าไม่ใส่จะข้าม)")]
-    public GameObject nextEnemyPrefab;
+    [Header("Current Enemy Settings (ค่าประจำตัวของร่างนี้)")]
+    [Tooltip("ดาเมจที่ร่างนี้ทำใส่ Player เมื่อชน (ใส่ 0 = ชนฟรีไม่เสียเลือด)")]
+    public int contactDamage = 10;
 
-    [Tooltip("Prefab แต้มคะแนนที่จะเกิดตอนตายจากการยิง (ถ้าไม่ใส่จะไม่ดรอปแต้ม)")]
+    [Tooltip("คะแนนที่ได้รับจากร่างนี้")]
+    public int scoreReward = 5;
+
+    [Tooltip("⭐ ติ๊กถูก = ตัวนี้จะไม่โดนยิงและยิงไม่ตาย (ใช้สำหรับร่างตั้งต้น)")]
+    public bool isInvulnerable = false;
+
+    [Header("Sequential Evolution (ตั้งค่าสายเปลี่ยนร่าง)")]
+    public EvolutionStage[] evolutionChain;
+    public int currentChainIndex = 0;
+
+    [Tooltip("ความเร็วพื้นฐานในการบินไปทางซ้ายของร่างใหม่")]
+    public float defaultFlySpeed = 4f;
+
+    [Tooltip("ระยะเวลาป้องกันการตายซ้อนในเฟรมเดียวกัน (ใช้เฉพาะร่างที่มีดาเมจ)")]
+    public float spawnGracePeriod = 0.25f;
+    private float graceTimer = 0f;
+
+    [Tooltip("Prefab แต้มคะแนนสำรอง (ใช้เฉพาะศัตรูที่ไม่มีสายเปลี่ยนร่าง)")]
     public GameObject pointPrefab;
-
-    [Tooltip("คะแนนที่จะได้รับเมื่อกำจัดศัตรูตัวนี้ได้")]
-    public int scoreReward = 20;
-
-    [Tooltip("ให้ตัวที่เกิดใหม่ (ศัตรู/แต้ม) เคลื่อนที่ตามทิศทางและความเร็วเดิมของตัวนี้")]
     public bool inheritVelocity = true;
 
     [Header("Player Collision (การชนกับผู้เล่น)")]
-    [Tooltip("ดาเมจที่ทำใส่ Player เมื่อบินชนกัน")]
-    public int contactDamage = 15;
-
-    [Tooltip("ติ๊กถูกเพื่อให้ผู้เล่นได้รับคะแนนทันทีเมื่อบินชนกัน")]
-    public bool giveScoreOnPlayerHit = true; // ⭐ ให้แต้มทันทีเมื่อชนผู้เล่น
-
-    [Tooltip("เมื่อชน Player แล้ว ศัตรูตัวนี้จะระเบิด/ตายทันทีหรือไม่")]
+    public bool giveScoreOnPlayerHit = true;
     public bool destroyOnHitPlayer = true;
-
-    [Tooltip("คูลดาวน์ดาเมจ (กรณี destroyOnHitPlayer = false)")]
-    public float damageCooldown = 0.5f;
+    public float damageCooldown = 0.3f;
     private float lastHitPlayerTime = -999f;
 
     [Header("Spike Death Settings (ปล่อยหนามตอนตาย)")]
-    [Tooltip("ติ๊กถูกถ้าต้องการให้ตัวนี้ปล่อยหนามตอนตาย")]
+    [Tooltip("ติ๊กถูกถ้าต้องการให้ตัวนี้ปล่อยหนามตอนตาย (ตัวที่เป็นแต้มดาเมจ 0 จะไม่ปล่อยหนาม)")]
     public bool spawnSpikesOnDeath = true;
     public GameObject spikePrefab;
     public int spikeCount = 4;
     public float spikeSpeed = 6f;
 
-    [Header("Spike Rotation Variation (การหมุนทิศทางหนาม)")]
+    [Header("Spike Rotation Variation")]
     public bool randomizeSpikeAngle = true;
     public bool useEnemyRotation = true;
 
@@ -63,7 +86,7 @@ public class EnemyHealthTest : MonoBehaviour
     private Color originalColor;
     private Coroutine flashCoroutine;
     private bool isDead = false;
-    private bool killedByPlayerCollision = false; // ตรวจจับว่าตายจากการชน Player หรือไม่
+    private bool killedByPlayerCollision = false;
 
     private void Awake()
     {
@@ -81,9 +104,23 @@ public class EnemyHealthTest : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (graceTimer > 0f)
+        {
+            graceTimer -= Time.deltaTime;
+        }
+    }
+
+    public void SetSpawnGrace(float duration)
+    {
+        graceTimer = duration;
+    }
+
+    // ⭐ ระบบรับดาเมจ: หากติดสถานะ isInvulnerable จะไม่รับดาเมจและไม่ตาย
     public void TakeDamage(float damage)
     {
-        if (isDead) return;
+        if (isDead || isInvulnerable) return;
 
         currentHealth -= damage;
 
@@ -127,9 +164,17 @@ public class EnemyHealthTest : MonoBehaviour
         HandlePlayerCollision(collider.gameObject);
     }
 
+    private void OnTriggerStay2D(Collider2D collider)
+    {
+        HandlePlayerCollision(collider.gameObject);
+    }
+
+    // ⭐ ผู้เล่นยังคงบินชนเพื่อเก็บแต้มได้ตามปกติ 100%
     private void HandlePlayerCollision(GameObject target)
     {
         if (isDead) return;
+
+        if (contactDamage > 0 && graceTimer > 0f) return;
 
         if (target.CompareTag("Player") || target.transform.root.CompareTag("Player"))
         {
@@ -139,20 +184,26 @@ public class EnemyHealthTest : MonoBehaviour
             PlayerHealthTest healthTest = target.GetComponentInParent<PlayerHealthTest>();
             if (healthTest != null)
             {
-                healthTest.TakeDamage(contactDamage);
-                Debug.Log($"<color=red>[Enemy Collision] ชน Player! ลดเลือด {contactDamage}</color>");
+                if (contactDamage > 0)
+                {
+                    healthTest.TakeDamage(contactDamage, "Enemy");
+                    Debug.Log($"<color=red>[Collision] ชน Player! เสียเลือด: -{contactDamage}</color>");
+                }
+                else
+                {
+                    Debug.Log($"<color=cyan>[Collision] เก็บแต้มสำเร็จ! (ดาเมจ 0 ไม่เสียเลือด)</color>");
+                }
             }
 
-            // ⭐ 1. เพิ่มแต้มให้ผู้เล่นทันทีเมื่อเกิดการบินชนกัน
-            if (giveScoreOnPlayerHit && GameScoreManager.Instance != null)
+            if (giveScoreOnPlayerHit && GameScoreManager.Instance != null && scoreReward > 0)
             {
                 GameScoreManager.Instance.AddScore(scoreReward);
-                Debug.Log($"<color=green>[Enemy Collision] ชนศัตรูสำเร็จ! ได้รับคะแนน: +{scoreReward}</color>");
+                Debug.Log($"<color=green>[Score] ได้รับคะแนน: +{scoreReward}</color>");
             }
 
             if (destroyOnHitPlayer)
             {
-                killedByPlayerCollision = true; // มาร์กไว้ว่าตายจากการชน
+                killedByPlayerCollision = true;
                 Die();
             }
         }
@@ -163,49 +214,80 @@ public class EnemyHealthTest : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        Vector2 enemyVelocity = Vector2.left * 4f;
+        Vector2 forwardVelocity = Vector2.left * defaultFlySpeed;
         if (TryGetComponent<Rigidbody2D>(out var rb))
         {
-            if (rb.linearVelocity.sqrMagnitude > 0.05f)
-            {
-                enemyVelocity = rb.linearVelocity;
-            }
+            float speedX = Mathf.Abs(rb.linearVelocity.x);
+            if (speedX < 1f) speedX = defaultFlySpeed;
+
+            forwardVelocity = new Vector2(-speedX, rb.linearVelocity.y);
         }
 
-        // 1. ตัวเลือก: เสกศัตรูตัวใหม่ (เช่น Boomer แตกตัวเป็น Enemy ปกติ)
-        if (nextEnemyPrefab != null)
+        // 1. เสกตัวถัดไปตาม Evolution Chain เฉพาะเมื่อโดนยิงตายเท่านั้น
+        bool hasNextStage = false;
+        if (!killedByPlayerCollision && evolutionChain != null && currentChainIndex < evolutionChain.Length)
         {
-            GameObject spawnedEnemy = Instantiate(nextEnemyPrefab, transform.position, Quaternion.identity);
-
-            if (inheritVelocity && spawnedEnemy.TryGetComponent<Rigidbody2D>(out var spawnedRb))
+            EvolutionStage nextStage = evolutionChain[currentChainIndex];
+            if (nextStage != null && nextStage.enemyPrefab != null)
             {
-                spawnedRb.linearVelocity = enemyVelocity;
+                hasNextStage = true;
 
-                if (spawnedEnemy.TryGetComponent<MovementTest>(out var moveScript))
+                GameObject spawnedEnemy = Instantiate(nextStage.enemyPrefab, transform.position, Quaternion.identity);
+
+                if (spawnedEnemy.TryGetComponent(out EnemyHealthTest nextHealth))
                 {
-                    moveScript.UpdateRotation();
+                    nextHealth.evolutionChain = this.evolutionChain;
+                    nextHealth.currentChainIndex = this.currentChainIndex + 1;
+                    nextHealth.contactDamage = nextStage.contactDamage;
+                    nextHealth.scoreReward = nextStage.scoreReward;
+
+                    // ⭐ ส่งต่อค่าสถานะอมตะไปยังร่างใหม่ที่เกิดมา
+                    nextHealth.isInvulnerable = nextStage.isInvulnerable;
+
+                    if (nextStage.maxHealth > 0f)
+                    {
+                        nextHealth.maxHealth = nextStage.maxHealth;
+                        nextHealth.currentHealth = nextStage.maxHealth;
+                    }
+
+                    if (nextStage.contactDamage > 0)
+                    {
+                        nextHealth.SetSpawnGrace(spawnGracePeriod);
+                    }
+                    else
+                    {
+                        nextHealth.SetSpawnGrace(0f);
+                    }
+                }
+
+                if (inheritVelocity && spawnedEnemy.TryGetComponent<Rigidbody2D>(out var spawnedRb))
+                {
+                    spawnedRb.linearVelocity = forwardVelocity;
+
+                    if (spawnedEnemy.TryGetComponent<MovementTest>(out var moveScript))
+                    {
+                        moveScript.UpdateRotation();
+                    }
                 }
             }
         }
 
-        // ⭐ 2. ดรอปแต้ม Point Prefab (จะดรอปเฉพาะตอนโดนยิงตายเท่านั้น เพื่อไม่ให้ได้แต้มซ้ำซ้อนตอนบินชน)
-        if (pointPrefab != null && (!killedByPlayerCollision || !giveScoreOnPlayerHit))
+        // 2. ป้องกันการเกิดแต้มเบิ้ล
+        if (!hasNextStage && pointPrefab != null && (!killedByPlayerCollision || !giveScoreOnPlayerHit))
         {
             GameObject dropPoint = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-
             if (dropPoint.TryGetComponent(out PointItem pointScript))
             {
-                pointScript.Setup(scoreReward, inheritVelocity ? enemyVelocity : Vector2.left * 4f);
+                pointScript.Setup(scoreReward, inheritVelocity ? forwardVelocity : Vector2.left * defaultFlySpeed);
             }
         }
 
-        // 3. ปล่อยหนามกระจายรอบตัว
-        if (spawnSpikesOnDeath && spikePrefab != null)
+        // 3. ปล่อยหนามเฉพาะตัวศัตรูที่มีดาเมจ
+        if (contactDamage > 0 && spawnSpikesOnDeath && spikePrefab != null)
         {
             SpawnBouncingSpikes();
         }
 
-        // 4. เอฟเฟกต์ระเบิด
         if (deathEffectPrefab != null)
         {
             Quaternion randomRot = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
