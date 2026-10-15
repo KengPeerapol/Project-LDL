@@ -62,18 +62,10 @@ public class PlayerAttackTest : MonoBehaviour
     public int chargedBulletBounces = 3;
 
     [Header("--- Mode 2: Laser Beam Settings (ชาร์จยิงแบบลำแสงเลเซอร์) ---")]
-    [Tooltip("ระยะยิงรวมไกลสุดของลำแสงเลเซอร์")]
     public float laserRange = 35f;
-
-    [Tooltip("ความหนาของลำแสงเลเซอร์")]
     public float laserBeamWidth = 0.45f;
-
-    [Tooltip("ระยะเวลาที่ลำแสงเลเซอร์อยู่ค้างบนหน้าจอ (วินาที)")]
     public float laserDuration = 0.6f;
-
     public Color laserColor = new Color(1f, 0.2f, 0.2f, 0.95f);
-
-    [Tooltip("จำนวนครั้งที่ลำแสงเลเซอร์สามารถเด้งสะท้อนกำแพงได้")]
     public int laserBounces = 2;
 
     [Header("Gun Scale Settings (เอฟเฟกต์ปืนใหญ่ขึ้นตอนชาร์จ 100%)")]
@@ -98,12 +90,18 @@ public class PlayerAttackTest : MonoBehaviour
     public LayerMask wallLayer = ~0;
     public float maxTrajectoryDistance = 35f;
     public float trajectoryWidth = 0.08f;
+    public Color bulletTrajectoryColor = new Color(0f, 1f, 1f, 0.85f);
+    public Color laserTrajectoryColor = new Color(1f, 0.35f, 0.05f, 0.9f);
 
-    [Tooltip("⭐ สีของเส้นเล็งเมื่ออยู่ในโหมดกระสุน (Bullet)")]
-    public Color bulletTrajectoryColor = new Color(0f, 1f, 1f, 0.85f); // สีฟ้า Cyan
+    // ==================== Optimized Private Buffers ====================
+    private const int MAX_RAYCAST_BUFFER = 16;
+    private readonly RaycastHit2D[] raycastHitsBuffer = new RaycastHit2D[MAX_RAYCAST_BUFFER];
+    private readonly RaycastHit2D[] circleCastHitsBuffer = new RaycastHit2D[MAX_RAYCAST_BUFFER];
 
-    [Tooltip("⭐ สีของเส้นเล็งเมื่ออยู่ในโหมดเลเซอร์ (Laser)")]
-    public Color laserTrajectoryColor = new Color(1f, 0.35f, 0.05f, 0.9f); // สีส้ม/แดงนีออน
+    private readonly List<Vector3> trajectoryPointsCache = new List<Vector3>(16);
+    private readonly List<Vector3> laserPointsCache = new List<Vector3>(16);
+    private readonly List<LaserSegment> laserSegmentsCache = new List<LaserSegment>(16);
+    private readonly HashSet<EnemyHealthTest> damagedEnemiesCache = new HashSet<EnemyHealthTest>();
 
     private float nextFireTime = 0f;
     private float currentChargeTimer = 0f;
@@ -120,12 +118,24 @@ public class PlayerAttackTest : MonoBehaviour
     private PlayerControllerTest playerController;
     private LineRenderer laserLineRenderer;
     private Coroutine activeLaserCoroutine;
+    private AudioManger cachedAudioManager;
+
+    private GUIStyle cachedTextStyle;
+    private GUIStyle cachedBtnStyle;
+    private bool guiStylesInitialized = false;
 
     private void Start()
     {
         mainCamera = Camera.main;
         playerHealthTest = GetComponent<PlayerHealthTest>();
         playerController = GetComponent<PlayerControllerTest>();
+
+        // Cache Audio Manager ล่วงหน้า ไม่ใช้ GameObject.Find ในลูปยิง
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            cachedAudioManager = audioObj.GetComponent<AudioManger>();
+        }
 
         if (gunVisual == null)
         {
@@ -203,7 +213,6 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void SetupLaserLineRenderer()
     {
-        // สร้าง Laser แยกอิสระเพื่อไม่ให้หมุนตามตัว Player
         GameObject laserObj = new GameObject("LaserBeamRenderer");
         laserLineRenderer = laserObj.AddComponent<LineRenderer>();
 
@@ -217,7 +226,7 @@ public class PlayerAttackTest : MonoBehaviour
         laserLineRenderer.endColor = laserColor;
         laserLineRenderer.startWidth = laserBeamWidth;
         laserLineRenderer.endWidth = laserBeamWidth;
-        laserLineRenderer.useWorldSpace = true; // ⭐ ยึดตำแหน่งโลก
+        laserLineRenderer.useWorldSpace = true;
         laserLineRenderer.sortingOrder = 20;
         laserLineRenderer.positionCount = 0;
         laserLineRenderer.enabled = false;
@@ -300,11 +309,7 @@ public class PlayerAttackTest : MonoBehaviour
 
     private bool IsPlayerDead()
     {
-        if (playerHealthTest != null && playerHealthTest.currentHealth <= 0f)
-        {
-            return true;
-        }
-        return false;
+        return playerHealthTest != null && playerHealthTest.currentHealth <= 0f;
     }
 
     private void HandleMouseAiming()
@@ -315,7 +320,6 @@ public class PlayerAttackTest : MonoBehaviour
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
 
         Vector2 pivotOrigin = (gunPivot != null) ? (Vector2)gunPivot.position : (Vector2)transform.position;
-
         Vector2 rawDirection = (Vector2)mouseWorldPos - pivotOrigin;
         float targetAngle = Mathf.Atan2(rawDirection.y, rawDirection.x) * Mathf.Rad2Deg;
 
@@ -426,16 +430,45 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    // ⭐ คำนวณพิกัดเลเซอร์เป็นภาพนิ่ง ณ จังหวะที่ยิง (Snapshot) เพื่อไม่ให้ขยับตามปืน
+    // ⭐ Zero-Allocation Helper สำหรับค้นหากำแพงที่ชนใกล้ที่สุด
+    private bool TryGetClosestWallHit(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D closestHit)
+    {
+        int hitCount = Physics2D.RaycastNonAlloc(origin, direction, raycastHitsBuffer, distance, wallLayer);
+        float minDistance = float.MaxValue;
+        bool hitFound = false;
+        closestHit = default;
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit2D hit = raycastHitsBuffer[i];
+            if (hit.collider == null) continue;
+            if (hit.collider.transform.root == transform.root) continue;
+            if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Bullet")) continue;
+            if (hit.distance < 0.02f) continue;
+
+            if (hit.collider.CompareTag("Wall"))
+            {
+                if (hit.distance < minDistance)
+                {
+                    minDistance = hit.distance;
+                    closestHit = hit;
+                    hitFound = true;
+                }
+            }
+        }
+
+        return hitFound;
+    }
+
     private void FireLaserBeam()
     {
         Vector2 startPos = (firePoint != null) ? (Vector2)firePoint.position : (Vector2)transform.position;
         Vector2 startDir = currentAimDirection;
 
-        List<Vector3> staticPoints = new List<Vector3>();
-        List<LaserSegment> staticSegments = new List<LaserSegment>();
+        laserPointsCache.Clear();
+        laserSegmentsCache.Clear();
 
-        staticPoints.Add(startPos);
+        laserPointsCache.Add(startPos);
 
         Vector2 currentPos = startPos;
         Vector2 currentDir = startDir;
@@ -444,31 +477,11 @@ public class PlayerAttackTest : MonoBehaviour
 
         for (int i = 0; i <= laserBounces; i++)
         {
-            RaycastHit2D[] wallHits = Physics2D.RaycastAll(currentPos, currentDir, remainingRange, wallLayer);
-            System.Array.Sort(wallHits, (a, b) => a.distance.CompareTo(b.distance));
-
-            bool hitWall = false;
-            RaycastHit2D wallHit = new RaycastHit2D();
-
-            foreach (var hit in wallHits)
-            {
-                if (hit.collider == null) continue;
-                if (hit.collider.transform.root == transform.root) continue;
-                if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Bullet")) continue;
-                if (hit.distance < 0.02f) continue;
-
-                if (hit.collider.CompareTag("Wall"))
-                {
-                    wallHit = hit;
-                    hitWall = true;
-                    break;
-                }
-            }
-
+            bool hitWall = TryGetClosestWallHit(currentPos, currentDir, remainingRange, out RaycastHit2D wallHit);
             float segmentDist = hitWall ? wallHit.distance : remainingRange;
             Vector2 segmentEnd = hitWall ? wallHit.point : (currentPos + (currentDir * segmentDist));
 
-            staticSegments.Add(new LaserSegment
+            laserSegmentsCache.Add(new LaserSegment
             {
                 start = currentPos,
                 end = segmentEnd,
@@ -476,7 +489,7 @@ public class PlayerAttackTest : MonoBehaviour
                 direction = currentDir
             });
 
-            staticPoints.Add(segmentEnd);
+            laserPointsCache.Add(segmentEnd);
 
             if (hitWall)
             {
@@ -514,57 +527,54 @@ public class PlayerAttackTest : MonoBehaviour
         {
             StopCoroutine(activeLaserCoroutine);
         }
-        activeLaserCoroutine = StartCoroutine(StaticLaserRoutine(staticPoints, staticSegments));
+        activeLaserCoroutine = StartCoroutine(StaticLaserRoutine());
 
         PlayShootAnimation();
 
-        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
-        if (audioObj != null)
+        if (cachedAudioManager != null && cachedAudioManager.Shoot != null)
         {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Shoot != null)
-            {
-                audioManager.PlaySFX(audioManager.Shoot);
-            }
+            cachedAudioManager.PlaySFX(cachedAudioManager.Shoot);
         }
     }
 
-    // ⭐ แอนิเมชันเลเซอร์ค้างอยู่กับที่ในฉาก ไม่หมุนและไม่เคลื่อนที่ตามผู้เล่น
-    private IEnumerator StaticLaserRoutine(List<Vector3> points, List<LaserSegment> segments)
+    private IEnumerator StaticLaserRoutine()
     {
-        laserLineRenderer.positionCount = points.Count;
-        laserLineRenderer.SetPositions(points.ToArray());
+        laserLineRenderer.positionCount = laserPointsCache.Count;
+        for (int i = 0; i < laserPointsCache.Count; i++)
+        {
+            laserLineRenderer.SetPosition(i, laserPointsCache[i]);
+        }
         laserLineRenderer.enabled = true;
 
-        HashSet<EnemyHealthTest> damagedEnemies = new HashSet<EnemyHealthTest>();
+        damagedEnemiesCache.Clear();
         float elapsed = 0f;
 
         while (elapsed < laserDuration)
         {
             elapsed += Time.unscaledDeltaTime;
 
-            // ตรวจจับศัตรูตามแนวพิกัดเดิมที่ตรึงไว้
-            for (int i = 0; i < segments.Count; i++)
+            // ตรวจจับศัตรูแบบ CircleCastNonAlloc
+            for (int i = 0; i < laserSegmentsCache.Count; i++)
             {
-                LaserSegment seg = segments[i];
-                RaycastHit2D[] enemyHits = Physics2D.CircleCastAll(seg.start, laserBeamWidth * 0.5f, seg.direction, seg.length);
+                LaserSegment seg = laserSegmentsCache[i];
+                int enemyHitCount = Physics2D.CircleCastNonAlloc(seg.start, laserBeamWidth * 0.5f, seg.direction, circleCastHitsBuffer, seg.length);
 
-                foreach (var hit in enemyHits)
+                for (int h = 0; h < enemyHitCount; h++)
                 {
+                    RaycastHit2D hit = circleCastHitsBuffer[h];
                     if (hit.collider == null) continue;
                     if (hit.collider.CompareTag("Enemy") || hit.collider.transform.root.CompareTag("Enemy"))
                     {
                         EnemyHealthTest enemy = hit.collider.GetComponentInParent<EnemyHealthTest>();
-                        if (enemy != null && !damagedEnemies.Contains(enemy))
+                        if (enemy != null && !damagedEnemiesCache.Contains(enemy))
                         {
-                            damagedEnemies.Add(enemy);
+                            damagedEnemiesCache.Add(enemy);
                             enemy.TakeDamage(chargedDamage);
                         }
                     }
                 }
             }
 
-            // ค่อยๆ ลดความหนาของลำแสงจนจางหายไป
             float progress = elapsed / laserDuration;
             float currentWidth = Mathf.Lerp(laserBeamWidth, 0.03f, progress);
             laserLineRenderer.startWidth = currentWidth;
@@ -602,7 +612,6 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    // ⭐ อัปเดตสีและความยาวของเส้นเล็งตามโหมดปัจจุบัน
     private void UpdateTrajectoryPreview()
     {
         if (!enableTrajectory || !enableChargeAttack)
@@ -621,13 +630,11 @@ public class PlayerAttackTest : MonoBehaviour
         {
             if (chargeMode == ChargeMode.Projectile)
             {
-                // โหมดกระสุน: ใช้สี bulletTrajectoryColor
                 ApplyTrajectoryColor(bulletTrajectoryColor);
                 DrawBounceTrajectory(chargedBulletBounces, maxTrajectoryDistance);
             }
             else if (chargeMode == ChargeMode.LaserBeam)
             {
-                // โหมดเลเซอร์: ใช้สี laserTrajectoryColor
                 ApplyTrajectoryColor(laserTrajectoryColor);
                 DrawBounceTrajectory(laserBounces, laserRange);
             }
@@ -647,6 +654,7 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
+    // ⭐ วาดเส้นเล็งแบบ Zero GC Alloc (ไม่ใช้ .ToArray() และไม่สร้าง List ใหม่)
     private void DrawBounceTrajectory(int maxBounces, float totalDistance)
     {
         if (trajectoryLine == null) return;
@@ -654,38 +662,19 @@ public class PlayerAttackTest : MonoBehaviour
         Vector2 currentPos = (firePoint != null) ? (Vector2)firePoint.position : (Vector2)transform.position;
         Vector2 currentDir = currentAimDirection;
 
-        List<Vector3> points = new List<Vector3>();
-        points.Add(currentPos);
+        trajectoryPointsCache.Clear();
+        trajectoryPointsCache.Add(currentPos);
 
         int bouncesLeft = maxBounces;
         float remainingRange = totalDistance;
 
         for (int i = 0; i <= maxBounces; i++)
         {
-            RaycastHit2D[] hits = Physics2D.RaycastAll(currentPos, currentDir, remainingRange, wallLayer);
-            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-            bool hitWall = false;
-            RaycastHit2D wallHit = new RaycastHit2D();
-
-            foreach (var hit in hits)
-            {
-                if (hit.collider == null) continue;
-                if (hit.collider.transform.root == transform.root) continue;
-                if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Bullet")) continue;
-                if (hit.distance < 0.02f) continue;
-
-                if (hit.collider.CompareTag("Wall"))
-                {
-                    wallHit = hit;
-                    hitWall = true;
-                    break;
-                }
-            }
+            bool hitWall = TryGetClosestWallHit(currentPos, currentDir, remainingRange, out RaycastHit2D wallHit);
 
             if (hitWall)
             {
-                points.Add(wallHit.point);
+                trajectoryPointsCache.Add(wallHit.point);
                 remainingRange -= wallHit.distance;
 
                 if (bouncesLeft > 0 && remainingRange > 0.1f)
@@ -712,13 +701,17 @@ public class PlayerAttackTest : MonoBehaviour
             }
             else
             {
-                points.Add(currentPos + (currentDir * remainingRange));
+                trajectoryPointsCache.Add(currentPos + (currentDir * remainingRange));
                 break;
             }
         }
 
-        trajectoryLine.positionCount = points.Count;
-        trajectoryLine.SetPositions(points.ToArray());
+        // เซ็ตตำแหน่งทีละจุดเพื่อไม่เกิดการจัดสรร Array ในฮีป
+        trajectoryLine.positionCount = trajectoryPointsCache.Count;
+        for (int i = 0; i < trajectoryPointsCache.Count; i++)
+        {
+            trajectoryLine.SetPosition(i, trajectoryPointsCache[i]);
+        }
         trajectoryLine.enabled = true;
     }
 
@@ -744,14 +737,9 @@ public class PlayerAttackTest : MonoBehaviour
 
         PlayShootAnimation();
 
-        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
-        if (audioObj != null)
+        if (cachedAudioManager != null && cachedAudioManager.Shoot != null)
         {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Shoot != null)
-            {
-                audioManager.PlaySFX(audioManager.Shoot);
-            }
+            cachedAudioManager.PlaySFX(cachedAudioManager.Shoot);
         }
     }
 
@@ -806,52 +794,63 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
+    private void InitGUIStyles()
+    {
+        if (guiStylesInitialized) return;
+
+        cachedTextStyle = new GUIStyle();
+        cachedTextStyle.fontSize = 18;
+        cachedTextStyle.fontStyle = FontStyle.Bold;
+
+        cachedBtnStyle = new GUIStyle(GUI.skin.button);
+        cachedBtnStyle.fontSize = 14;
+        cachedBtnStyle.fontStyle = FontStyle.Bold;
+
+        guiStylesInitialized = true;
+    }
+
     private void OnGUI()
     {
         if (PauseMenuManager.isGamePaused) return;
         if (playerController != null && !playerController.CanShootAndControl) return;
         if (!enableChargeAttack) return;
 
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 18;
-        style.fontStyle = FontStyle.Bold;
+        InitGUIStyles(); // แคช Style ไว้ใช้ซ้ำ ไม่สร้างใหม่ทุกเฟรม
 
         string modeName = (chargeMode == ChargeMode.Projectile) ? "BULLET (เด้งกำแพง)" : "BOUNCING LASER (เลเซอร์เด้ง)";
 
         if (chargeCooldownTimer > 0f)
         {
-            style.normal.textColor = Color.red;
-            GUI.Label(new Rect(20, 20, 400, 30), $"Charged Shot CD: {chargeCooldownTimer:F1}s", style);
+            cachedTextStyle.normal.textColor = Color.red;
+            GUI.Label(new Rect(20, 20, 400, 30), $"Charged Shot CD: {chargeCooldownTimer:F1}s", cachedTextStyle);
         }
         else
         {
-            style.normal.textColor = Color.green;
-            GUI.Label(new Rect(20, 20, 400, 30), "Charged Shot: READY", style);
+            cachedTextStyle.normal.textColor = Color.green;
+            GUI.Label(new Rect(20, 20, 400, 30), "Charged Shot: READY", cachedTextStyle);
         }
 
         if (isCharging)
         {
-            style.normal.textColor = Color.yellow;
+            cachedTextStyle.normal.textColor = Color.yellow;
             float chargePercent = Mathf.Clamp01(currentChargeTimer / chargeTimeRequired) * 100f;
             string status = (chargePercent >= 100f) ? "FULL (100%)" : $"{chargePercent:F0}%";
             string slowMoStatus = isSlowMoActive ? "[Slow-Mo]" : "[Normal Speed]";
-            GUI.Label(new Rect(20, 50, 450, 30), $"Charging [{modeName}] {slowMoStatus}: {status}", style);
+            GUI.Label(new Rect(20, 50, 450, 30), $"Charging [{modeName}] {slowMoStatus}: {status}", cachedTextStyle);
         }
 
         if (showOnScreenToggleButton)
         {
-            GUIStyle btnStyle = new GUIStyle(GUI.skin.button);
-            btnStyle.fontSize = 14;
-            btnStyle.fontStyle = FontStyle.Bold;
-
-            float btnX = Screen.width - 240f;
-            float btnY = 20f;
+            float btnWidth = 210f;
+            float btnHeight = 48f;
+            float btnX = Screen.width - btnWidth - 20f;
+            float btnY = Screen.height - btnHeight - 20f;
 
             string btnText = (chargeMode == ChargeMode.Projectile)
-                ? $"[Q] Mode: Bullet\n(คลิกสลับเป็น Laser)"
-                : $"[Q] Mode: Laser\n(คลิกสลับเป็น Bullet)";
+                ? "[Q] Mode: Bullet\n(คลิกสลับเป็น Laser)"
+                : "[Q] Mode: Laser\n(คลิกสลับเป็น Bullet)";
 
-            if (GUI.Button(new Rect(btnX, btnY, 210, 48), btnText, btnStyle))
+            if (GUI.Button(new Rect(btnX, btnY, btnWidth, btnHeight), btnText, cachedBtnStyle))
             {
                 ToggleChargeMode();
             }
