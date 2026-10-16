@@ -35,14 +35,29 @@ public class MissileEventSystem : MonoBehaviour
     public PlayerControllerTest playerController;
 
     private float timerDisplay = 0f;
-    private string eventStatus = "Cooldown";
+    private AudioManger cachedAudioManager;
+    private WaitForSeconds cachedDelayBetweenMissiles;
+    private WaitForSeconds cachedPostWaveWait;
+
+    private void Awake()
+    {
+        // แคช Yield Instruction เพื่อ Zero GC Alloc
+        cachedDelayBetweenMissiles = new WaitForSeconds(delayBetweenMissiles);
+        cachedPostWaveWait = new WaitForSeconds(totalWarningDuration + 2.5f);
+    }
 
     private void Start()
     {
         if (playerController == null)
         {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) playerController = p.GetComponentInParent<PlayerControllerTest>();
+            playerController = Object.FindAnyObjectByType<PlayerControllerTest>();
+        }
+
+        // แคช Audio Manager ครั้งเดียว ไม่เรียก Find ในลูป
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            cachedAudioManager = audioObj.GetComponent<AudioManger>();
         }
 
         StartCoroutine(MissileEventLoop());
@@ -52,7 +67,6 @@ public class MissileEventSystem : MonoBehaviour
     {
         while (true)
         {
-            eventStatus = "Cooldown";
             timerDisplay = cooldownTime;
 
             while (timerDisplay > 0f)
@@ -74,8 +88,6 @@ public class MissileEventSystem : MonoBehaviour
 
     private IEnumerator TriggerMissileWaveRoutine()
     {
-        eventStatus = "Missile Incoming!";
-
         if (enemySpawner != null) enemySpawner.SetActive(false);
         if (itemSpawner != null) itemSpawner.SetActive(false);
 
@@ -86,10 +98,10 @@ public class MissileEventSystem : MonoBehaviour
             if (playerController == null || !playerController.CanShootAndControl) break;
 
             StartCoroutine(SingleMissileSequenceRoutine());
-            yield return new WaitForSeconds(delayBetweenMissiles);
+            yield return cachedDelayBetweenMissiles;
         }
 
-        yield return new WaitForSeconds(totalWarningDuration + 2.5f);
+        yield return cachedPostWaveWait;
 
         if (enemySpawner != null) enemySpawner.SetActive(true);
         if (itemSpawner != null) itemSpawner.SetActive(true);
@@ -102,15 +114,10 @@ public class MissileEventSystem : MonoBehaviour
         GameObject warningObj = Instantiate(warningPrefab);
         SpriteRenderer warningRenderer = warningObj.GetComponentInChildren<SpriteRenderer>();
 
-        // ⭐ 1. เล่นเสียงเตือน Alert สำหรับจรวดลูกนี้
-        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
-        if (audioObj != null)
+        // เล่นเสียงแจ้งเตือนผ่าน Reference ที่แคชไว้
+        if (cachedAudioManager != null && cachedAudioManager.Alert != null)
         {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.Alert != null)
-            {
-                audioManager.PlaySFX(audioManager.Alert);
-            }
+            cachedAudioManager.PlaySFX(cachedAudioManager.Alert);
         }
 
         float elapsed = 0f;
@@ -153,18 +160,12 @@ public class MissileEventSystem : MonoBehaviour
 
         Destroy(warningObj);
 
-        // ปล่อยจรวดมิสไซล์
         Vector3 spawnPos = new Vector3(spawnRightX + 1f, lockedY, 0f);
         Instantiate(missilePrefab, spawnPos, Quaternion.identity);
 
-        // ⭐ 2. เล่นเสียงพุ่ง MidSide สำหรับจรวดลูกนี้
-        if (audioObj != null)
+        if (cachedAudioManager != null && cachedAudioManager.MidSide != null)
         {
-            AudioManger audioManager = audioObj.GetComponent<AudioManger>();
-            if (audioManager != null && audioManager.MidSide != null)
-            {
-                audioManager.PlaySFX(audioManager.MidSide);
-            }
+            cachedAudioManager.PlaySFX(cachedAudioManager.MidSide);
         }
     }
 }

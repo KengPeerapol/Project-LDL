@@ -24,15 +24,14 @@ public class PauseMenuManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
         isGamePaused = false;
         isGameOver = false;
 
-        // ⭐ 1. ปิดหน้าต่างเมนูและหน้าต่างจบเกมทั้งหมดตอนเริ่มฉาก
         if (pausePanel != null) pausePanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
 
-        // ⭐ 2. บังคับเปิดปุ่ม Pause บนหน้าจอให้แสดงผลเสมอตอนเริ่มเกม
         if (pauseButtonOnScreen != null)
         {
             pauseButtonOnScreen.SetActive(true);
@@ -41,7 +40,6 @@ public class PauseMenuManager : MonoBehaviour
 
     private void Update()
     {
-        // หากเกมจบแล้ว (ชนะ/แพ้) หรือหน้าต่างผลจบเกมเปิดอยู่ ให้บล็อกและซ่อนปุ่ม Pause ทันที
         if (isGameOver || IsEndGameActive())
         {
             if (pauseButtonOnScreen != null && pauseButtonOnScreen.activeSelf)
@@ -51,7 +49,6 @@ public class PauseMenuManager : MonoBehaviour
             return;
         }
 
-        // ตรวจจับการกดปุ่ม Escape (Esc) บนคีย์บอร์ด
         bool escPressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
 
         if (escPressed)
@@ -93,6 +90,7 @@ public class PauseMenuManager : MonoBehaviour
     {
         isGamePaused = false;
         Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f; // ⭐ ป้องกัน fixedDeltaTime ค้างจากการสโลว์โหมด
 
         if (pausePanel != null) pausePanel.SetActive(false);
         if (pauseButtonOnScreen != null) pauseButtonOnScreen.SetActive(true);
@@ -104,6 +102,7 @@ public class PauseMenuManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f; // ⭐ คืนค่าเวลาฟิสิกส์มาตรฐาน
         isGamePaused = false;
         isGameOver = false;
         Cursor.visible = false;
@@ -114,6 +113,7 @@ public class PauseMenuManager : MonoBehaviour
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f; // ⭐ คืนค่าเวลาฟิสิกส์มาตรฐาน
         isGamePaused = false;
         isGameOver = false;
         Cursor.visible = true;

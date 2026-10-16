@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletTest : MonoBehaviour
 {
     [Header("Bullet Settings")]
+    [Tooltip("ความเร็วพื้นฐานของกระสุน (จะถูกแทนที่ถ้าส่งค่าความเร็วมาจาก PlayerAttackTest)")]
     public float speed = 12f;
     public float lifeTime = 3f;
     public int damage = 25;
@@ -17,15 +18,21 @@ public class BulletTest : MonoBehaviour
     private int currentBounces = 0;
 
     private Rigidbody2D rb;
-    private HashSet<Collider2D> hitTargets = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> hitTargets = new HashSet<Collider2D>();
 
-    public void Setup(Vector2 direction, int bulletDamage, float sizeMultiplier = 1f, bool pierce = false, int bounces = 0)
+    // ⭐ เพิ่มพารามิเตอร์ customSpeed ให้ปรับแยกความเร็วกระสุนธรรมดาและกระสุนชาร์จได้
+    public void Setup(Vector2 direction, int bulletDamage, float sizeMultiplier = 1f, bool pierce = false, int bounces = 0, float customSpeed = -1f)
     {
         damage = bulletDamage;
         isPiercing = pierce;
         maxBounces = bounces;
         currentBounces = 0;
         transform.localScale *= sizeMultiplier;
+
+        if (customSpeed > 0f)
+        {
+            speed = customSpeed;
+        }
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -53,13 +60,9 @@ public class BulletTest : MonoBehaviour
         }
         else if (collision.CompareTag("Enemy") || collision.transform.root.CompareTag("Enemy"))
         {
-            EnemyHealthTest enemyTest = collision.GetComponent<EnemyHealthTest>();
-            if (enemyTest == null)
-            {
-                enemyTest = collision.GetComponentInParent<EnemyHealthTest>();
-            }
+            EnemyHealthTest enemyTest = collision.GetComponentInParent<EnemyHealthTest>();
 
-            // ⭐ หากศัตรู/แต้มตัวนี้เปิด isInvulnerable กระสุนจะบินทะลุผ่านไปเลย ไม่โดนบล็อก
+            // หากศัตรู/แต้มตัวนี้เปิด isInvulnerable กระสุนจะบินทะลุผ่านไปทันที
             if (enemyTest != null && enemyTest.isInvulnerable)
             {
                 return;

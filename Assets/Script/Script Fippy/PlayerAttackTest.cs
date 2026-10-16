@@ -35,16 +35,16 @@ public class PlayerAttackTest : MonoBehaviour
     public float fireRate = 0.25f;
     public float firePointDistance = 0.7f;
 
+    [Tooltip("ความเร็วของกระสุนธรรมดา")]
+    public float normalBulletSpeed = 12f;
+
     [Header("Aim Angle Clamp (จำกัดมุมชี้ด้านหน้า)")]
     [Range(0f, 360f)]
     public float maxAimAngle = 80f;
 
     [Header("Charge Attack Settings (ระบบชาร์จยิง)")]
     public bool enableChargeAttack = true;
-
-    [Tooltip("โหมดชาร์จยิงปัจจุบัน (สลับได้ผ่านปุ่ม UI หรือคีย์ลัด)")]
     public ChargeMode chargeMode = ChargeMode.Projectile;
-
     public float chargeTimeRequired = 1.0f;
     public float chargeCooldown = 5.0f;
     public int normalDamage = 25;
@@ -60,6 +60,9 @@ public class PlayerAttackTest : MonoBehaviour
     public GameObject chargedBulletPrefab;
     public float chargedBulletScale = 1.0f;
     public int chargedBulletBounces = 3;
+
+    [Tooltip("ความเร็วของกระสุนชาร์จพิเศษ")]
+    public float chargedBulletSpeed = 18f;
 
     [Header("--- Mode 2: Laser Beam Settings (ชาร์จยิงแบบลำแสงเลเซอร์) ---")]
     public float laserRange = 35f;
@@ -98,6 +101,9 @@ public class PlayerAttackTest : MonoBehaviour
     private readonly RaycastHit2D[] raycastHitsBuffer = new RaycastHit2D[MAX_RAYCAST_BUFFER];
     private readonly RaycastHit2D[] circleCastHitsBuffer = new RaycastHit2D[MAX_RAYCAST_BUFFER];
 
+    private ContactFilter2D wallContactFilter;
+    private ContactFilter2D laserContactFilter;
+
     private readonly List<Vector3> trajectoryPointsCache = new List<Vector3>(16);
     private readonly List<Vector3> laserPointsCache = new List<Vector3>(16);
     private readonly List<LaserSegment> laserSegmentsCache = new List<LaserSegment>(16);
@@ -130,12 +136,19 @@ public class PlayerAttackTest : MonoBehaviour
         playerHealthTest = GetComponent<PlayerHealthTest>();
         playerController = GetComponent<PlayerControllerTest>();
 
-        // Cache Audio Manager ล่วงหน้า ไม่ใช้ GameObject.Find ในลูปยิง
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
             cachedAudioManager = audioObj.GetComponent<AudioManger>();
         }
+
+        wallContactFilter = new ContactFilter2D();
+        wallContactFilter.SetLayerMask(wallLayer);
+        wallContactFilter.useTriggers = true;
+
+        laserContactFilter = new ContactFilter2D();
+        laserContactFilter.SetLayerMask(~0);
+        laserContactFilter.useTriggers = true;
 
         if (gunVisual == null)
         {
@@ -234,13 +247,15 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void Update()
     {
-        if (PauseMenuManager.isGamePaused || (Time.timeScale <= 0f && !isSlowMoActive))
+        // ⭐ 1. หากเกม Pause หรือ Time.timeScale เป็น 0 ให้หยุดกระบวนการชาร์จทันทีโดย "ห้ามเขียนทับ Time.timeScale"
+        if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f)
         {
-            ResetSlowMotion();
-            ResetGunScale();
-            HideTrajectory();
+            isSlowMoActive = false; // รีเซ็ตแฟล็กเงียบๆ ห้ามสั่ง Time.timeScale = 1f
             isCharging = false;
             currentChargeTimer = 0f;
+            hasLoggedFullCharge = false;
+            ResetGunScale();
+            HideTrajectory();
             return;
         }
 
@@ -353,7 +368,7 @@ public class PlayerAttackTest : MonoBehaviour
 
             if (Mouse.current.leftButton.wasPressedThisFrame && Time.unscaledTime >= nextFireTime)
             {
-                FireBullet(bulletPrefab, normalDamage, 1.0f, isPiercing: false, bounces: normalBulletBounces);
+                FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
                 nextFireTime = Time.unscaledTime + fireRate;
             }
             return;
@@ -402,8 +417,8 @@ public class PlayerAttackTest : MonoBehaviour
                     if (chargeMode == ChargeMode.Projectile)
                     {
                         GameObject spawnPrefab = (chargedBulletPrefab != null) ? chargedBulletPrefab : bulletPrefab;
-                        FireBullet(spawnPrefab, chargedDamage, chargedBulletScale, isPiercing: true, bounces: chargedBulletBounces);
-                        Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จ! ดาเมจ {chargedDamage}</color>");
+                        FireBullet(spawnPrefab, chargedDamage, chargedBulletScale, chargedBulletSpeed, isPiercing: true, bounces: chargedBulletBounces);
+                        Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จ! ดาเมจ {chargedDamage} ความเร็ว {chargedBulletSpeed}</color>");
                     }
                     else if (chargeMode == ChargeMode.LaserBeam)
                     {
@@ -415,13 +430,13 @@ public class PlayerAttackTest : MonoBehaviour
                 }
                 else
                 {
-                    FireBullet(bulletPrefab, normalDamage, 1.0f, isPiercing: false, bounces: normalBulletBounces);
+                    FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
                     Debug.LogWarning("[Charged Shot] ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
                 }
             }
             else if (Time.unscaledTime >= nextFireTime)
             {
-                FireBullet(bulletPrefab, normalDamage, 1.0f, isPiercing: false, bounces: normalBulletBounces);
+                FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
                 nextFireTime = Time.unscaledTime + fireRate;
             }
 
@@ -430,10 +445,9 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    // ⭐ Zero-Allocation Helper สำหรับค้นหากำแพงที่ชนใกล้ที่สุด
     private bool TryGetClosestWallHit(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D closestHit)
     {
-        int hitCount = Physics2D.RaycastNonAlloc(origin, direction, raycastHitsBuffer, distance, wallLayer);
+        int hitCount = Physics2D.Raycast(origin, direction, wallContactFilter, raycastHitsBuffer, distance);
         float minDistance = float.MaxValue;
         bool hitFound = false;
         closestHit = default;
@@ -551,13 +565,19 @@ public class PlayerAttackTest : MonoBehaviour
 
         while (elapsed < laserDuration)
         {
+            // ⭐ ถ้าเกมติด Pause ให้ข้ามเฟรมไป ไม่นับเวลาและไม่ยิงดาเมจ
+            if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f)
+            {
+                yield return null;
+                continue;
+            }
+
             elapsed += Time.unscaledDeltaTime;
 
-            // ตรวจจับศัตรูแบบ CircleCastNonAlloc
             for (int i = 0; i < laserSegmentsCache.Count; i++)
             {
                 LaserSegment seg = laserSegmentsCache[i];
-                int enemyHitCount = Physics2D.CircleCastNonAlloc(seg.start, laserBeamWidth * 0.5f, seg.direction, circleCastHitsBuffer, seg.length);
+                int enemyHitCount = Physics2D.CircleCast(seg.start, laserBeamWidth * 0.5f, seg.direction, laserContactFilter, circleCastHitsBuffer, seg.length);
 
                 for (int h = 0; h < enemyHitCount; h++)
                 {
@@ -566,7 +586,7 @@ public class PlayerAttackTest : MonoBehaviour
                     if (hit.collider.CompareTag("Enemy") || hit.collider.transform.root.CompareTag("Enemy"))
                     {
                         EnemyHealthTest enemy = hit.collider.GetComponentInParent<EnemyHealthTest>();
-                        if (enemy != null && !damagedEnemiesCache.Contains(enemy))
+                        if (enemy != null && !enemy.isInvulnerable && !damagedEnemiesCache.Contains(enemy))
                         {
                             damagedEnemiesCache.Add(enemy);
                             enemy.TakeDamage(chargedDamage);
@@ -654,7 +674,6 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    // ⭐ วาดเส้นเล็งแบบ Zero GC Alloc (ไม่ใช้ .ToArray() และไม่สร้าง List ใหม่)
     private void DrawBounceTrajectory(int maxBounces, float totalDistance)
     {
         if (trajectoryLine == null) return;
@@ -706,7 +725,6 @@ public class PlayerAttackTest : MonoBehaviour
             }
         }
 
-        // เซ็ตตำแหน่งทีละจุดเพื่อไม่เกิดการจัดสรร Array ในฮีป
         trajectoryLine.positionCount = trajectoryPointsCache.Count;
         for (int i = 0; i < trajectoryPointsCache.Count; i++)
         {
@@ -724,7 +742,7 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    private void FireBullet(GameObject prefabToSpawn, int damage, float scale, bool isPiercing = false, int bounces = 0)
+    private void FireBullet(GameObject prefabToSpawn, int damage, float scale, float bulletSpeed, bool isPiercing = false, int bounces = 0)
     {
         if (prefabToSpawn == null || firePoint == null) return;
 
@@ -732,7 +750,7 @@ public class PlayerAttackTest : MonoBehaviour
         BulletTest bulletScript = newBullet.GetComponent<BulletTest>();
         if (bulletScript != null)
         {
-            bulletScript.Setup(currentAimDirection, damage, scale, isPiercing, bounces);
+            bulletScript.Setup(currentAimDirection, damage, scale, isPiercing, bounces, bulletSpeed);
         }
 
         PlayShootAnimation();
@@ -753,6 +771,9 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void ApplySlowMotion(bool enable)
     {
+        // ⭐ ไม่เปิดสโลว์โหมดทับ หากเกมกำลัง Pause หรือ Time.timeScale เป็น 0
+        if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f) return;
+
         if (enable)
         {
             Time.timeScale = slowMotionTimeScale;
@@ -765,13 +786,18 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
+    // ⭐ แก้ไขจุดสำคัญ: เช็กว่าหากเกมกำลัง Pause อยู่ ห้ามปรับ Time.timeScale = 1.0f เด็ดขาด
     private void ResetSlowMotion()
     {
         if (isSlowMoActive)
         {
-            Time.timeScale = 1.0f;
-            Time.fixedDeltaTime = 0.02f;
             isSlowMoActive = false;
+
+            if (!PauseMenuManager.isGamePaused && Time.timeScale > 0f)
+            {
+                Time.timeScale = 1.0f;
+                Time.fixedDeltaTime = 0.02f;
+            }
         }
     }
 
@@ -815,7 +841,7 @@ public class PlayerAttackTest : MonoBehaviour
         if (playerController != null && !playerController.CanShootAndControl) return;
         if (!enableChargeAttack) return;
 
-        InitGUIStyles(); // แคช Style ไว้ใช้ซ้ำ ไม่สร้างใหม่ทุกเฟรม
+        InitGUIStyles();
 
         string modeName = (chargeMode == ChargeMode.Projectile) ? "BULLET (เด้งกำแพง)" : "BOUNCING LASER (เลเซอร์เด้ง)";
 

@@ -5992,9 +5992,17 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: chargedBulletSpeed
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: enableChargeAttack
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: chargedBulletPrefab
+      value: 
+      objectReference: {fileID: 1505545788687779975, guid: 91d68bb20114991469ca0e6e72903f4f, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
