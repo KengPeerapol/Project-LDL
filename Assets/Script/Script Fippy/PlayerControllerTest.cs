@@ -262,4 +262,30 @@ public class PlayerControllerTest : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
     }
+
+    // ⭐ ระบบเสียงเก็บแต้ม (พร้อมโค้ดเช็กบั๊ก)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Point"))
+        {
+            GameScoreManager.Instance.AddScore(20);
+
+            // เช็กว่าปัญหาเกิดจากอะไร
+            if (audioManager == null)
+            {
+                Debug.LogError("<color=red>[ด่วน] ตัวละครหา Audio Manager ไม่เจอ! (Tag อาจจะหลุด หรือสะกดผิด)</color>");
+            }
+            else if (audioManager.CollectPoint == null)
+            {
+                Debug.LogError("<color=red>[ด่วน] หาไฟล์เสียงไม่เจอ! (หลุดจากช่อง Collect Point ใน Audio Manager)</color>");
+            }
+            else
+            {
+                Debug.Log("<color=green>สั่งเล่นเสียงเก็บแต้มแล้ว!</color>");
+                audioManager.PlaySFX(audioManager.CollectPoint);
+            }
+
+            Destroy(other.gameObject);
+        }
+    }
 }

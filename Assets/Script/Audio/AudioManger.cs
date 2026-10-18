@@ -19,17 +19,34 @@ public class AudioManger : MonoBehaviour
     public AudioClip HurtMissile;
     public AudioClip HurtPlaque;
 
+    [Header("--- Score & UI Sounds ---")]
+    public AudioClip CollectPoint;
+    public AudioClip ScoreReached;
+    public AudioClip GameOverSound;
+    public AudioClip UIHover;
+    public AudioClip UIClick;
+
     [Header("--- Other SFX ---")]
     public AudioClip Die;
     public AudioClip Alert;
     public AudioClip MidSide;
 
+    [Header("-------- Volume Settings ----------")]
+    [Tooltip("ปรับความดังเฉพาะเสียง Game Over (0 = เงียบสุด, 1 = ดังสุด)")]
+    [Range(0f, 1f)] public float gameOverVolume = 0.5f;
+
+    [Tooltip("ปรับความดังเสียงตอนชี้ปุ่ม (Hover)")]
+    [Range(0f, 1f)] public float uiHoverVolume = 0.3f; // ⭐ พี่ตั้งค่าเริ่มต้นให้เบาลง (0.3)
+
+    [Tooltip("ปรับความดังเสียงตอนคลิกปุ่ม (Click)")]
+    [Range(0f, 1f)] public float uiClickVolume = 1.0f; // ⭐ เสียงคลิกดังปกติ (1.0)
+
     [Header("-------- Anti-Spam Settings ----------")]
-    [Tooltip("ระยะเวลาดีเลย์ขั้นต่ำระหว่างเสียงมิสไซล์ (วินาที) แนะนำ 0.15s เพื่อให้ดังครบทุกจำนวนลูก")]
-    public float missileSfxCooldown = 0.15f; // ⭐ ปรับลดจาก 0.8f เหลือ 0.15f เพื่อให้เสียงจรวดลูกถัดไปดังทันที
+    [Tooltip("ระยะเวลาดีเลย์ขั้นต่ำระหว่างเสียงมิสไซล์ (วินาที)")]
+    public float missileSfxCooldown = 0.15f;
 
     [Header("-------- Random Pitch Settings ----------")]
-    [Tooltip("ค่าความต่ำ-สูงของเสียงยิงปืน (ปกติคือ 1)")]
+    [Tooltip("ค่าความต่ำ-สูงของเสียงยิงปืน และเสียงคลิก UI")]
     public float minPitch = 0.75f;
     public float maxPitch = 1.25f;
 
@@ -37,6 +54,9 @@ public class AudioManger : MonoBehaviour
 
     private void Start()
     {
+        // บังคับให้เสียง SFX ทะลวงการหยุดเกมออกมาได้
+        if (SFXSource != null) SFXSource.ignoreListenerPause = true;
+
         if (background != null)
         {
             musicSource.clip = background;
@@ -48,7 +68,7 @@ public class AudioManger : MonoBehaviour
     {
         if (clip == null) return;
 
-        // ดักคูลดาวน์เฉพาะช่วงที่สั้นมากๆ เพื่อป้องกันการเปิดซ้ำซ้อนในเฟรมเดียวกัน แต่ยังดังครบตามจำนวนลูก
+        // ดักคูลดาวน์มิสไซล์
         if (clip == Alert || clip == MidSide)
         {
             if (soundTimers.ContainsKey(clip))
@@ -61,13 +81,13 @@ public class AudioManger : MonoBehaviour
             soundTimers[clip] = UnityEngine.Time.time;
         }
 
-        if (clip == Shoot)
+        // นำเสียง UIClick มารวมกลุ่มสุ่ม Pitch (สูง-ต่ำ) ด้วย
+        if (clip == Shoot || clip == UIClick)
         {
             SFXSource.pitch = Random.Range(minPitch, maxPitch);
         }
         else if (clip == Alert || clip == MidSide)
         {
-            // สุ่มระดับเสียงเล็กน้อย (0.95 - 1.05) เพื่อให้เสียงมิสไซล์แต่ละลูกมีมิติและไม่กลืนกัน
             SFXSource.pitch = Random.Range(0.95f, 1.05f);
         }
         else
@@ -75,7 +95,23 @@ public class AudioManger : MonoBehaviour
             SFXSource.pitch = 1f;
         }
 
-        SFXSource.PlayOneShot(clip);
+        // ⭐ แยกระดับความดังของแต่ละเสียงก่อนเล่น
+        if (clip == GameOverSound)
+        {
+            SFXSource.PlayOneShot(clip, gameOverVolume);
+        }
+        else if (clip == UIHover)
+        {
+            SFXSource.PlayOneShot(clip, uiHoverVolume); // ใช้ระดับเสียง Hover
+        }
+        else if (clip == UIClick)
+        {
+            SFXSource.PlayOneShot(clip, uiClickVolume); // ใช้ระดับเสียง Click
+        }
+        else
+        {
+            SFXSource.PlayOneShot(clip); // เสียงอื่นๆ ดังปกติ
+        }
     }
 
     public void StopMusic()

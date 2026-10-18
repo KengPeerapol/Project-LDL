@@ -68,6 +68,9 @@ public class StarResultManager : MonoBehaviour
 
     private bool hasShownResult = false;
 
+    // ⭐ ตัวแปรสำหรับเรียกใช้ Audio Manager
+    private AudioManger audioManager;
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -80,6 +83,13 @@ public class StarResultManager : MonoBehaviour
 
     private void Start()
     {
+        // ⭐ ค้นหา Audio Manager ตอนเริ่มเกม
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            audioManager = audioObj.GetComponent<AudioManger>();
+        }
+
         if (!hasShownResult)
         {
             if (resultPanel != null)
@@ -163,10 +173,10 @@ public class StarResultManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        PlayEndSFX(condFinish);
-
         // หยุดเวลาเกม
         Time.timeScale = 0f;
+
+        PlayEndSFX(condFinish);
 
         // ------------------ 5. สั่งเล่นแอนิเมชันดาว ------------------
         if (enableStarAnimation)
@@ -271,6 +281,33 @@ public class StarResultManager : MonoBehaviour
 
     private void PlayEndSFX(bool won)
     {
+        // ⭐ ป้องกันกรณีที่ Start() ทำงานไม่ทัน ให้หา Audio Manager อีกรอบแบบชัวร์ๆ
+        if (audioManager == null)
+        {
+            GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+            if (audioObj != null) audioManager = audioObj.GetComponent<AudioManger>();
+        }
+
+        // ถ้ายอมแพ้/ตาย ให้ไปดึงเสียง Game Over
+        if (!won)
+        {
+            if (audioManager == null)
+            {
+                Debug.LogError("<color=red>[ด่วน] StarResultManager หา Audio Manager ไม่เจอ! (Tag หลุดหรืออยู่คนละตัว)</color>");
+            }
+            else if (audioManager.GameOverSound == null)
+            {
+                Debug.LogError("<color=red>[ด่วน] ยังไม่ได้ลากไฟล์เสียงใส่ช่อง GameOverSound!</color>");
+            }
+            else
+            {
+                Debug.Log("<color=green>สั่งเล่นเสียง Game Over แล้ว!</color>");
+                audioManager.PlaySFX(audioManager.GameOverSound);
+            }
+            return;
+        }
+
+        // ระบบสำรองเดิมสำหรับตอนชนะ
         AudioClip clipToPlay = won ? winSFX : loseSFX;
         if (clipToPlay != null && Camera.main != null)
         {

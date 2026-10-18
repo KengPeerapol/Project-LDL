@@ -88,10 +88,20 @@ public class EnemyHealthTest : MonoBehaviour
     private bool isDead = false;
     private bool killedByPlayerCollision = false;
 
+    // ⭐ เพิ่มตัวแปร AudioManager
+    private AudioManger audioManager;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null) originalColor = spriteRenderer.color;
+
+        // ⭐ หา AudioManager ในฉาก
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            audioManager = audioObj.GetComponent<AudioManger>();
+        }
     }
 
     private void Start()
@@ -192,6 +202,12 @@ public class EnemyHealthTest : MonoBehaviour
                 else
                 {
                     Debug.Log($"<color=cyan>[Collision] เก็บแต้มสำเร็จ! (ดาเมจ 0 ไม่เสียเลือด)</color>");
+
+                    // ⭐ สั่งเล่นเสียงเวลาเก็บแต้ม (ก้อนสีส้ม) ตรงนี้
+                    if (audioManager != null && audioManager.CollectPoint != null)
+                    {
+                        audioManager.PlaySFX(audioManager.CollectPoint);
+                    }
                 }
             }
 

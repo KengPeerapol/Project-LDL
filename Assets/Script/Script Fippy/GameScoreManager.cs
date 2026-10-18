@@ -27,6 +27,10 @@ public class GameScoreManager : MonoBehaviour
     private float initialDistance = 0f;
     private bool isGameEnded = false;
 
+    // ⭐ ตัวแปรใหม่
+    private bool hasPlayedTargetSound = false;
+    private AudioManger audioManager;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -39,6 +43,13 @@ public class GameScoreManager : MonoBehaviour
 
     private void Start()
     {
+        // ⭐ หา AudioManager ในฉาก
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            audioManager = audioObj.GetComponent<AudioManger>();
+        }
+
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -74,7 +85,6 @@ public class GameScoreManager : MonoBehaviour
 
         if (distanceText != null)
         {
-            // ปัดเศษลง (Mathf.Floor) เพื่อให้ตัวเลขลดลงอย่างเป็นธรรมชาติ
             distanceText.text = $"Distance: {Mathf.FloorToInt(remainingDistance)}m";
         }
 
@@ -90,6 +100,17 @@ public class GameScoreManager : MonoBehaviour
         if (isGameEnded) return;
         currentScore += amount;
         UpdateScoreUI();
+
+        // ⭐ เช็กว่าคะแนนถึงเกณฑ์หรือยัง และยังไม่เคยเล่นเสียงนี้มาก่อน
+        if (currentScore >= targetScore && !hasPlayedTargetSound)
+        {
+            hasPlayedTargetSound = true; // ล็อกไว้ไม่ให้ร้องซ้ำ
+            if (audioManager != null && audioManager.ScoreReached != null)
+            {
+                audioManager.PlaySFX(audioManager.ScoreReached);
+            }
+            Debug.Log("<color=yellow>[Score] แต้มถึงเกณฑ์แล้ว! เล่นเสียงเตือน!</color>");
+        }
     }
 
     private void UpdateScoreUI()
@@ -107,7 +128,6 @@ public class GameScoreManager : MonoBehaviour
         if (isGameEnded) return;
         isGameEnded = true;
 
-        // ⭐ บังคับเซ็ตระยะทางให้เป็น 0m และหลอดเต็ม 100% ทันทีที่ชนเส้นชัย
         if (distanceText != null)
         {
             distanceText.text = "Distance: 0m";
