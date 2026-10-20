@@ -137,8 +137,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ab6e3a38258a3b54aab92651e779167c
-      internalID: -1668901636
+      spriteID: e81cf62cc89a31c4d8c77c9e5f6aee3b
+      internalID: 1351881094
       vertices: []
       indices: 
       edges: []
@@ -159,8 +159,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 616b478fdfdffd24a9303f7b59f8d378
-      internalID: -121599252
+      spriteID: 9dc2e8700820f7347a832b1aaf1ea443
+      internalID: 151568084
       vertices: []
       indices: 
       edges: []
@@ -181,8 +181,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 604835b75087af145baea36e4234135b
-      internalID: 1679611286
+      spriteID: d41585b5b674fbf4c99bc2fc87f6c319
+      internalID: -92923466
       vertices: []
       indices: 
       edges: []
@@ -203,8 +203,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5f749afe3f6924f42a4e959edd4d7458
-      internalID: 1964346501
+      spriteID: 7867dda0cbe58f8449ce40df509b0356
+      internalID: -860435610
       vertices: []
       indices: 
       edges: []
@@ -213,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4a33deb96145cf14ab5b75882336418a
+    spriteID: 443fd7a2812d711459793ae1a069c635
     internalID: 0
     vertices: []
     indices: 
@@ -226,10 +226,10 @@ TextureImporter:
         value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":1.0},"gridSpriteSize":{"x":320.0,"y":180.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Gameplay-bg_0: 7658045800596577545
-      Gameplay-bg_1: -1668901636
-      Gameplay-bg_2: -121599252
-      Gameplay-bg_3: 1679611286
-      Gameplay-bg_4: 1964346501
+      Gameplay-bg_1: 1351881094
+      Gameplay-bg_2: 151568084
+      Gameplay-bg_3: -92923466
+      Gameplay-bg_4: -860435610
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
