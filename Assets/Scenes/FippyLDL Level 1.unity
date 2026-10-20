@@ -4093,7 +4093,7 @@ MonoBehaviour:
   HurtSpike: {fileID: 8300000, guid: 4fe2d5d82f8028c4f949adc6a6590385, type: 3}
   HurtMissile: {fileID: 8300000, guid: a96f015a96a95ec4cacf8e2eae1670ed, type: 3}
   HurtPlaque: {fileID: 8300000, guid: 4298afddf6cec684f9d68c62c67f8ee4, type: 3}
-  CollectPoint: {fileID: 8300000, guid: 6dce9b128234ecf48a1f034595fa3640, type: 3}
+  CollectPoint: {fileID: 8300000, guid: 5575d0db61623204cb9208444e803457, type: 3}
   ScoreReached: {fileID: 8300000, guid: 0229c13f0316b6e46b8c13d7ed15b994, type: 3}
   GameOverSound: {fileID: 8300000, guid: ea24b06ba8dfe1d41b407defecae3927, type: 3}
   UIHover: {fileID: 8300000, guid: 06553cc86c7f90f47a43078156c30a67, type: 3}
