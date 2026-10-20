@@ -317,13 +317,30 @@ public class StarResultManager : MonoBehaviour
 
     public void RestartGame()
     {
+        StartCoroutine(DelayedRestart());
+    }
+
+    public void GoToMainMenu(string sceneName = "MainMenu")
+    {
+        StartCoroutine(DelayedMainMenu(sceneName));
+    }
+
+    // ==========================================
+    // ชุดคำสั่งใหม่สำหรับหน่วงเวลาก่อนเปลี่ยนฉาก
+    // ==========================================
+    private IEnumerator DelayedRestart()
+    {
+        yield return new WaitForSecondsRealtime(0.3f); // หน่วงเวลา 0.3 วินาทีให้เสียงคลิกดังจบ
+
         Time.timeScale = 1f;
         PauseMenuManager.isGameOver = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void GoToMainMenu(string sceneName = "MainMenu")
+    private IEnumerator DelayedMainMenu(string sceneName)
     {
+        yield return new WaitForSecondsRealtime(0.3f); // หน่วงเวลา 0.3 วินาทีให้เสียงคลิกดังจบ
+
         Time.timeScale = 1f;
         PauseMenuManager.isGameOver = false;
         SceneManager.LoadScene(sceneName);

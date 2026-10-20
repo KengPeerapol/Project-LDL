@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
@@ -90,7 +91,7 @@ public class PauseMenuManager : MonoBehaviour
     {
         isGamePaused = false;
         Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f; // ⭐ ป้องกัน fixedDeltaTime ค้างจากการสโลว์โหมด
+        Time.fixedDeltaTime = 0.02f;
 
         if (pausePanel != null) pausePanel.SetActive(false);
         if (pauseButtonOnScreen != null) pauseButtonOnScreen.SetActive(true);
@@ -99,26 +100,54 @@ public class PauseMenuManager : MonoBehaviour
         AudioListener.pause = false;
     }
 
+    // ==========================================
+    // ปรับแก้ 2 ฟังก์ชันนี้ให้เรียกใช้ Coroutine หน่วงเวลา
+    // ==========================================
     public void RestartGame()
     {
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f; // ⭐ คืนค่าเวลาฟิสิกส์มาตรฐาน
-        isGamePaused = false;
-        isGameOver = false;
-        Cursor.visible = false;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        AudioListener.pause = false;
+        StartCoroutine(DelayedRestart());
     }
 
     public void LoadMainMenu()
     {
+        StartCoroutine(DelayedMainMenu());
+    }
+
+    // ==========================================
+    // ชุดคำสั่งใหม่สำหรับหน่วงเวลาก่อนเปลี่ยนฉาก
+    // ==========================================
+    private IEnumerator DelayedRestart()
+    {
+        // 1. คืนค่าเวลาก่อน เพื่อให้ระบบแอนิเมชันหรือเสียงที่พึ่งพา TimeScale ทำงานได้ปกติ
         Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f; // ⭐ คืนค่าเวลาฟิสิกส์มาตรฐาน
+        Time.fixedDeltaTime = 0.02f;
+        AudioListener.pause = false; // ต้องปลดล็อก AudioListener ด้วย เสียงจะได้ดัง
+
+        // 2. หน่วงเวลา 0.3 วินาทีให้เสียงคลิกดังจบ
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        // 3. รีเซ็ตสถานะและเปลี่ยนฉาก
+        isGamePaused = false;
+        isGameOver = false;
+        Cursor.visible = false;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private IEnumerator DelayedMainMenu()
+    {
+        // 1. คืนค่าเวลาและปลดล็อกเสียงก่อน
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
+        AudioListener.pause = false;
+
+        // 2. หน่วงเวลา 0.3 วินาทีให้เสียงคลิกดังจบ
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        // 3. รีเซ็ตสถานะและไปหน้าเมนู
         isGamePaused = false;
         isGameOver = false;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         SceneManager.LoadScene("MainMenu");
-        AudioListener.pause = false;
     }
 }
