@@ -34,8 +34,6 @@ public class PlayerAttackTest : MonoBehaviour
     public Transform firePoint;
     public float fireRate = 0.25f;
     public float firePointDistance = 0.7f;
-
-    [Tooltip("ความเร็วของกระสุนธรรมดา")]
     public float normalBulletSpeed = 12f;
 
     [Header("Aim Angle Clamp (จำกัดมุมชี้ด้านหน้า)")]
@@ -46,7 +44,6 @@ public class PlayerAttackTest : MonoBehaviour
     public bool enableChargeAttack = true;
     public ChargeMode chargeMode = ChargeMode.Projectile;
     public float chargeTimeRequired = 1.0f;
-    public float chargeCooldown = 5.0f;
     public int normalDamage = 25;
     public int chargedDamage = 100;
 
@@ -60,9 +57,8 @@ public class PlayerAttackTest : MonoBehaviour
     public GameObject chargedBulletPrefab;
     public float chargedBulletScale = 1.0f;
     public int chargedBulletBounces = 3;
-
-    [Tooltip("ความเร็วของกระสุนชาร์จพิเศษ")]
     public float chargedBulletSpeed = 18f;
+    public float projectileChargeCooldown = 3.5f;
 
     [Header("--- Mode 2: Laser Beam Settings (ชาร์จยิงแบบลำแสงเลเซอร์) ---")]
     public float laserRange = 35f;
@@ -70,6 +66,10 @@ public class PlayerAttackTest : MonoBehaviour
     public float laserDuration = 0.6f;
     public Color laserColor = new Color(1f, 0.2f, 0.2f, 0.95f);
     public int laserBounces = 2;
+    public float laserChargeCooldown = 6.0f;
+
+    [Tooltip("⭐ ติ๊กถูก = ให้เลเซอร์ยิงทำลาย Missile ได้ | ติ๊กออก = เลเซอร์ไม่ทำลาย Missile (สำหรับเปิด/ปิดทดสอบ)")]
+    public bool laserCanDestroyMissile = true;
 
     [Header("Gun Scale Settings (เอฟเฟกต์ปืนใหญ่ขึ้นตอนชาร์จ 100%)")]
     public bool enableGunScale = true;
@@ -108,10 +108,15 @@ public class PlayerAttackTest : MonoBehaviour
     private readonly List<Vector3> laserPointsCache = new List<Vector3>(16);
     private readonly List<LaserSegment> laserSegmentsCache = new List<LaserSegment>(16);
     private readonly HashSet<EnemyHealthTest> damagedEnemiesCache = new HashSet<EnemyHealthTest>();
+    private readonly HashSet<MissileProjectile> damagedMissilesCache = new HashSet<MissileProjectile>();
 
     private float nextFireTime = 0f;
     private float currentChargeTimer = 0f;
-    private float chargeCooldownTimer = 0f;
+    private float projectileCooldownTimer = 0f;
+    private float laserCooldownTimer = 0f;
+
+    private float ActiveCooldownTimer => (chargeMode == ChargeMode.Projectile) ? projectileCooldownTimer : laserCooldownTimer;
+
     private bool isCharging = false;
     private bool hasLoggedFullCharge = false;
     private bool isSlowMoActive = false;
@@ -247,10 +252,9 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void Update()
     {
-        // ⭐ 1. หากเกม Pause หรือ Time.timeScale เป็น 0 ให้หยุดกระบวนการชาร์จทันทีโดย "ห้ามเขียนทับ Time.timeScale"
         if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f)
         {
-            isSlowMoActive = false; // รีเซ็ตแฟล็กเงียบๆ ห้ามสั่ง Time.timeScale = 1f
+            isSlowMoActive = false;
             isCharging = false;
             currentChargeTimer = 0f;
             hasLoggedFullCharge = false;
@@ -289,13 +293,19 @@ public class PlayerAttackTest : MonoBehaviour
     {
         chargeMode = (chargeMode == ChargeMode.Projectile) ? ChargeMode.LaserBeam : ChargeMode.Projectile;
         UpdateModeUI();
-        Debug.Log($"<color=yellow>[Weapon Mode] สลับโหมดการยิงเป็น: {chargeMode}</color>");
-    }
 
-    public void SetChargeMode(int modeIndex)
-    {
-        chargeMode = (ChargeMode)modeIndex;
-        UpdateModeUI();
+        // ⭐ แก้ไขจุดที่ 1: เมื่อกดสลับโหมดแล้วโหมดใหม่ยังติดคูลดาวน์อยู่ ให้ยกเลิก Slow Motion ทันที
+        if (ActiveCooldownTimer > 0f)
+        {
+            if (isSlowMoActive)
+            {
+                ResetSlowMotion();
+            }
+            HideTrajectory();
+            ResetGunScale();
+        }
+
+        Debug.Log($"<color=yellow>[Weapon Mode] สลับโหมดการยิงเป็น: {chargeMode}</color>");
     }
 
     private void UpdateModeUI()
@@ -310,15 +320,16 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void UpdateCooldown()
     {
-        if (chargeCooldownTimer > 0f)
+        if (projectileCooldownTimer > 0f)
         {
-            chargeCooldownTimer -= Time.unscaledDeltaTime;
+            projectileCooldownTimer -= Time.unscaledDeltaTime;
+            if (projectileCooldownTimer < 0f) projectileCooldownTimer = 0f;
+        }
 
-            if (chargeCooldownTimer <= 0f)
-            {
-                chargeCooldownTimer = 0f;
-                Debug.Log("<color=green>[Charged Shot] ชาร์จยิงพร้อมใช้งานแล้ว! (Ready)</color>");
-            }
+        if (laserCooldownTimer > 0f)
+        {
+            laserCooldownTimer -= Time.unscaledDeltaTime;
+            if (laserCooldownTimer < 0f) laserCooldownTimer = 0f;
         }
     }
 
@@ -385,21 +396,30 @@ public class PlayerAttackTest : MonoBehaviour
         {
             currentChargeTimer += Time.unscaledDeltaTime;
 
-            if (enableSlowMotion && !isSlowMoActive && chargeCooldownTimer <= 0f && currentChargeTimer >= slowMotionDelay)
+            // ⭐ แก้ไขจุดที่ 2: ควบคุม Slow Motion ให้ทำงานเฉพาะตอนที่โหมดนั้นพร้อมใช้งานจริง
+            if (enableSlowMotion && currentChargeTimer >= slowMotionDelay)
             {
-                ApplySlowMotion(true);
+                if (!isSlowMoActive && ActiveCooldownTimer <= 0f)
+                {
+                    ApplySlowMotion(true);
+                }
+                else if (isSlowMoActive && ActiveCooldownTimer > 0f)
+                {
+                    // หากชาร์จอยู่แต่โหมดปัจจุบันติดคูลดาวน์ (เช่น เพิ่งกด Q สลับมา) ให้ปิด Slow Motion ทันที
+                    ResetSlowMotion();
+                }
             }
 
             if (currentChargeTimer >= chargeTimeRequired && !hasLoggedFullCharge)
             {
                 hasLoggedFullCharge = true;
-                if (chargeCooldownTimer <= 0f)
+                if (ActiveCooldownTimer <= 0f)
                 {
                     Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! พร้อมยิง</color>");
                 }
                 else
                 {
-                    Debug.LogWarning($"<color=orange>[Charged Shot] ชาร์จเต็ม แต่ติดคูลดาวน์! เหลือ {chargeCooldownTimer:F1} วิ</color>");
+                    Debug.LogWarning($"<color=orange>[Charged Shot] ชาร์จเต็ม แต่ติดคูลดาวน์! เหลือ {ActiveCooldownTimer:F1} วิ</color>");
                 }
             }
         }
@@ -412,26 +432,26 @@ public class PlayerAttackTest : MonoBehaviour
 
             if (currentChargeTimer >= chargeTimeRequired)
             {
-                if (chargeCooldownTimer <= 0f)
+                if (ActiveCooldownTimer <= 0f)
                 {
                     if (chargeMode == ChargeMode.Projectile)
                     {
                         GameObject spawnPrefab = (chargedBulletPrefab != null) ? chargedBulletPrefab : bulletPrefab;
                         FireBullet(spawnPrefab, chargedDamage, chargedBulletScale, chargedBulletSpeed, isPiercing: true, bounces: chargedBulletBounces);
-                        Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จ! ดาเมจ {chargedDamage} ความเร็ว {chargedBulletSpeed}</color>");
+                        projectileCooldownTimer = projectileChargeCooldown;
+                        Debug.Log($"<color=red>[Charged Shot] ยิงกระสุนชาร์จ! (CD: {projectileChargeCooldown}s)</color>");
                     }
                     else if (chargeMode == ChargeMode.LaserBeam)
                     {
                         FireLaserBeam();
-                        Debug.Log($"<color=red>[Charged Shot] ยิงเลเซอร์สะท้อนกำแพง! ดาเมจ {chargedDamage}</color>");
+                        laserCooldownTimer = laserChargeCooldown;
+                        Debug.Log($"<color=red>[Charged Shot] ยิงเลเซอร์สะท้อน! (CD: {laserChargeCooldown}s)</color>");
                     }
-
-                    chargeCooldownTimer = chargeCooldown;
                 }
                 else
                 {
                     FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
-                    Debug.LogWarning("[Charged Shot] ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
+                    Debug.LogWarning("[Charged Shot] โหมดนี้ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
                 }
             }
             else if (Time.unscaledTime >= nextFireTime)
@@ -561,11 +581,11 @@ public class PlayerAttackTest : MonoBehaviour
         laserLineRenderer.enabled = true;
 
         damagedEnemiesCache.Clear();
+        damagedMissilesCache.Clear();
         float elapsed = 0f;
 
         while (elapsed < laserDuration)
         {
-            // ⭐ ถ้าเกมติด Pause ให้ข้ามเฟรมไป ไม่นับเวลาและไม่ยิงดาเมจ
             if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f)
             {
                 yield return null;
@@ -583,6 +603,8 @@ public class PlayerAttackTest : MonoBehaviour
                 {
                     RaycastHit2D hit = circleCastHitsBuffer[h];
                     if (hit.collider == null) continue;
+
+                    // 1. ตรวจจับศัตรู EnemyHealthTest
                     if (hit.collider.CompareTag("Enemy") || hit.collider.transform.root.CompareTag("Enemy"))
                     {
                         EnemyHealthTest enemy = hit.collider.GetComponentInParent<EnemyHealthTest>();
@@ -590,6 +612,17 @@ public class PlayerAttackTest : MonoBehaviour
                         {
                             damagedEnemiesCache.Add(enemy);
                             enemy.TakeDamage(chargedDamage);
+                        }
+                    }
+
+                    // 2. ตรวจจับและทำลาย Missile เฉพาะเมื่อเปิดใช้งานระบบ
+                    if (laserCanDestroyMissile)
+                    {
+                        MissileProjectile missile = hit.collider.GetComponentInParent<MissileProjectile>();
+                        if (missile != null && !damagedMissilesCache.Contains(missile))
+                        {
+                            damagedMissilesCache.Add(missile);
+                            missile.DestroyByLaser(); //[cite: 23]
                         }
                     }
                 }
@@ -618,7 +651,7 @@ public class PlayerAttackTest : MonoBehaviour
             return;
         }
 
-        bool isFullyCharged = isCharging && (currentChargeTimer >= chargeTimeRequired) && (chargeCooldownTimer <= 0f);
+        bool isFullyCharged = isCharging && (currentChargeTimer >= chargeTimeRequired) && (ActiveCooldownTimer <= 0f);
         Vector3 targetScale = isFullyCharged ? (originalGunScale * chargedGunScale) : originalGunScale;
 
         gunVisual.localScale = Vector3.Lerp(gunVisual.localScale, targetScale, Time.unscaledDeltaTime * gunScaleSmoothSpeed);
@@ -641,7 +674,7 @@ public class PlayerAttackTest : MonoBehaviour
         }
 
         bool canShow = false;
-        if (isCharging && chargeCooldownTimer <= 0f)
+        if (isCharging && ActiveCooldownTimer <= 0f)
         {
             canShow = showOnlyAtFullCharge ? (currentChargeTimer >= chargeTimeRequired) : true;
         }
@@ -771,7 +804,6 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void ApplySlowMotion(bool enable)
     {
-        // ⭐ ไม่เปิดสโลว์โหมดทับ หากเกมกำลัง Pause หรือ Time.timeScale เป็น 0
         if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f) return;
 
         if (enable)
@@ -786,7 +818,6 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    // ⭐ แก้ไขจุดสำคัญ: เช็กว่าหากเกมกำลัง Pause อยู่ ห้ามปรับ Time.timeScale = 1.0f เด็ดขาด
     private void ResetSlowMotion()
     {
         if (isSlowMoActive)
@@ -843,17 +874,17 @@ public class PlayerAttackTest : MonoBehaviour
 
         InitGUIStyles();
 
-        string modeName = (chargeMode == ChargeMode.Projectile) ? "BULLET (เด้งกำแพง)" : "BOUNCING LASER (เลเซอร์เด้ง)";
+        string modeName = (chargeMode == ChargeMode.Projectile) ? "BULLET" : "LASER";
 
-        if (chargeCooldownTimer > 0f)
+        if (ActiveCooldownTimer > 0f)
         {
             cachedTextStyle.normal.textColor = Color.red;
-            GUI.Label(new Rect(20, 20, 400, 30), $"Charged Shot CD: {chargeCooldownTimer:F1}s", cachedTextStyle);
+            GUI.Label(new Rect(20, 20, 400, 30), $"Charged [{modeName}] CD: {ActiveCooldownTimer:F1}s", cachedTextStyle);
         }
         else
         {
             cachedTextStyle.normal.textColor = Color.green;
-            GUI.Label(new Rect(20, 20, 400, 30), "Charged Shot: READY", cachedTextStyle);
+            GUI.Label(new Rect(20, 20, 400, 30), $"Charged [{modeName}]: READY", cachedTextStyle);
         }
 
         if (isCharging)
@@ -883,26 +914,18 @@ public class PlayerAttackTest : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(transform.position, (Vector3)currentAimDirection * 2f);
-    }
-
     public void ReduceChargeCooldown(float reductionTime)
     {
-        if (chargeCooldownTimer > 0f)
+        if (projectileCooldownTimer > 0f)
         {
-            chargeCooldownTimer = Mathf.Max(0f, chargeCooldownTimer - reductionTime);
-
-            if (chargeCooldownTimer <= 0f)
-            {
-                Debug.Log("<color=green>[Item] ลดคูลดาวน์! ปืนพร้อมชาร์จยิงทันที!</color>");
-            }
-            else
-            {
-                Debug.Log($"<color=cyan>[Item] ลดคูลดาวน์ลง {reductionTime}s เหลืออีก {chargeCooldownTimer:F1}s</color>");
-            }
+            projectileCooldownTimer = Mathf.Max(0f, projectileCooldownTimer - reductionTime);
         }
+
+        if (laserCooldownTimer > 0f)
+        {
+            laserCooldownTimer = Mathf.Max(0f, laserCooldownTimer - reductionTime);
+        }
+
+        Debug.Log($"<color=green>[Item] ลดคูลดาวน์ชาร์จยิงทั้งสองโหมดลง {reductionTime}s!</color>");
     }
 }

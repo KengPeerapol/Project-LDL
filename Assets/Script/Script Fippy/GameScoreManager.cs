@@ -20,16 +20,23 @@ public class GameScoreManager : MonoBehaviour
     public Color scorePendingColor = Color.white;
     public Color scoreCompletedColor = Color.green;
 
+    [Tooltip("⭐ หลอดคะแนนแบบ Slider (ลาก Slider บน Canvas มาใส่ช่องนี้)")]
+    public Slider scoreSlider;
+
+    [Tooltip("⭐ หลอดคะแนนแบบ Image Filled (ลาก Image ที่ตั้งค่าเป็น Filled มาใส่ช่องนี้)")]
+    public Image scoreBarFill;
+
     [Header("UI Distance (ระยะทาง)")]
     public TextMeshProUGUI distanceText;
     public Slider distanceSlider;
 
     private float initialDistance = 0f;
     private bool isGameEnded = false;
-
-    // ⭐ ตัวแปรใหม่
     private bool hasPlayedTargetSound = false;
     private AudioManger audioManager;
+
+    // Optimized Cached Values
+    private int lastDisplayedDistance = -1;
 
     private void Awake()
     {
@@ -43,7 +50,7 @@ public class GameScoreManager : MonoBehaviour
 
     private void Start()
     {
-        // ⭐ หา AudioManager ในฉาก
+        // แคช AudioManager ครั้งเดียวตั้งแต่เริ่มเกม
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
@@ -76,6 +83,7 @@ public class GameScoreManager : MonoBehaviour
         UpdateDistanceUI();
     }
 
+    // ⭐ Optimized: อัปเดตข้อความระยะทางเฉพาะเมื่อตัวเลขระยะทาง (เมตร) เปลี่ยนแปลงจริง
     private void UpdateDistanceUI()
     {
         if (player == null || finishLine == null) return;
@@ -83,9 +91,12 @@ public class GameScoreManager : MonoBehaviour
         float remainingDistance = finishLine.position.x - player.position.x;
         if (remainingDistance < 0f) remainingDistance = 0f;
 
-        if (distanceText != null)
+        int currentDistanceMeter = Mathf.FloorToInt(remainingDistance);
+
+        if (distanceText != null && currentDistanceMeter != lastDisplayedDistance)
         {
-            distanceText.text = $"Distance: {Mathf.FloorToInt(remainingDistance)}m";
+            lastDisplayedDistance = currentDistanceMeter;
+            distanceText.text = $"Distance: {currentDistanceMeter}m";
         }
 
         if (distanceSlider != null && initialDistance > 0f)
@@ -101,10 +112,10 @@ public class GameScoreManager : MonoBehaviour
         currentScore += amount;
         UpdateScoreUI();
 
-        // ⭐ เช็กว่าคะแนนถึงเกณฑ์หรือยัง และยังไม่เคยเล่นเสียงนี้มาก่อน
+        // เล่นเสียงเมื่อแต้มถึงเป้าหมายครั้งแรก
         if (currentScore >= targetScore && !hasPlayedTargetSound)
         {
-            hasPlayedTargetSound = true; // ล็อกไว้ไม่ให้ร้องซ้ำ
+            hasPlayedTargetSound = true;
             if (audioManager != null && audioManager.ScoreReached != null)
             {
                 audioManager.PlaySFX(audioManager.ScoreReached);
@@ -113,6 +124,7 @@ public class GameScoreManager : MonoBehaviour
         }
     }
 
+    // ⭐ อัปเดตทั้งข้อความตัวเลขและหลอดคะแนน (ทำงานแบบ Event-driven เฉพาะตอนได้แต้ม)
     private void UpdateScoreUI()
     {
         if (scoreText != null)
@@ -120,9 +132,22 @@ public class GameScoreManager : MonoBehaviour
             scoreText.text = $"Score: {currentScore} / {targetScore}";
             scoreText.color = (currentScore >= targetScore) ? scoreCompletedColor : scorePendingColor;
         }
+
+        float scoreProgress = (targetScore > 0) ? Mathf.Clamp01((float)currentScore / targetScore) : 0f;
+
+        // อัปเดตหลอด Slider
+        if (scoreSlider != null)
+        {
+            scoreSlider.value = scoreProgress;
+        }
+
+        // อัปเดตหลอด Image Fill
+        if (scoreBarFill != null)
+        {
+            scoreBarFill.fillAmount = scoreProgress;
+        }
     }
 
-    // ⭐ เมื่อผู้เล่นชนเส้นชัย
     public void CheckFinishLine(PlayerControllerTest playerController)
     {
         if (isGameEnded) return;

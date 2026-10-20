@@ -134,10 +134,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db551cb49ab161e47ad4827b3fdcdbc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletTest
-  speed: 18
+  speed: 30
   lifeTime: 3
   damage: 25
-  pointPrefab: {fileID: 5118996002469163254, guid: 082f74f54a9b0f14caf42c41d3d3d94c, type: 3}
+  isPiercing: 0
+  maxBounces: 0
 --- !u!70 &3304749875727843962
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
