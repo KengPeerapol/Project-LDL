@@ -300,7 +300,7 @@ SpriteRenderer:
   m_Size: {x: 3.2, y: 1.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
 --- !u!1 &73467946
@@ -1788,6 +1788,8 @@ MonoBehaviour:
   wallMoveSpeed: 6
   slideDistance: 87.1
   wallPreWarningTime: 2.5
+  spawnEnemyDuringWall: 0
+  spawnItemDuringWall: 0
   warningPrefab: {fileID: 1919442258139172247, guid: 45a3158c6d78cff41986552f9bf3809d, type: 3}
   missilePrefab: {fileID: 4783931667091252217, guid: 76aa89af7611a144589d4689e458bf77, type: 3}
   minMissiles: 3
@@ -1799,6 +1801,8 @@ MonoBehaviour:
   minY: -3.8
   maxY: 3.8
   missileRotationZ: 90
+  spawnEnemyDuringMissile: 0
+  spawnItemDuringMissile: 0
   enemySpawner: {fileID: 1951566999}
   itemSpawner: {fileID: 1080669736}
   playerController: {fileID: 1897711352}
@@ -2868,6 +2872,8 @@ MonoBehaviour:
   scoreText: {fileID: 358729504}
   scorePendingColor: {r: 1, g: 1, b: 1, a: 1}
   scoreCompletedColor: {r: 0, g: 1, b: 0, a: 1}
+  scoreSlider: {fileID: 0}
+  scoreBarFill: {fileID: 0}
   distanceText: {fileID: 1510435362}
   distanceSlider: {fileID: 1278415593}
 --- !u!4 &1124346796
@@ -3530,7 +3536,7 @@ SpriteRenderer:
   m_Size: {x: 3.2, y: 1.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
 --- !u!1 &1221424030
@@ -3980,7 +3986,7 @@ SpriteRenderer:
   m_Size: {x: 3.2, y: 1.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
 --- !u!1 &1398041596
@@ -4022,9 +4028,17 @@ MonoBehaviour:
   HurtSpike: {fileID: 8300000, guid: 4fe2d5d82f8028c4f949adc6a6590385, type: 3}
   HurtMissile: {fileID: 8300000, guid: a96f015a96a95ec4cacf8e2eae1670ed, type: 3}
   HurtPlaque: {fileID: 8300000, guid: 4298afddf6cec684f9d68c62c67f8ee4, type: 3}
+  CollectPoint: {fileID: 0}
+  ScoreReached: {fileID: 0}
+  GameOverSound: {fileID: 0}
+  UIHover: {fileID: 0}
+  UIClick: {fileID: 0}
   Die: {fileID: 8300000, guid: 6548a0be1d9d087488a9af77e50a661d, type: 3}
   Alert: {fileID: 8300000, guid: ff23b431bcb724e41b512ab2d64a2e0c, type: 3}
   MidSide: {fileID: 8300000, guid: 509ac0cedec8fea478e11a7348a350b6, type: 3}
+  gameOverVolume: 0.5
+  uiHoverVolume: 0.3
+  uiClickVolume: 1
   missileSfxCooldown: 0.9
   minPitch: 0.75
   maxPitch: 1.25
@@ -5046,7 +5060,7 @@ SpriteRenderer:
   m_Size: {x: 3.2, y: 1.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
 --- !u!4 &1878085443
@@ -5964,12 +5978,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: chargeMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: laserRange
+      value: 9999
+      objectReference: {fileID: 0}
+    - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: gunAnimator
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: maxAimAngle
       value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: laserBounces
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

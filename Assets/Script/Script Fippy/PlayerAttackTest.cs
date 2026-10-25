@@ -402,6 +402,7 @@ public class PlayerAttackTest : MonoBehaviour
                 if (!isSlowMoActive && ActiveCooldownTimer <= 0f)
                 {
                     ApplySlowMotion(true);
+                    maxAimAngle = 60f;
                 }
                 else if (isSlowMoActive && ActiveCooldownTimer > 0f)
                 {
@@ -429,6 +430,7 @@ public class PlayerAttackTest : MonoBehaviour
             ResetSlowMotion();
             HideTrajectory();
             isCharging = false;
+            maxAimAngle = 360f;
 
             if (currentChargeTimer >= chargeTimeRequired)
             {
