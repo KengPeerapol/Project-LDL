@@ -563,7 +563,7 @@ RectTransform:
   m_Father: {fileID: 1488097001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 3.5, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -825,7 +825,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &225828020
 RectTransform:
   m_ObjectHideFlags: 0
@@ -843,7 +843,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -70, y: 501}
+  m_AnchoredPosition: {x: 0, y: 390}
   m_SizeDelta: {x: 349.9547, y: 64.1232}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &225828021
@@ -2651,7 +2651,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -5.6404}
+  m_AnchoredPosition: {x: 0, y: -5.6404114}
   m_SizeDelta: {x: 0, y: -11.2808}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &914118132
@@ -2917,15 +2917,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2366d78c8c213a548a5ba93e59239724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameScoreManager
-  targetScore: 950
+  targetScore: 100
   currentScore: 0
   player: {fileID: 1897711356}
   finishLine: {fileID: 1776670054}
   scoreText: {fileID: 0}
   scorePendingColor: {r: 1, g: 1, b: 1, a: 1}
   scoreCompletedColor: {r: 0, g: 1, b: 0, a: 1}
-  scoreSlider: {fileID: 225828021}
-  scoreBarFill: {fileID: 0}
+  scoreSlider: {fileID: 0}
+  scoreBarFill: {fileID: 1589166509}
+  playerLdlBarSprite: {fileID: 0}
   distanceText: {fileID: 0}
   distanceSlider: {fileID: 1278415593}
 --- !u!4 &1124346796
@@ -3822,8 +3823,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -589.2, y: 501}
-  m_SizeDelta: {x: 349.9547, y: 64.1232}
+  m_AnchoredPosition: {x: 0, y: 501}
+  m_SizeDelta: {x: 349.9547, y: 64.12317}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1297857028
 GameObject:
@@ -4609,8 +4610,8 @@ RectTransform:
   m_Children:
   - {fileID: 157999957}
   - {fileID: 115247315}
-  - {fileID: 1510435360}
   - {fileID: 1278415594}
+  - {fileID: 1510435360}
   - {fileID: 225828020}
   - {fileID: 282846792}
   - {fileID: 149607411}
@@ -4650,6 +4651,17 @@ MonoBehaviour:
   pauseButtonOnScreen: {fileID: 157999953}
   winPanel: {fileID: 0}
   gameOverPanel: {fileID: 0}
+--- !u!114 &1589166509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5699203099398988200, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+  m_PrefabInstance: {fileID: 2120821915}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &1594735330
 GameObject:
   m_ObjectHideFlags: 0
@@ -6192,6 +6204,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4274201880869795372, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: chargeMode
       value: 1
@@ -6247,6 +6263,10 @@ PrefabInstance:
     - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: projectileChargeCooldown
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622836928346107445, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

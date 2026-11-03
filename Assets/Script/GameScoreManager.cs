@@ -15,18 +15,22 @@ public class GameScoreManager : MonoBehaviour
     public Transform player;
     public Transform finishLine;
 
-    [Header("UI Score (แต้มคะแนน)")]
+    [Header("--- UI Point Bar (หลอดคะแนนใต้ตัว Player) ---")]
+    [Tooltip("ข้อความกำกับใต้หลอดคะแนน (เช่น point bar)")]
     public TextMeshProUGUI scoreText;
     public Color scorePendingColor = Color.white;
     public Color scoreCompletedColor = Color.green;
 
-    [Tooltip("⭐ หลอดคะแนนแบบ Slider (ลาก Slider บน Canvas มาใส่ช่องนี้)")]
+    [Tooltip("หลอดคะแนนแบบ Slider")]
     public Slider scoreSlider;
 
-    [Tooltip("⭐ หลอดคะแนนแบบ Image Filled (ลาก Image ที่ตั้งค่าเป็น Filled มาใส่ช่องนี้)")]
+    [Tooltip("หลอดคะแนนแบบ Image Filled")]
     public Image scoreBarFill;
 
-    [Header("UI Distance (ระยะทาง)")]
+    [Tooltip("SpriteRenderer ของ ldl-bar ใต้ตัว Player (ถ้ามี)")]
+    public SpriteRenderer playerLdlBarSprite;
+
+    [Header("--- UI Distance Bar (หลอดระยะทางบนกลางจอ) ---")]
     public TextMeshProUGUI distanceText;
     public Slider distanceSlider;
 
@@ -35,7 +39,7 @@ public class GameScoreManager : MonoBehaviour
     private bool hasPlayedTargetSound = false;
     private AudioManger audioManager;
 
-    // Optimized Cached Values
+    // Optimized Dirty-Check Cache
     private int lastDisplayedDistance = -1;
 
     private void Awake()
@@ -50,7 +54,6 @@ public class GameScoreManager : MonoBehaviour
 
     private void Start()
     {
-        // แคช AudioManager ครั้งเดียวตั้งแต่เริ่มเกม
         GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
         if (audioObj != null)
         {
@@ -83,7 +86,7 @@ public class GameScoreManager : MonoBehaviour
         UpdateDistanceUI();
     }
 
-    // ⭐ Optimized: อัปเดตข้อความระยะทางเฉพาะเมื่อตัวเลขระยะทาง (เมตร) เปลี่ยนแปลงจริง
+    // ⭐ อัปเดตข้อความระยะทางเฉพาะเมื่อตัวเลขเปลี่ยน ป้องกันการเกิด GC Alloc ทุกเฟรม
     private void UpdateDistanceUI()
     {
         if (player == null || finishLine == null) return;
@@ -112,7 +115,6 @@ public class GameScoreManager : MonoBehaviour
         currentScore += amount;
         UpdateScoreUI();
 
-        // เล่นเสียงเมื่อแต้มถึงเป้าหมายครั้งแรก
         if (currentScore >= targetScore && !hasPlayedTargetSound)
         {
             hasPlayedTargetSound = true;
@@ -124,7 +126,7 @@ public class GameScoreManager : MonoBehaviour
         }
     }
 
-    // ⭐ อัปเดตทั้งข้อความตัวเลขและหลอดคะแนน (ทำงานแบบ Event-driven เฉพาะตอนได้แต้ม)
+    // ⭐ อัปเดต Point Bar แบบ Event-Driven (เฉพาะเมื่อแต้มเปลี่ยน)
     private void UpdateScoreUI()
     {
         if (scoreText != null)
@@ -135,13 +137,11 @@ public class GameScoreManager : MonoBehaviour
 
         float scoreProgress = (targetScore > 0) ? Mathf.Clamp01((float)currentScore / targetScore) : 0f;
 
-        // อัปเดตหลอด Slider
         if (scoreSlider != null)
         {
             scoreSlider.value = scoreProgress;
         }
 
-        // อัปเดตหลอด Image Fill
         if (scoreBarFill != null)
         {
             scoreBarFill.fillAmount = scoreProgress;
