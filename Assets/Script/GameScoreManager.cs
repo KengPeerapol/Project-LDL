@@ -11,6 +11,14 @@ public class GameScoreManager : MonoBehaviour
     public int targetScore = 100;
     public int currentScore = 0;
 
+    [Header("Point Bar Stepping Settings (การเพิ่มทีละขั้น)")]
+    [Tooltip("⭐ ติ๊กถูก = ให้หลอดคะแนนขยับทีละสเต็ป (เช่น ทีละ 20% ให้ตรงกับ 5 ช่องของ ldl-bar)")]
+    public bool snapToSteps = true;
+
+    [Range(1, 50)]
+    [Tooltip("ขนาดของแต่ละสเต็ปเป็นเปอร์เซ็นต์ (ค่าเริ่มต้น 20% = 5 ช่อง)")]
+    public int stepPercent = 20;
+
     [Header("References (ตัวละครและเส้นชัย)")]
     public Transform player;
     public Transform finishLine;
@@ -126,7 +134,7 @@ public class GameScoreManager : MonoBehaviour
         }
     }
 
-    // ⭐ อัปเดต Point Bar แบบ Event-Driven (เฉพาะเมื่อแต้มเปลี่ยน)
+    // ⭐ คำนวณแบบสเต็ป 20% (Event-Driven ทำงานเฉพาะตอนคะแนนเปลี่ยน)
     private void UpdateScoreUI()
     {
         if (scoreText != null)
@@ -135,7 +143,17 @@ public class GameScoreManager : MonoBehaviour
             scoreText.color = (currentScore >= targetScore) ? scoreCompletedColor : scorePendingColor;
         }
 
-        float scoreProgress = (targetScore > 0) ? Mathf.Clamp01((float)currentScore / targetScore) : 0f;
+        // 1. คำนวณเปอร์เซ็นต์คะแนนจริง
+        int percent = (targetScore > 0) ? (currentScore * 100) / targetScore : 0;
+
+        // 2. ปัดสเต็ปทีละ 20% ด้วย Integer Math (ป้องกันบั๊กทศนิยมเพี้ยน)
+        if (snapToSteps && stepPercent > 0)
+        {
+            percent = (percent / stepPercent) * stepPercent;
+        }
+
+        // 3. แปลงค่าเป็นช่วง 0.0f - 1.0f สำหรับ Slider และ Image Fill
+        float scoreProgress = Mathf.Clamp01(percent / 100f);
 
         if (scoreSlider != null)
         {
