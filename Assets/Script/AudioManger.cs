@@ -31,36 +31,73 @@ public class AudioManger : MonoBehaviour
     public AudioClip Alert;
     public AudioClip MidSide;
 
+    [Tooltip("⭐ ลากไฟล์เสียงตอนศัตรูหลุดรอดออกนอกจอมาใส่ช่องนี้")]
+    public AudioClip EnemyEscape;
+
     [Header("-------- Volume Settings ----------")]
-    [Tooltip("ปรับความดังเฉพาะเสียง Game Over (0 = เงียบสุด, 1 = ดังสุด)")]
     [Range(0f, 1f)] public float gameOverVolume = 0.5f;
-
-    [Tooltip("ปรับความดังเสียงตอนชี้ปุ่ม (Hover)")]
-    [Range(0f, 1f)] public float uiHoverVolume = 0.3f; // ⭐ พี่ตั้งค่าเริ่มต้นให้เบาลง (0.3)
-
-    [Tooltip("ปรับความดังเสียงตอนคลิกปุ่ม (Click)")]
-    [Range(0f, 1f)] public float uiClickVolume = 1.0f; // ⭐ เสียงคลิกดังปกติ (1.0)
+    [Range(0f, 1f)] public float uiHoverVolume = 0.3f;
+    [Range(0f, 1f)] public float uiClickVolume = 1.0f;
+    [Range(0f, 1f)] public float alertVolume = 0.8f;
 
     [Header("-------- Anti-Spam Settings ----------")]
-    [Tooltip("ระยะเวลาดีเลย์ขั้นต่ำระหว่างเสียงมิสไซล์ (วินาที)")]
     public float missileSfxCooldown = 0.15f;
 
     [Header("-------- Random Pitch Settings ----------")]
-    [Tooltip("ค่าความต่ำ-สูงของเสียงยิงปืน และเสียงคลิก UI")]
     public float minPitch = 0.75f;
     public float maxPitch = 1.25f;
 
-    private Dictionary<AudioClip, float> soundTimers = new Dictionary<AudioClip, float>();
+    private AudioSource alertSource;
+    private int activeAlertCount = 0;
+    private readonly Dictionary<AudioClip, float> soundTimers = new Dictionary<AudioClip, float>();
+
+    private void Awake()
+    {
+        alertSource = gameObject.AddComponent<AudioSource>();
+        alertSource.playOnAwake = false;
+        alertSource.loop = true;
+        alertSource.ignoreListenerPause = true;
+    }
 
     private void Start()
     {
-        // บังคับให้เสียง SFX ทะลวงการหยุดเกมออกมาได้
         if (SFXSource != null) SFXSource.ignoreListenerPause = true;
 
-        if (background != null)
+        if (background != null && musicSource != null)
         {
             musicSource.clip = background;
             musicSource.Play();
+        }
+    }
+
+    public void PlayAlert()
+    {
+        activeAlertCount++;
+        if (Alert == null || alertSource == null) return;
+
+        alertSource.clip = Alert;
+        alertSource.volume = alertVolume;
+        if (!alertSource.isPlaying)
+        {
+            alertSource.Play();
+        }
+    }
+
+    public void StopAlert()
+    {
+        activeAlertCount = Mathf.Max(0, activeAlertCount - 1);
+        if (activeAlertCount == 0 && alertSource != null && alertSource.isPlaying)
+        {
+            alertSource.Stop();
+        }
+    }
+
+    public void ForceStopAlert()
+    {
+        activeAlertCount = 0;
+        if (alertSource != null && alertSource.isPlaying)
+        {
+            alertSource.Stop();
         }
     }
 
@@ -68,7 +105,6 @@ public class AudioManger : MonoBehaviour
     {
         if (clip == null) return;
 
-        // ดักคูลดาวน์มิสไซล์
         if (clip == Alert || clip == MidSide)
         {
             if (soundTimers.ContainsKey(clip))
@@ -81,7 +117,6 @@ public class AudioManger : MonoBehaviour
             soundTimers[clip] = UnityEngine.Time.time;
         }
 
-        // นำเสียง UIClick มารวมกลุ่มสุ่ม Pitch (สูง-ต่ำ) ด้วย
         if (clip == Shoot || clip == UIClick)
         {
             SFXSource.pitch = Random.Range(minPitch, maxPitch);
@@ -95,22 +130,21 @@ public class AudioManger : MonoBehaviour
             SFXSource.pitch = 1f;
         }
 
-        // ⭐ แยกระดับความดังของแต่ละเสียงก่อนเล่น
         if (clip == GameOverSound)
         {
             SFXSource.PlayOneShot(clip, gameOverVolume);
         }
         else if (clip == UIHover)
         {
-            SFXSource.PlayOneShot(clip, uiHoverVolume); // ใช้ระดับเสียง Hover
+            SFXSource.PlayOneShot(clip, uiHoverVolume);
         }
         else if (clip == UIClick)
         {
-            SFXSource.PlayOneShot(clip, uiClickVolume); // ใช้ระดับเสียง Click
+            SFXSource.PlayOneShot(clip, uiClickVolume);
         }
         else
         {
-            SFXSource.PlayOneShot(clip); // เสียงอื่นๆ ดังปกติ
+            SFXSource.PlayOneShot(clip);
         }
     }
 
@@ -120,5 +154,10 @@ public class AudioManger : MonoBehaviour
         {
             musicSource.Stop();
         }
+    }
+
+    private void OnDisable()
+    {
+        ForceStopAlert();
     }
 }

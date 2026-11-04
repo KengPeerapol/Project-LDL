@@ -6,27 +6,37 @@ public class EnemyEscapeManager : MonoBehaviour
 {
     public static EnemyEscapeManager Instance { get; private set; }
 
-    [Header("Escape Limit Settings (โควตาดาวดวงที่ 3)")]
-    [Tooltip("จำนวนศัตรูสูงสุดที่ยอมให้หลุดได้เพื่อรับดาวดวงที่ 3 (หลุดเกินจะไม่แพ้ แต่จะชวดดาวข้อนี้)")]
+    [Header("Escape Limit Settings (โควตาศัตรูที่หลุดรอด)")]
     public int maxEscapesAllowed = 5;
+    public int currentEscapes = 0;
 
-    [Tooltip("รูปแบบการแสดงผล: ติ๊กถูก = แสดงจำนวนที่หลุดไปแล้ว (0/5) | ติ๊กออก = แสดงจำนวนที่เหลือ (5)")]
-    public bool showAsCountUp = true;
+    public int CurrentEscapes => currentEscapes;
+    public int maxEscapes => maxEscapesAllowed;
 
-    [Header("UI Displays")]
+    [Header("--- UI Escape Bar Settings ---")]
+    public Image escapeBarFill;
+    public Slider escapeSlider;
     public TextMeshProUGUI escapeText;
     public Image decorativeIcon;
-    public Sprite iconSprite;
 
-    [Header("Color Warning (สีเตือนสถานะดาว)")]
-    public Color normalColor = Color.white;
-    public Color warningColor = Color.yellow;
-    public Color dangerColor = Color.red; // สีแดงเมื่อหลุดเกินโควตาดาว
+    [Header("--- Bar Juice Effect (การสั่นและพิกเซล) ---")]
+    public UIBarPixelEffect barEffect;
 
-    private int currentEscapes = 0;
+    [Header("Bar Direction Settings")]
+    public bool fillAsEscapesIncrease = true;
+    public bool snapToSteps = true;
 
-    // Property สำหรับให้ StarResultManager ดึงค่าไปคำนวณดาว
-    public int CurrentEscapes => currentEscapes;
+    [Header("Color Warning (เขียว -> ส้ม -> แดง)")]
+    public Color safeColor = Color.green;
+    public Color warningColor = new Color(1f, 0.55f, 0f);
+    public Color dangerColor = Color.red;
+
+    [Header("Danger Thresholds")]
+    [Range(0f, 1f)] public float warningThreshold = 0.35f;
+    [Range(0f, 1f)] public float dangerThreshold = 0.70f;
+
+    private Image cachedSliderFillImage;
+    private AudioManger audioManager;
 
     private void Awake()
     {
@@ -36,58 +46,95 @@ public class EnemyEscapeManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        if (escapeSlider != null && escapeSlider.fillRect != null)
+        {
+            cachedSliderFillImage = escapeSlider.fillRect.GetComponent<Image>();
+        }
+
+        if (barEffect == null)
+        {
+            if (escapeBarFill != null) barEffect = escapeBarFill.GetComponent<UIBarPixelEffect>();
+            if (barEffect == null) barEffect = GetComponentInChildren<UIBarPixelEffect>();
+        }
     }
 
     private void Start()
     {
         currentEscapes = 0;
 
-        if (decorativeIcon != null && iconSprite != null)
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
         {
-            decorativeIcon.sprite = iconSprite;
+            audioManager = audioObj.GetComponent<AudioManger>();
         }
 
-        UpdateUI();
+        if (escapeText != null)
+        {
+            escapeText.text = "escape bar";
+        }
+
+        UpdateEscapeBarUI(triggerEffect: false);
     }
 
-    // ⭐ ทำงานเมื่อมี Enemy หลุดขอบจอด้านซ้าย
     public void OnEnemyEscaped(string enemyName = "")
     {
         currentEscapes++;
-        UpdateUI();
+        UpdateEscapeBarUI(triggerEffect: true);
 
-        Debug.Log($"<color=orange>[Enemy Escaped] ศัตรูหลุดรอด: {currentEscapes} ตัว (โควตาดาว: {maxEscapesAllowed})</color>");
+        Debug.Log($"<color=orange>[Enemy Escaped] {enemyName} หลุดรอด: {currentEscapes}/{maxEscapesAllowed}</color>");
 
-        // ⭐ ตัดคำสั่ง TriggerGameOver() ออกแล้ว เกมจะไม่หยุด/ไม่แพ้ เล่นต่อได้ตามปกติ
+        // ⭐ ดึงเสียง EnemyEscape จาก AudioManger โดยตรง
+        if (audioManager != null && audioManager.EnemyEscape != null)
+        {
+            audioManager.PlaySFX(audioManager.EnemyEscape);
+        }
     }
 
-    private void UpdateUI()
+    private void UpdateEscapeBarUI(bool triggerEffect = false)
     {
-        if (escapeText == null) return;
+        if (maxEscapesAllowed <= 0) return;
 
-        int remaining = Mathf.Max(0, maxEscapesAllowed - currentEscapes);
+        float dangerRatio = Mathf.Clamp01((float)currentEscapes / maxEscapesAllowed);
 
-        if (showAsCountUp)
+        float fillProgress = dangerRatio;
+        if (snapToSteps)
         {
-            escapeText.text = $"Escaped: {currentEscapes} / {maxEscapesAllowed}";
-        }
-        else
-        {
-            escapeText.text = $"Remaining: {remaining}";
+            float step = 1f / maxEscapesAllowed;
+            fillProgress = Mathf.Round(fillProgress / step) * step;
         }
 
-        // แจ้งเตือนสีตัวอักษร
-        if (currentEscapes > maxEscapesAllowed)
+        float displayValue = fillAsEscapesIncrease ? fillProgress : (1f - fillProgress);
+
+        Color targetBarColor;
+        if (dangerRatio < warningThreshold) targetBarColor = safeColor;
+        else if (dangerRatio < dangerThreshold) targetBarColor = warningColor;
+        else targetBarColor = dangerColor;
+
+        if (escapeBarFill != null)
         {
-            escapeText.color = dangerColor; // หลุดเกินโควตาแล้ว (สีแดง - ชวดดาวข้อนี้)
+            escapeBarFill.fillAmount = displayValue;
+            escapeBarFill.color = targetBarColor;
         }
-        else if (remaining <= 1)
+
+        if (escapeSlider != null)
         {
-            escapeText.color = warningColor; // ใกล้หลุดเกินโควตา
+            escapeSlider.value = displayValue;
+            if (cachedSliderFillImage != null)
+            {
+                cachedSliderFillImage.color = targetBarColor;
+            }
         }
-        else
+
+        if (triggerEffect && barEffect != null)
         {
-            escapeText.color = normalColor;
+            barEffect.PlayEffect(targetBarColor);
         }
+    }
+
+    public void ResetEscapes()
+    {
+        currentEscapes = 0;
+        UpdateEscapeBarUI(triggerEffect: false);
     }
 }
