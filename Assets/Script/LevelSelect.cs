@@ -43,6 +43,11 @@ public class LevelSelect : MonoBehaviour
         SceneManager.LoadScene(levelName);
     }
 
+    // เพิ่มฟังก์ชันนี้ลงในคลาส LevelSelect
+    public void GoToMainMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
     public void ResetProgress()
     {
         PlayerPrefs.DeleteKey("ReachedLevel");

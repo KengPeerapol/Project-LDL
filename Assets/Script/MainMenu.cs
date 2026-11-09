@@ -20,4 +20,16 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
+
+    // 4. ฟังก์ชันออกจากเกม (สำหรับปุ่ม Quit)
+    public void QuitGame()
+    {
+        Debug.Log("[Game] ปิดโปรแกรมและออกจากเกม");
+        Application.Quit(); // สั่งปิดเกมเมื่อ Build เป็นไฟล์ .exe หรือแอปพลิเคชันจริง
+
+#if UNITY_EDITOR
+        // กรณีทดสอบในหน้า Unity Editor คำสั่งนี้จะหยุดโหมด Play ให้อัตโนมัติ
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }

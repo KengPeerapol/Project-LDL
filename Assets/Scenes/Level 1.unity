@@ -1656,7 +1656,7 @@ Transform:
   m_GameObject: {fileID: 492009000}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.653, y: -3.04, z: 1}
+  m_LocalPosition: {x: -2.653, y: -3.734, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2050,13 +2050,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc69c0ec933992a4fb2a2eeefb55afe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEventManager
-  cooldownTime: 5
+  cooldownTime: 10
   globalEventChance: 100
-  wallWeight: 1
-  missileWeight: 100
+  wallWeight: 50
+  missileWeight: 1
   topWall: {fileID: 1157801743}
   bottomWall: {fileID: 492009001}
-  wallMoveSpeed: 6
+  wallMoveSpeed: 10
   slideDistance: 87.1
   wallPreWarningTime: 2.5
   spawnEnemyDuringWall: 0
@@ -2692,6 +2692,7 @@ GameObject:
   - component: {fileID: 850535644}
   - component: {fileID: 850535648}
   - component: {fileID: 850535649}
+  - component: {fileID: 850535650}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2841,6 +2842,18 @@ MonoBehaviour:
   m_CropFrameX: 0
   m_CropFrameY: 0
   m_StretchFill: 0
+--- !u!114 &850535650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850535643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fee1b348bd6bd34896d142eefd9e72a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DisableDebug
 --- !u!1 &866723393
 GameObject:
   m_ObjectHideFlags: 0
@@ -3200,13 +3213,13 @@ MonoBehaviour:
   enemies:
   - enemyName: Cooldown
     prefab: {fileID: 4044427734538613108, guid: 53a65531bc6ecc24497b2568c6dc5f94, type: 3}
-    spawnWeight: 70
+    spawnWeight: 65
   - enemyName: Heal
     prefab: {fileID: 8593860426822094936, guid: c457a11619842e941b7deecedb8561aa, type: 3}
-    spawnWeight: 30
+    spawnWeight: 35
   useRandomInterval: 1
-  minSpawnInterval: 1
-  maxSpawnInterval: 2.5
+  minSpawnInterval: 2.5
+  maxSpawnInterval: 5
   spawnImmediately: 1
   playerController: {fileID: 1897711352}
   alwaysShowGizmo: 1
@@ -3316,7 +3329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2366d78c8c213a548a5ba93e59239724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameScoreManager
-  targetScore: 100
+  targetScore: 400
   currentScore: 0
   snapToSteps: 1
   stepPercent: 20
@@ -3470,7 +3483,7 @@ Transform:
   m_GameObject: {fileID: 1157801742}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: -2.6529, y: 3.836, z: 1}
+  m_LocalPosition: {x: -2.6529, y: 4.43, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5670,7 +5683,7 @@ Transform:
   m_GameObject: {fileID: 1776670051}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
-  m_LocalPosition: {x: 350, y: 0, z: 0}
+  m_LocalPosition: {x: 200, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
