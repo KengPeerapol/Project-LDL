@@ -23,12 +23,15 @@ public class EnemyEscapeManager : MonoBehaviour
     public UIBarPixelEffect barEffect;
 
     [Header("Bar Direction Settings")]
-    public bool fillAsEscapesIncrease = true;
+    [Tooltip("ติ๊กถูก = หลอดเริ่มจาก 0 แล้วค่อยๆ เพิ่มขึ้น | ติ๊กออก = หลอดเต็ม 100% แล้วค่อยๆ ลดลงเมื่อศัตรูหลุดรอด")]
+    public bool fillAsEscapesIncrease = false; // ⭐ เริ่มต้นจากเต็ม 100% แล้วลดลง
+
+    [Tooltip("ปัดค่าให้ขยับทีละสเต็ปตามจำนวนศัตรู")]
     public bool snapToSteps = true;
 
     [Header("Color Warning (เขียว -> ส้ม -> แดง)")]
     public Color safeColor = Color.green;
-    public Color warningColor = new Color(1f, 0.55f, 0f);
+    public Color warningColor = new Color(1f, 0.55f, 0f); // ส้ม
     public Color dangerColor = Color.red;
 
     [Header("Danger Thresholds")]
@@ -84,7 +87,7 @@ public class EnemyEscapeManager : MonoBehaviour
 
         Debug.Log($"<color=orange>[Enemy Escaped] {enemyName} หลุดรอด: {currentEscapes}/{maxEscapesAllowed}</color>");
 
-        // ⭐ ดึงเสียง EnemyEscape จาก AudioManger โดยตรง
+        // ดึงเสียง EnemyEscape จาก AudioManger โดยตรง
         if (audioManager != null && audioManager.EnemyEscape != null)
         {
             audioManager.PlaySFX(audioManager.EnemyEscape);
@@ -95,8 +98,10 @@ public class EnemyEscapeManager : MonoBehaviour
     {
         if (maxEscapesAllowed <= 0) return;
 
+        // คำนวณอัตราส่วนศัตรูที่หลุดรอด (0.0 = ยังไม่มีหลุด, 1.0 = หลุดครบโควตา)
         float dangerRatio = Mathf.Clamp01((float)currentEscapes / maxEscapesAllowed);
 
+        // กำหนดความยาวหลอด (คำนวณแบบสเต็ป)
         float fillProgress = dangerRatio;
         if (snapToSteps)
         {
@@ -104,8 +109,10 @@ public class EnemyEscapeManager : MonoBehaviour
             fillProgress = Mathf.Round(fillProgress / step) * step;
         }
 
+        // ถ้า fillAsEscapesIncrease เป็น false -> หลอดจะเริ่มที่ 1.0 แล้วลดลงตาม fillProgress
         float displayValue = fillAsEscapesIncrease ? fillProgress : (1f - fillProgress);
 
+        // คำนวณสีหลอดเตือนภัยตามอัตราอันตราย
         Color targetBarColor;
         if (dangerRatio < warningThreshold) targetBarColor = safeColor;
         else if (dangerRatio < dangerThreshold) targetBarColor = warningColor;
