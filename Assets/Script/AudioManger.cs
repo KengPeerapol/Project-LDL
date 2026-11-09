@@ -1,14 +1,19 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManger : MonoBehaviour
 {
+    private static AudioManger instance;
+
     [Header("-------- Audio Source ----------")]
     [SerializeField] AudioSource musicSource;
     [SerializeField] AudioSource SFXSource;
 
     [Header("-------- Audio Clip ----------")]
     public AudioClip background;
+    public AudioClip menuBackground;
     public AudioClip Shoot;
     public AudioClip Pick;
     public AudioClip Time;
@@ -28,6 +33,7 @@ public class AudioManger : MonoBehaviour
 
     [Header("--- Other SFX ---")]
     public AudioClip Die;
+    public AudioClip EnemyDie;
     public AudioClip Alert;
     public AudioClip MidSide;
 
@@ -39,9 +45,14 @@ public class AudioManger : MonoBehaviour
     [Range(0f, 1f)] public float uiHoverVolume = 0.3f;
     [Range(0f, 1f)] public float uiClickVolume = 1.0f;
     [Range(0f, 1f)] public float alertVolume = 0.8f;
+    // ⭐ ข้อ 2: เพิ่มช่องสำหรับปรับความดังเสียงศัตรูหนีโดยเฉพาะ
+    [Range(0f, 1f)] public float enemyEscapeVolume = 0.4f;
 
     [Header("-------- Anti-Spam Settings ----------")]
     public float missileSfxCooldown = 0.15f;
+
+    [Header("-------- Game Over Settings ----------")]
+    public float gameOverSoundDelay = 0.5f;
 
     [Header("-------- Random Pitch Settings ----------")]
     public float minPitch = 0.75f;
@@ -53,19 +64,69 @@ public class AudioManger : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
         alertSource = gameObject.AddComponent<AudioSource>();
         alertSource.playOnAwake = false;
         alertSource.loop = true;
         alertSource.ignoreListenerPause = true;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        if (SFXSource != null) SFXSource.ignoreListenerPause = true;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
-        if (background != null && musicSource != null)
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (instance == this) ForceStopAlert();
+    }
+
+    private void Update()
+    {
+        if (alertSource != null)
         {
-            musicSource.clip = background;
+            if (UnityEngine.Time.timeScale == 0f)
+            {
+                if (alertSource.isPlaying)
+                {
+                    alertSource.Pause();
+                }
+            }
+            else
+            {
+                if (activeAlertCount > 0 && !alertSource.isPlaying)
+                {
+                    alertSource.UnPause();
+                }
+            }
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (instance != this) return;
+
+        if (SFXSource != null) SFXSource.Stop();
+        ForceStopAlert();
+
+        if (SFXSource != null) SFXSource.ignoreListenerPause = true;
+        if (musicSource == null) return;
+
+        AudioClip clipToPlay = (scene.name == "MainMenu" || scene.name == "LevelSelect") ? menuBackground : background;
+
+        if (clipToPlay != null && (musicSource.clip != clipToPlay || !musicSource.isPlaying))
+        {
+            musicSource.clip = clipToPlay;
+            musicSource.loop = true;
             musicSource.Play();
         }
     }
@@ -109,15 +170,15 @@ public class AudioManger : MonoBehaviour
         {
             if (soundTimers.ContainsKey(clip))
             {
-                if (UnityEngine.Time.time - soundTimers[clip] < missileSfxCooldown)
+                if (UnityEngine.Time.unscaledTime - soundTimers[clip] < missileSfxCooldown)
                 {
                     return;
                 }
             }
-            soundTimers[clip] = UnityEngine.Time.time;
+            soundTimers[clip] = UnityEngine.Time.unscaledTime;
         }
 
-        if (clip == Shoot || clip == UIClick)
+        if (clip == Shoot || clip == UIClick || clip == EnemyDie)
         {
             SFXSource.pitch = Random.Range(minPitch, maxPitch);
         }
@@ -132,7 +193,12 @@ public class AudioManger : MonoBehaviour
 
         if (clip == GameOverSound)
         {
-            SFXSource.PlayOneShot(clip, gameOverVolume);
+            StartCoroutine(PlayGameOverSoundRoutine());
+        }
+        // ⭐ แยกระดับความดังของเสียงศัตรูหนี ไม่ให้ไปทับกับเสียงอื่นๆ
+        else if (clip == EnemyEscape)
+        {
+            SFXSource.PlayOneShot(clip, enemyEscapeVolume);
         }
         else if (clip == UIHover)
         {
@@ -148,16 +214,26 @@ public class AudioManger : MonoBehaviour
         }
     }
 
+    private IEnumerator PlayGameOverSoundRoutine()
+    {
+        if (SFXSource != null) SFXSource.Stop();
+        ForceStopAlert();
+        StopMusic();
+
+        yield return new WaitForSecondsRealtime(gameOverSoundDelay);
+
+        if (SFXSource != null && GameOverSound != null)
+        {
+            SFXSource.pitch = 1f;
+            SFXSource.PlayOneShot(GameOverSound, gameOverVolume);
+        }
+    }
+
     public void StopMusic()
     {
         if (musicSource != null)
         {
             musicSource.Stop();
         }
-    }
-
-    private void OnDisable()
-    {
-        ForceStopAlert();
     }
 }
