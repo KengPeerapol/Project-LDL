@@ -5,35 +5,44 @@ using UnityEngine.SceneManagement;
 public class LevelSelect : MonoBehaviour
 {
     [Header("Level Buttons")]
+    public Button level1Button;
     public Button level2Button;
     public Button level3Button;
 
-    void Start()
+    [Header("Patient Info Window")]
+    public PatientInfoPanel patientInfoPanel;
+
+    private void Start()
     {
-        // อ่านค่าระดับด่านสูงสุดที่ผ่านแล้ว (ถ้าเพิ่งเล่นครั้งแรก ค่าเริ่มต้นจะเป็น 1)
         int reachedLevel = PlayerPrefs.GetInt("ReachedLevel", 1);
 
-        // ด่าน 1 กดได้เสมอ
-        // ด่าน 2 จะกดได้ก็ต่อเมื่อ reachedLevel >= 2
-        if (level2Button != null)
-        {
-            level2Button.interactable = (reachedLevel >= 2);
-        }
+        if (level2Button != null) level2Button.interactable = (reachedLevel >= 2);
+        if (level3Button != null) level3Button.interactable = (reachedLevel >= 3);
 
-        // ด่าน 3 จะกดได้ก็ต่อเมื่อ reachedLevel >= 3
-        if (level3Button != null)
+        // ผูก Event ให้ปุ่มเลข 1 สั่งเปิดหน้าต่างข้อมูลผู้ป่วย
+        if (level1Button != null)
         {
-            level3Button.interactable = (reachedLevel >= 3);
+            level1Button.onClick.AddListener(OnLevel1Clicked);
         }
     }
 
-    // ฟังก์ชันสำหรับเรียกโหลด Scene ด่าน
+    public void OnLevel1Clicked()
+    {
+        if (patientInfoPanel != null)
+        {
+            patientInfoPanel.OpenWindow(0);
+        }
+        else
+        {
+            LoadLevel("Level 1");
+        }
+    }
+
     public void LoadLevel(string levelName)
     {
         SceneManager.LoadScene(levelName);
     }
 
-    // (ออฟชันเสริม) ปุ่ม Reset ความคืบหน้าสำหรับทดสอบระบบ
     public void ResetProgress()
     {
         PlayerPrefs.DeleteKey("ReachedLevel");
