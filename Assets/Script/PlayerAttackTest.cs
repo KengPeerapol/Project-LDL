@@ -9,8 +9,8 @@ public class PlayerAttackTest : MonoBehaviour
 {
     public enum ChargeMode
     {
-        Projectile, // แบบที่ 1: กระสุนเด้งกำแพง
-        LaserBeam   // แบบที่ 2: ลำแสงเลเซอร์ (เด้งกำแพงได้)
+        Projectile,
+        LaserBeam
     }
 
     private struct LaserSegment
@@ -95,6 +95,12 @@ public class PlayerAttackTest : MonoBehaviour
     public float trajectoryWidth = 0.08f;
     public Color bulletTrajectoryColor = new Color(0f, 1f, 1f, 0.85f);
     public Color laserTrajectoryColor = new Color(1f, 0.35f, 0.05f, 0.9f);
+
+    // ⭐ เพิ่มหมวดหมู่ตั้งค่าเสียงชาร์จ
+    [Header("--- Charge Sound Settings ---")]
+    public AudioClip chargeSound;
+    [Range(0f, 1f)] public float chargeSoundVolume = 0.6f;
+    private AudioSource chargeAudioSource;
 
     // ==================== Optimized Private Buffers ====================
     private const int MAX_RAYCAST_BUFFER = 16;
@@ -199,6 +205,11 @@ public class PlayerAttackTest : MonoBehaviour
         }
 
         UpdateModeUI();
+
+        // ⭐ สร้างลำโพงส่วนตัวสำหรับเสียงชาร์จยิง
+        chargeAudioSource = gameObject.AddComponent<AudioSource>();
+        chargeAudioSource.playOnAwake = false;
+        chargeAudioSource.loop = true; // วนลูปไปเรื่อยๆ จนกว่าจะปล่อยปุ่ม
     }
 
     private void SetupTrajectoryLineRenderer()
@@ -250,10 +261,20 @@ public class PlayerAttackTest : MonoBehaviour
         laserLineRenderer.enabled = false;
     }
 
+    // ⭐ ฟังก์ชันผู้ช่วยสำหรับหยุดเสียงชาร์จ
+    private void StopChargeSound()
+    {
+        if (chargeAudioSource != null && chargeAudioSource.isPlaying)
+        {
+            chargeAudioSource.Stop();
+        }
+    }
+
     private void Update()
     {
         if (PauseMenuManager.isGamePaused || Time.timeScale <= 0f)
         {
+            StopChargeSound(); // ⭐ หยุดเสียงตอนกด Pause
             isSlowMoActive = false;
             isCharging = false;
             currentChargeTimer = 0f;
@@ -265,6 +286,7 @@ public class PlayerAttackTest : MonoBehaviour
 
         if (IsPlayerDead() || (playerController != null && !playerController.CanShootAndControl))
         {
+            StopChargeSound(); // ⭐ หยุดเสียงตอนตาย
             ResetSlowMotion();
             ResetGunScale();
             HideTrajectory();
@@ -294,13 +316,13 @@ public class PlayerAttackTest : MonoBehaviour
         chargeMode = (chargeMode == ChargeMode.Projectile) ? ChargeMode.LaserBeam : ChargeMode.Projectile;
         UpdateModeUI();
 
-        // ⭐ แก้ไขจุดที่ 1: เมื่อกดสลับโหมดแล้วโหมดใหม่ยังติดคูลดาวน์อยู่ ให้ยกเลิก Slow Motion ทันที
         if (ActiveCooldownTimer > 0f)
         {
             if (isSlowMoActive)
             {
                 ResetSlowMotion();
             }
+            StopChargeSound(); // ⭐ ตัดเสียงทิ้งถ้าย้ายโหมดแล้วติดคูลดาวน์
             HideTrajectory();
             ResetGunScale();
         }
@@ -390,13 +412,29 @@ public class PlayerAttackTest : MonoBehaviour
             isCharging = true;
             currentChargeTimer = 0f;
             hasLoggedFullCharge = false;
+
+            // ⭐ สั่งเล่นเสียงตอนเริ่มคลิกเมาส์ค้าง
+            if (chargeSound != null && chargeAudioSource != null && ActiveCooldownTimer <= 0f)
+            {
+                chargeAudioSource.clip = chargeSound;
+                chargeAudioSource.volume = chargeSoundVolume;
+                chargeAudioSource.pitch = 0.8f; // เริ่มต้นที่เสียงต่ำนิดๆ ให้ฟีลลิ่งกำลังปั่นเครื่อง
+                chargeAudioSource.Play();
+            }
         }
 
         if (Mouse.current.leftButton.isPressed && isCharging)
         {
             currentChargeTimer += Time.unscaledDeltaTime;
 
-            // ⭐ แก้ไขจุดที่ 2: ควบคุม Slow Motion ให้ทำงานเฉพาะตอนที่โหมดนั้นพร้อมใช้งานจริง
+            // ⭐ ปรับเสียงให้แหลมขึ้นเรื่อยๆ ตามเปอร์เซ็นต์หลอดชาร์จ!
+            if (chargeAudioSource != null && chargeAudioSource.isPlaying)
+            {
+                float chargePercent = Mathf.Clamp01(currentChargeTimer / chargeTimeRequired);
+                // พอชาร์จ 100% เสียงจะสูงขึ้นถึง 1.5 เท่า
+                chargeAudioSource.pitch = Mathf.Lerp(0.8f, 1.5f, chargePercent);
+            }
+
             if (enableSlowMotion && currentChargeTimer >= slowMotionDelay)
             {
                 if (!isSlowMoActive && ActiveCooldownTimer <= 0f)
@@ -406,7 +444,6 @@ public class PlayerAttackTest : MonoBehaviour
                 }
                 else if (isSlowMoActive && ActiveCooldownTimer > 0f)
                 {
-                    // หากชาร์จอยู่แต่โหมดปัจจุบันติดคูลดาวน์ (เช่น เพิ่งกด Q สลับมา) ให้ปิด Slow Motion ทันที
                     ResetSlowMotion();
                 }
             }
@@ -427,6 +464,8 @@ public class PlayerAttackTest : MonoBehaviour
 
         if (Mouse.current.leftButton.wasReleasedThisFrame && isCharging)
         {
+            StopChargeSound(); // ⭐ ปล่อยเมาส์ปุ๊บ หยุดเสียงชาร์จทันที
+
             ResetSlowMotion();
             HideTrajectory();
             isCharging = false;
@@ -606,7 +645,6 @@ public class PlayerAttackTest : MonoBehaviour
                     RaycastHit2D hit = circleCastHitsBuffer[h];
                     if (hit.collider == null) continue;
 
-                    // 1. ตรวจจับศัตรู EnemyHealthTest
                     if (hit.collider.CompareTag("Enemy") || hit.collider.transform.root.CompareTag("Enemy"))
                     {
                         EnemyHealthTest enemy = hit.collider.GetComponentInParent<EnemyHealthTest>();
@@ -617,14 +655,13 @@ public class PlayerAttackTest : MonoBehaviour
                         }
                     }
 
-                    // 2. ตรวจจับและทำลาย Missile เฉพาะเมื่อเปิดใช้งานระบบ
                     if (laserCanDestroyMissile)
                     {
                         MissileProjectile missile = hit.collider.GetComponentInParent<MissileProjectile>();
                         if (missile != null && !damagedMissilesCache.Contains(missile))
                         {
                             damagedMissilesCache.Add(missile);
-                            missile.DestroyByLaser(); //[cite: 23]
+                            missile.DestroyByLaser();
                         }
                     }
                 }
@@ -836,6 +873,7 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void OnDisable()
     {
+        StopChargeSound(); // ⭐ หยุดเสียงชาร์จตอนปิดสคริปต์
         ResetSlowMotion();
         ResetGunScale();
         HideTrajectory();
@@ -844,6 +882,7 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void OnDestroy()
     {
+        StopChargeSound(); // ⭐ หยุดเสียงชาร์จตอนทำลาย object
         ResetSlowMotion();
         ResetGunScale();
         HideTrajectory();

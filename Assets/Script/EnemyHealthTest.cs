@@ -83,7 +83,6 @@ public class EnemyHealthTest : MonoBehaviour
         }
     }
 
-    // ⭐ รับดาเมจจากการยิง
     public void TakeDamage(float damage)
     {
         if (isDead || isInvulnerable) return;
@@ -141,11 +140,9 @@ public class EnemyHealthTest : MonoBehaviour
                 if (contactDamage > 0)
                 {
                     healthTest.TakeDamage(contactDamage, "Enemy");
-                    Debug.Log($"<color=red>[Collision] ชน Player! เสียเลือด: -{contactDamage}</color>");
                 }
                 else
                 {
-                    Debug.Log($"<color=cyan>[Collision] ชนเก็บแต้มสำเร็จ! (ดาเมจ 0 ไม่เสียเลือด)</color>");
                     if (audioManager != null && audioManager.CollectPoint != null)
                     {
                         audioManager.PlaySFX(audioManager.CollectPoint);
@@ -156,7 +153,6 @@ public class EnemyHealthTest : MonoBehaviour
             if (giveScoreOnPlayerHit && GameScoreManager.Instance != null && scoreReward > 0)
             {
                 GameScoreManager.Instance.AddScore(scoreReward);
-                Debug.Log($"<color=green>[Score] ได้รับคะแนน: +{scoreReward}</color>");
             }
 
             if (destroyOnHitPlayer)
@@ -172,25 +168,31 @@ public class EnemyHealthTest : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // ⭐ ให้คะแนนทันทีเมื่อโดนยิงตาย (ไม่ต้องเสกแต้มหรือร่างใหม่)
         if (!killedByPlayerCollision && GameScoreManager.Instance != null && scoreReward > 0)
         {
             GameScoreManager.Instance.AddScore(scoreReward);
-            Debug.Log($"<color=green>[Score] ยิงศัตรูตาย! ได้รับคะแนนทันที: +{scoreReward}</color>");
 
-            if (audioManager != null && audioManager.CollectPoint != null)
+            if (audioManager != null)
             {
-                audioManager.PlaySFX(audioManager.CollectPoint);
+                // เล่นเสียงได้คะแนน
+                if (audioManager.CollectPoint != null)
+                {
+                    audioManager.PlaySFX(audioManager.CollectPoint);
+                }
+
+                // ⭐ เล่นเสียงศัตรูตาย จากช่องใหม่ที่เราเพิ่งสร้าง
+                if (audioManager.EnemyDie != null)
+                {
+                    audioManager.PlaySFX(audioManager.EnemyDie);
+                }
             }
         }
 
-        // ปล่อยหนามตอนตาย (ถ้าเปิดไว้และตัวศัตรูมีดาเมจ)
         if (contactDamage > 0 && spawnSpikesOnDeath && spikePrefab != null)
         {
             SpawnBouncingSpikes();
         }
 
-        // เอฟเฟกต์ระเบิดตอนตาย
         if (deathEffectPrefab != null)
         {
             Quaternion randomRot = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));

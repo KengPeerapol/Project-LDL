@@ -6,9 +6,10 @@ public class EnemyEscapeTrigger : MonoBehaviour
     [Header("Detection Tag")]
     public string enemyTag = "Enemy";
 
+    private AudioManger audioManager;
+
     private void Awake()
     {
-        // บังคับให้ Collider เป็น Trigger เสมอ
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
         {
@@ -16,21 +17,39 @@ public class EnemyEscapeTrigger : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        GameObject audioObj = GameObject.FindGameObjectWithTag("Audio");
+        if (audioObj != null)
+        {
+            audioManager = audioObj.GetComponent<AudioManger>();
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ตรวจจับเฉพาะศัตรู (ข้าม Player, Bullet และ Point)
         if (other.CompareTag(enemyTag) || other.transform.root.CompareTag(enemyTag))
         {
-            // ดึง Root GameObject ของศัตรู
             GameObject enemyObj = other.transform.root.gameObject;
 
-            // ส่งข้อมูลแจ้งเตือนระบบ
+            // ⭐ ดักจับ Missile: ถ้าชื่อของวัตถุมีคำว่า "Missile" (ตัวพิมพ์เล็กหรือใหญ่ก็ได้)
+            // ให้ทำลายทิ้งไปเงียบๆ แล้วหยุดการทำงานทันที (return) เสียงจะได้ไม่ร้อง
+            if (enemyObj.name.Contains("Missile") || enemyObj.name.Contains("missile"))
+            {
+                Destroy(enemyObj);
+                return;
+            }
+
             if (EnemyEscapeManager.Instance != null)
             {
                 EnemyEscapeManager.Instance.OnEnemyEscaped(enemyObj.name);
             }
 
-            // ทำลายศัตรูทิ้งทันทีเมื่อหลุดออกนอกจอ
+            if (audioManager != null && audioManager.EnemyEscape != null)
+            {
+                audioManager.PlaySFX(audioManager.EnemyEscape);
+            }
+
             Destroy(enemyObj);
         }
     }
