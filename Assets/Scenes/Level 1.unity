@@ -2153,7 +2153,7 @@ MonoBehaviour:
   enemySpawner: {fileID: 1951566999}
   itemSpawner: {fileID: 1080669736}
   playerController: {fileID: 1897711352}
-  showDebugOnScreen: 1
+  showDebugOnScreen: 0
   showGizmos: 1
 --- !u!1 &629926757
 GameObject:
@@ -2547,7 +2547,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -1.7399505, y: 6.380052}
+  m_AnchoredPosition: {x: -1.7399445, y: 6.380052}
   m_SizeDelta: {x: 36.9201, y: 12.76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &757857363
@@ -6844,8 +6844,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1897711362}
     - target: {fileID: 514008331962633070, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: enableConsoleLogs
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514008331962633070, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: enableScreenShake
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 514008331962633070, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: showDebugOnScreen
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 534322496820327794, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_Name
@@ -7002,6 +7010,10 @@ PrefabInstance:
     - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: projectileChargeCooldown
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6681081217590678989, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
+      propertyPath: showOnScreenToggleButton
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8622836928346107445, guid: b966a37499ce7154293d8e7de0fe1bd6, type: 3}
       propertyPath: m_AnchorMax.y
