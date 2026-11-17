@@ -175,52 +175,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   autoDestroy: 1
-  lifeTime: 6
+  lifeTime: 5
   maxHealth: 25
-  contactDamage: 15
   scoreReward: 20
+  contactDamage: 10
   isInvulnerable: 0
-  evolutionChain:
-  - stageName: 1
-    enemyPrefab: {fileID: 5118996002469163254, guid: 363392e48f618d347bb93f3f14ecc410, type: 3}
-    maxHealth: 20
-    contactDamage: 15
-    scoreReward: 5
-    isInvulnerable: 0
-  - stageName: 2
-    enemyPrefab: {fileID: 5118996002469163254, guid: 082f74f54a9b0f14caf42c41d3d3d94c, type: 3}
-    maxHealth: 20
-    contactDamage: 10
-    scoreReward: 10
-    isInvulnerable: 0
-  - stageName: 3
-    enemyPrefab: {fileID: 4363381124587479592, guid: 2b2db21f5d02dc54886dc6748b74ebe1, type: 3}
-    maxHealth: 20
-    contactDamage: 0
-    scoreReward: 15
-    isInvulnerable: 0
-  - stageName: 4
-    enemyPrefab: {fileID: 8593860426822094936, guid: b3c889a23a007fe45b228f53b883760f, type: 3}
-    maxHealth: 20
-    contactDamage: 0
-    scoreReward: 20
-    isInvulnerable: 1
-  currentChainIndex: 0
-  defaultFlySpeed: 4
-  spawnGracePeriod: 0.25
-  pointPrefab: {fileID: 0}
-  inheritVelocity: 1
+  canTriggerEscape: 0
   giveScoreOnPlayerHit: 1
   destroyOnHitPlayer: 1
-  damageCooldown: 0.5
+  damageCooldown: 0.3
   spawnSpikesOnDeath: 1
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}
   spikeCount: 3
-  spikeSpeed: 7
-  randomizeSpikeAngle: 1
-  useEnemyRotation: 1
-  hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  flashDuration: 0.067
+  spikeSpeed: 6.7
+  spikeSpawnOffset: 0.5
+  randomizeAngle: 1
+  useCurrentRotationAsBase: 1
+  hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  enablePixelShatter: 1
+  pixelCount: 16
+  pixelSize: 0.22
+  explosionSpeed: 6.5
+  pixelDuration: 0.65
+  customPixelColor: {r: 1, g: 0.52949154, b: 0, a: 0}
   deathEffectPrefab: {fileID: 0}
 --- !u!95 &5120644694000503860
 Animator:
@@ -256,6 +234,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2feda718ec8598c4894451a48a35d3b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExplodingEnemyTest
+  maxHealth: 60
+  currentHealth: 0
+  explodeOnDeath: 1
+  spriteRenderer: {fileID: 0}
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  flashMaterial: {fileID: 0}
   explosionRange: 2
   explosionEffect: {fileID: 0}
   spikePrefab: {fileID: 8576523470554721778, guid: 4ee3f98d9e518c946b706305565b631d, type: 3}

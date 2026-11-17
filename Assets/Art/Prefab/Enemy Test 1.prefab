@@ -87,7 +87,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 723151328481627841, guid: 82b2ff1c770831641ae29ea8692696b9, type: 3}
-  m_Color: {r: 1, g: 0.53792745, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -188,7 +188,7 @@ Animator:
   m_GameObject: {fileID: 5118996002469163254}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5e7310bd282fd3744a292881827dc885, type: 2}
+  m_Controller: {fileID: 9100000, guid: 130a355f8eb9fb24f856310e1f82124a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -213,13 +213,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthTest
   autoDestroy: 1
-  lifeTime: 4
-  maxHealth: 50
-  nextEnemyPrefab: {fileID: 0}
-  pointPrefab: {fileID: 0}
-  scoreReward: 30
-  inheritVelocity: 1
+  lifeTime: 8
+  maxHealth: 25
+  scoreReward: 5
   contactDamage: 0
+  isInvulnerable: 0
+  canTriggerEscape: 0
   giveScoreOnPlayerHit: 1
   destroyOnHitPlayer: 1
   damageCooldown: 0.5
@@ -227,8 +226,15 @@ MonoBehaviour:
   spikePrefab: {fileID: 0}
   spikeCount: 4
   spikeSpeed: 6
-  randomizeSpikeAngle: 1
-  useEnemyRotation: 1
+  spikeSpawnOffset: 0.5
+  randomizeAngle: 1
+  useCurrentRotationAsBase: 1
   hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.08
+  enablePixelShatter: 1
+  pixelCount: 16
+  pixelSize: 0.22
+  explosionSpeed: 6.5
+  pixelDuration: 0.65
+  customPixelColor: {r: 1, g: 0.5448127, b: 0, a: 0}
   deathEffectPrefab: {fileID: 0}
