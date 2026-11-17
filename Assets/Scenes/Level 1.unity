@@ -2316,7 +2316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc69c0ec933992a4fb2a2eeefb55afe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEventManager
-  cooldownTime: 10
+  cooldownTime: 2
   globalEventChance: 100
   wallWeight: 20
   missileWeight: 80
@@ -3664,6 +3664,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 914118132}
   m_CullTransparentMesh: 1
+--- !u!1 &939929913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 939929915}
+  - component: {fileID: 939929914}
+  m_Layer: 0
+  m_Name: BackgroundDustManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &939929914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 939929913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcc7756c81e00ab4e808d20096f7c1a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundDustManager
+  particleCount: 45
+  minSpeed: 2
+  maxSpeed: 5
+  minSize: 0.04
+  maxSize: 0.14
+  leftBound: -12
+  rightBound: 12
+  minY: -5.5
+  maxY: 5.5
+  dustColor: {r: 1, g: 0, b: 0, a: 0.35}
+  sortingOrder: -9
+--- !u!4 &939929915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 939929913}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1080669736
 GameObject:
   m_ObjectHideFlags: 0
@@ -7894,3 +7949,4 @@ SceneRoots:
   - {fileID: 1776670054}
   - {fileID: 98329865}
   - {fileID: 17748601}
+  - {fileID: 939929915}

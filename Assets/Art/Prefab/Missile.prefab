@@ -159,3 +159,13 @@ MonoBehaviour:
   flySpeed: 16
   despawnLeftX: -12
   damage: 20
+  enableThrusterEffect: 1
+  thrusterOffset: {x: 0, y: 0}
+  fireColor: {r: 1, g: 0.6993948, b: 0.10196078, a: 1}
+  particleSize: 0.25
+  spawnInterval: 0.03
+  particleLifetime: 0.25
+  thrusterEffectPrefab: {fileID: 0}
+  canBeDestroyedByLaser: 1
+  explosionEffectPrefab: {fileID: 0}
+  scoreReward: 10
