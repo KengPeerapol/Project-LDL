@@ -3,6 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [Header("UI Panels")]
+    [Tooltip("ลาก GameObject ของ Panel Tutorial ใน Hierarchy มาใส่ช่องนี้")]
+    public GameObject tutorialPanel;
+
     public void GoToLevelSelect()
     {
         SceneManager.LoadScene("LevelSelect");
@@ -18,14 +22,46 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    // 4. ฟังก์ชันออกจากเกม (สำหรับปุ่ม Quit)
+    // ==================== Tutorial Panel Control ====================
+
+    // ⭐ ฟังก์ชันกดเปิด Panel Tutorial (สำหรับปุ่ม How to play / Tutorial)
+    public void OpenTutorial()
+    {
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(true);
+        }
+    }
+
+    // ⭐ ฟังก์ชันกดปิด Panel Tutorial (สำหรับปุ่ม X หรือปุ่ม Close)
+    public void CloseTutorial()
+    {
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
+    }
+
+    // ⭐ ฟังก์ชันเปิด/ปิด แบบรับค่า GameObject โดยตรง (ยืดหยุ่นใช้กับ Panel อื่นๆ ได้ด้วย)
+    public void OpenPanel(GameObject panel)
+    {
+        if (panel != null) panel.SetActive(true);
+    }
+
+    public void ClosePanel(GameObject panel)
+    {
+        if (panel != null) panel.SetActive(false);
+    }
+
+    // ================================================================
+
+    // ฟังก์ชันออกจากเกม (สำหรับปุ่ม Quit)
     public void QuitGame()
     {
         Debug.Log("[Game] ปิดโปรแกรมและออกจากเกม");
-        Application.Quit(); // สั่งปิดเกมเมื่อ Build เป็นไฟล์ .exe หรือแอปพลิเคชันจริง
+        Application.Quit();
 
 #if UNITY_EDITOR
-        // กรณีทดสอบในหน้า Unity Editor คำสั่งนี้จะหยุดโหมด Play ให้อัตโนมัติ
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
