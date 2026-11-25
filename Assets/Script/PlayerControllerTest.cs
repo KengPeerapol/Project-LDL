@@ -121,11 +121,9 @@ public class PlayerControllerTest : MonoBehaviour
     {
         if (isWinning || isDead || isIntroPlaying) return;
 
-        // ⭐ ตรวจจับเฉพาะการกดค้าง (คลิกขวา หรือ Spacebar)
-        bool mouseHold = Mouse.current != null && Mouse.current.rightButton.isPressed;
+        // ⭐ ปรับเหลือเฉพาะการกดค้างปุ่ม Spacebar เพียงอย่างเดียวในการบิน
         bool spaceHold = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
-
-        isHoldingInput = mouseHold || spaceHold;
+        isHoldingInput = spaceHold;
 
         if (IsActive)
         {
@@ -145,7 +143,6 @@ public class PlayerControllerTest : MonoBehaviour
 
         if (CanFly)
         {
-            // ⭐ เมื่อกดค้าง: เร่งความเร็วลอยตัวขึ้นสู่ maxAscentSpeed ทันที
             if (isHoldingInput)
             {
                 float currentY = rb.linearVelocity.y;
@@ -154,7 +151,6 @@ public class PlayerControllerTest : MonoBehaviour
             }
         }
 
-        // จำกัดความเร็วตอนตก ไม่ให้ทิ้งดิ่งเร็วเกินไป
         if (rb.linearVelocity.y < -maxFallSpeed)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -maxFallSpeed);
@@ -263,25 +259,22 @@ public class PlayerControllerTest : MonoBehaviour
         rb.gravityScale = 0f;
     }
 
-    // ⭐ ระบบเสียงเก็บแต้ม (พร้อมโค้ดเช็กบั๊ก)
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Point"))
         {
             GameScoreManager.Instance.AddScore(20);
 
-            // เช็กว่าปัญหาเกิดจากอะไร
             if (audioManager == null)
             {
-                Debug.LogError("<color=red>[ด่วน] ตัวละครหา Audio Manager ไม่เจอ! (Tag อาจจะหลุด หรือสะกดผิด)</color>");
+                Debug.LogError("<color=red>[ด่วน] ตัวละครหา Audio Manager ไม่เจอ!</color>");
             }
             else if (audioManager.CollectPoint == null)
             {
-                Debug.LogError("<color=red>[ด่วน] หาไฟล์เสียงไม่เจอ! (หลุดจากช่อง Collect Point ใน Audio Manager)</color>");
+                Debug.LogError("<color=red>[ด่วน] หาไฟล์เสียงไม่เจอ!</color>");
             }
             else
             {
-                Debug.Log("<color=green>สั่งเล่นเสียงเก็บแต้มแล้ว!</color>");
                 audioManager.PlaySFX(audioManager.CollectPoint);
             }
 

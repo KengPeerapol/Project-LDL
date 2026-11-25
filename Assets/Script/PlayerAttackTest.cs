@@ -21,7 +21,6 @@ public class PlayerAttackTest : MonoBehaviour
         public Vector2 direction;
     }
 
-    // ⭐ เพิ่มตัวเลือกเปิด/ปิด OnGUI ใน Inspector (ค่าเริ่มต้นคือปิดไว้)
     [Header("--- Debug & OnGUI Settings (เปิด/ปิด UI บนจอ) ---")]
     [Tooltip("ติ๊กออก = ซ่อนข้อความและปุ่ม OnGUI ทั้งหมดบนหน้าจอ | ติ๊กถูก = เปิดแสดงผลสำหรับทดสอบ")]
     public bool showDebugGUI = false;
@@ -37,7 +36,8 @@ public class PlayerAttackTest : MonoBehaviour
     [Header("Shooting Settings (ยิงปกติ)")]
     public GameObject bulletPrefab;
     public Transform firePoint;
-    public float fireRate = 0.25f;
+    [Tooltip("ความถี่ในการยิงรัวเมื่อกดคลิกซ้ายค้าง (ยิ่งน้อยยิ่งยิงเร็ว เช่น 0.1 - 0.25)")]
+    public float fireRate = 0.18f;
     public float firePointDistance = 0.7f;
     public float normalBulletSpeed = 12f;
 
@@ -45,7 +45,7 @@ public class PlayerAttackTest : MonoBehaviour
     [Range(0f, 360f)]
     public float maxAimAngle = 80f;
 
-    [Header("Charge Attack Settings (ระบบชาร์จยิง)")]
+    [Header("Charge Attack Settings (ระบบชาร์จยิง - คลิกขวาค้าง)")]
     public bool enableChargeAttack = true;
     public ChargeMode chargeMode = ChargeMode.Projectile;
     public float chargeTimeRequired = 1.0f;
@@ -73,7 +73,7 @@ public class PlayerAttackTest : MonoBehaviour
     public int laserBounces = 2;
     public float laserChargeCooldown = 6.0f;
 
-    [Tooltip("⭐ ติ๊กถูก = ให้เลเซอร์ยิงทำลาย Missile ได้ | ติ๊กออก = เลเซอร์ไม่ทำลาย Missile (สำหรับเปิด/ปิดทดสอบ)")]
+    [Tooltip("⭐ ติ๊กถูก = ให้เลเซอร์ยิงทำลาย Missile ได้ | ติ๊กออก = เลเซอร์ไม่ทำลาย Missile")]
     public bool laserCanDestroyMissile = true;
 
     [Header("Gun Scale Settings (เอฟเฟกต์ปืนใหญ่ขึ้นตอนชาร์จ 100%)")]
@@ -393,6 +393,16 @@ public class PlayerAttackTest : MonoBehaviour
     {
         if (Mouse.current == null) return;
 
+        // ⭐ 1. ระบบยิงปกติ: กดคลิกซ้ายค้าง = ยิงออกมารัวๆ ตามค่า fireRate
+        if (Mouse.current.leftButton.isPressed)
+        {
+            if (Time.unscaledTime >= nextFireTime)
+            {
+                FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
+                nextFireTime = Time.unscaledTime + fireRate;
+            }
+        }
+
         if (!enableChargeAttack)
         {
             ResetSlowMotion();
@@ -400,16 +410,11 @@ public class PlayerAttackTest : MonoBehaviour
             HideTrajectory();
             isCharging = false;
             currentChargeTimer = 0f;
-
-            if (Mouse.current.leftButton.wasPressedThisFrame && Time.unscaledTime >= nextFireTime)
-            {
-                FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
-                nextFireTime = Time.unscaledTime + fireRate;
-            }
             return;
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        // ⭐ 2. ระบบชาร์จยิง: กดคลิกขวาค้างเพื่อเริ่มชาร์จ
+        if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             isCharging = true;
             currentChargeTimer = 0f;
@@ -424,7 +429,8 @@ public class PlayerAttackTest : MonoBehaviour
             }
         }
 
-        if (Mouse.current.leftButton.isPressed && isCharging)
+        // ระหว่างกดคลิกขวาค้าง
+        if (Mouse.current.rightButton.isPressed && isCharging)
         {
             currentChargeTimer += Time.unscaledDeltaTime;
 
@@ -452,7 +458,7 @@ public class PlayerAttackTest : MonoBehaviour
                 hasLoggedFullCharge = true;
                 if (ActiveCooldownTimer <= 0f)
                 {
-                    Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! พร้อมยิง</color>");
+                    Debug.Log("<color=cyan>[Charged Shot] ชาร์จเต็ม 100%! ปล่อยคลิกขวาเพื่อยิง</color>");
                 }
                 else
                 {
@@ -461,7 +467,8 @@ public class PlayerAttackTest : MonoBehaviour
             }
         }
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame && isCharging)
+        // เมื่อปล่อยคลิกขวา
+        if (Mouse.current.rightButton.wasReleasedThisFrame && isCharging)
         {
             StopChargeSound();
 
@@ -490,14 +497,12 @@ public class PlayerAttackTest : MonoBehaviour
                 }
                 else
                 {
-                    FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
-                    Debug.LogWarning("[Charged Shot] โหมดนี้ติดคูลดาวน์ ยิงเป็นกระสุนธรรมดาแทน");
+                    Debug.LogWarning("[Charged Shot] โหมดนี้ติดคูลดาวน์ ไม่สามารถปล่อยท่าชาร์จได้");
                 }
             }
-            else if (Time.unscaledTime >= nextFireTime)
+            else
             {
-                FireBullet(bulletPrefab, normalDamage, 1.0f, normalBulletSpeed, isPiercing: false, bounces: normalBulletBounces);
-                nextFireTime = Time.unscaledTime + fireRate;
+                Debug.Log("[Charged Shot] ยกเลิกการชาร์จ (ปล่อยก่อนชาร์จเต็ม)");
             }
 
             currentChargeTimer = 0f;
@@ -908,7 +913,6 @@ public class PlayerAttackTest : MonoBehaviour
 
     private void OnGUI()
     {
-        // ⭐ หากไม่ได้ติ๊กเปิด showDebugGUI จะไม่วาดอะไรลงบนจอเลย
         if (!showDebugGUI) return;
 
         if (PauseMenuManager.isGamePaused) return;
